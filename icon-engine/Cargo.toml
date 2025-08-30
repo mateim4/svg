@@ -1,0 +1,14 @@
+[package]
+name = "icon-engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+svg = "0.18.0"
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+roxmltree = "0.18"
+clap = { workspace = true, optional = true }
+
+[features]
+cli = ["dep:clap"]
