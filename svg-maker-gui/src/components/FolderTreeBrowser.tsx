@@ -14,6 +14,8 @@ import {
   X
 } from 'lucide-react';
 import { FolderTree, GitHubFile } from '../services/githubService';
+import { ParsedIcon } from '../services/iconRepositoryParsers';
+import { iconCacheService } from '../services/iconCacheService';
 import './FolderTreeBrowser.css';
 
 interface FolderTreeBrowserProps {
@@ -37,7 +39,7 @@ interface TreeItemProps {
   onPreviewFile: (file: GitHubFile) => void;
 }
 
-// SVG Icon Preview Component - Loads real SVG content from GitHub
+// SVG Icon Preview Component - Uses cache service for instant loading
 const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
   const [svgContent, setSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
@@ -55,21 +57,44 @@ const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
         setIsLoading(true);
         setError(false);
         
-        const response = await fetch(file.download_url);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        // Use the imported cache service
         
-        let rawSvg = await response.text();
+        // Create a ParsedIcon-like object from GitHubFile
+        const iconForCache: ParsedIcon = {
+          id: file.sha || file.path,
+          repository: 'github-file', // Generic repository identifier
+          downloadUrl: file.download_url || '',
+          name: file.name,
+          displayName: file.name.replace('.svg', ''),
+          category: 'Icons',
+          tags: [] as string[],
+          fileName: file.name,
+          path: file.path,
+          size: file.size || 0,
+          svgContent: '' // Required by ParsedIcon interface
+        };
+        
+        // Try to get from cache first, fall back to direct download
+        let rawSvg: string;
+        try {
+          rawSvg = await iconCacheService.getSvgContent(iconForCache);
+        } catch {
+          // Fallback to direct fetch if cache fails
+          const response = await fetch(file.download_url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          rawSvg = await response.text();
+        }
         
         // Clean and resize the SVG for preview (20x20 size)
         // Remove any existing width/height attributes and set preview size
-        rawSvg = rawSvg
+        const cleanedSvg = rawSvg
           .replace(/width="[^"]*"/gi, '')
           .replace(/height="[^"]*"/gi, '')
           .replace(/<svg([^>]*)>/i, '<svg$1 width="20" height="20">');
         
-        setSvgContent(rawSvg);
+        setSvgContent(cleanedSvg);
       } catch (err) {
         console.error('Failed to load SVG content:', err);
         setError(true);

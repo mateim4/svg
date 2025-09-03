@@ -20,6 +20,7 @@ import StyleControls from './components/StyleControls';
 import BatchProcessor, { ProcessedFile } from './components/BatchProcessor';
 import PreviewPanel from './components/PreviewPanel';
 import RepositoryAnalysis from './components/RepositoryAnalysis';
+import IconCacheLoader, { IconCacheStatus } from './components/IconCacheLoader';
 import iconRepositoryService, { RepositorySource } from './services/iconRepositoryService';
 import './styles/design-system.css';
 
@@ -81,6 +82,10 @@ const App: React.FC = () => {
   // Processing
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedFiles, setProcessedFiles] = useState<ProcessedFile[]>([]);
+
+  // Icon Cache
+  const [showCacheLoader, setShowCacheLoader] = useState(false);
+  const [isCacheComplete, setIsCacheComplete] = useState(false);
 
   // Handle GitHub repository loading
   const handleRepoLoad = async (repoInfo: RepoInfo) => {
@@ -642,6 +647,16 @@ const App: React.FC = () => {
         mode={mode}
         title={mode === 'local' ? 'Local File Processing' : 'GitHub Repository Processing'}
         onBackToDashboard={() => setMode('dashboard')}
+      />
+
+      {/* Icon Cache Loader */}
+      <IconCacheLoader
+        autoStart={true}
+        showProgress={showCacheLoader}
+        onComplete={() => {
+          setIsCacheComplete(true);
+          setShowCacheLoader(false);
+        }}
       />
 
       {/* Main Content */}

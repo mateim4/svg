@@ -11,6 +11,8 @@ import {
   Download
 } from 'lucide-react';
 import { GitHubFile } from '../services/githubService';
+import { ParsedIcon } from '../services/iconRepositoryParsers';
+import { iconCacheService } from '../services/iconCacheService';
 import './IconSelectionGrid.css';
 
 interface IconSelectionGridProps {
@@ -47,20 +49,43 @@ const IconPreview: React.FC<IconPreviewProps> = ({ icon, isSelected, onToggle })
         setIsLoading(true);
         setError(false);
         
-        const response = await fetch(icon.download_url);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Use the imported cache service
+        
+        // Create a ParsedIcon-like object from GitHubFile
+        const iconForCache: ParsedIcon = {
+          id: icon.sha || icon.path,
+          repository: 'github-file', // Generic repository identifier
+          downloadUrl: icon.download_url || '',
+          name: icon.name,
+          displayName: icon.name.replace('.svg', ''),
+          category: 'Icons',
+          tags: [] as string[],
+          fileName: icon.name,
+          path: icon.path,
+          size: icon.size || 0,
+          svgContent: '' // Required by ParsedIcon interface
+        };
+        
+        // Try to get from cache first, fall back to direct download
+        let rawSvg: string;
+        try {
+          rawSvg = await iconCacheService.getSvgContent(iconForCache);
+        } catch {
+          // Fallback to direct fetch if cache fails
+          const response = await fetch(icon.download_url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          rawSvg = await response.text();
         }
         
-        let rawSvg = await response.text();
-        
         // Clean and resize the SVG for grid display (32x32 size)
-        rawSvg = rawSvg
+        const cleanedSvg = rawSvg
           .replace(/width="[^"]*"/gi, '')
           .replace(/height="[^"]*"/gi, '')
           .replace(/<svg([^>]*)>/i, '<svg$1 width="32" height="32">');
         
-        setSvgContent(rawSvg);
+        setSvgContent(cleanedSvg);
       } catch (err) {
         console.error('Failed to load SVG content for', icon.name, ':', err);
         setError(true);
