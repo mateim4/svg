@@ -1,0 +1,236 @@
+.folder-upload {
+  background: transparent;
+  backdrop-filter: blur(30px) saturate(125%);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.folder-upload-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-icon {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.header-info h3 {
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.3;
+}
+
+.header-info p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.folder-dropzone {
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: transparent;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+.folder-dropzone:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.02);
+  transform: translateY(-2px);
+}
+
+.folder-dropzone.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  transform: scale(1.02);
+}
+
+.folder-dropzone.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dropzone-icon {
+  color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+.folder-dropzone:hover .dropzone-icon {
+  color: #3b82f6;
+}
+
+.folder-dropzone.active .dropzone-icon {
+  color: #1d4ed8;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(59, 130, 246, 0.2);
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dropzone-text h4 {
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+
+.dropzone-text p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.browse-button {
+  background: transparent;
+  border: 1px solid #3b82f6;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.browse-button:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #1d4ed8;
+  color: #1d4ed8;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  color: #dc2626;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.folder-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.info-section,
+.supported-formats {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.02);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.info-section svg,
+.supported-formats svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.info-section strong,
+.supported-formats strong {
+  color: #1f2937;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.info-section ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #4b5563;
+}
+
+.info-section li {
+  margin-bottom: 0.25rem;
+}
+
+.supported-formats span {
+  color: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .folder-upload {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .folder-dropzone {
+    padding: 2rem 1rem;
+  }
+
+  .header-info h3 {
+    font-size: 1.25rem;
+  }
+
+  .folder-info {
+    gap: 1rem;
+  }
+
+  .info-section,
+  .supported-formats {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+}

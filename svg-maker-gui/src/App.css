@@ -1,0 +1,311 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Accessibility improvements */
+*:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 500;
+  background: #CCD0D6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #1f2937;
+  line-height: 1.5;
+  letter-spacing: -0.025em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* New App Layout - No Sidebar */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+}
+
+/* Local Mode Layout */
+.app-container .local-mode {
+  position: relative;
+  min-height: calc(100vh - 80px);
+}
+
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-xl);
+}
+
+.bg-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.floating-shape {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  filter: blur(20px);
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+
+.content-container {
+  position: relative;
+  z-index: 1;
+  padding: 2.5rem 2rem;
+  min-height: 100vh;
+}
+
+/* Workspace Layouts */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+  position: relative;
+  z-index: 1;
+  align-items: stretch;
+  justify-items: center;
+  width: 100%;
+}
+
+.workspace-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* GitHub Workflow Layout */
+.github-workflow {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.workflow-step {
+  /* Full-width workflow steps should have main panel styling */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(30px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.controls-workflow {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.controls-workflow .panel {
+  /* Controls workflow panels inside GitHub mode workspace should have no fill - borders only */
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.controls-workflow .panel:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Fluent Design 2 Acrylic Panels */
+.panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(30px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.panel:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Specific Panel Layout */
+.repo-input-panel,
+.analysis-panel {
+  grid-column: 1 / -1;
+}
+
+.tree-panel {
+  min-height: 500px;
+}
+
+/* Error Message */
+.error-message {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #dc2626;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  backdrop-filter: blur(10px);
+}
+
+/* Legacy styles for compatibility - Unified Acrylic Theme */
+.upload-section,
+.controls-section,
+.preview-section,
+.tree-section,
+.processor-section,
+.repo-input-section,
+.analysis-section {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(30px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.upload-section:hover,
+.controls-section:hover,
+.preview-section:hover,
+.tree-section:hover,
+.processor-section:hover,
+.repo-input-section:hover,
+.analysis-section:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .panel {
+    padding: 1.8rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 260px;
+  }
+  
+  .content-container {
+    padding: 1.5rem;
+  }
+  
+  .workspace-grid {
+    gap: 1.25rem;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .content-container {
+    padding: 1.5rem 1rem;
+    margin-left: 0;
+  }
+  
+  .panel {
+    padding: 1.5rem;
+    border-radius: 14px;
+  }
+  
+  .workspace-grid {
+    gap: 1.25rem;
+    padding: 0 0.5rem;
+  }
+  
+  .floating-shape {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .content-container {
+    padding: 0.75rem;
+  }
+  
+  .panel {
+    padding: 0.75rem;
+  }
+}

@@ -1,0 +1,46 @@
+/* Clean, Minimal Navigation Header */
+
+.navigation-header {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--gray-200);
+  padding: var(--space-lg) var(--space-xl);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  backdrop-filter: blur(8px);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.back-button {
+  color: var(--text-secondary) !important;
+  font-weight: var(--font-medium) !important;
+}
+
+.back-button:hover {
+  color: var(--text-primary) !important;
+}
+
+.nav-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navigation-header {
+    padding: var(--space-md) var(--space-lg);
+  }
+  
+  .nav-title {
+    font-size: var(--text-lg);
+  }
+}
