@@ -41,7 +41,6 @@ const PreviewComparison: React.FC<PreviewComparisonProps> = ({
   const [showOriginal, setShowOriginal] = useState(true);
   const [showProcessed, setShowProcessed] = useState(true);
   const [backgroundPattern, setBackgroundPattern] = useState<'transparent' | 'light' | 'dark' | 'grid'>('grid');
-
   const currentItem = selectedItem || items[0];
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev * 1.2, 3));
@@ -107,13 +106,6 @@ const PreviewComparison: React.FC<PreviewComparisonProps> = ({
         </div>
       </div>
 
-      <div className="preview-info">
-        <div className="size-info">
-          {type === 'processed' && (
-            <span>{config.width}×{config.height}px</span>
-          )}
-        </div>
-      </div>
     </motion.div>
   );
 
@@ -281,28 +273,6 @@ const PreviewComparison: React.FC<PreviewComparisonProps> = ({
         )}
       </div>
 
-      {/* Style Quick Preview (when comparison mode is active) */}
-      {viewMode === 'comparison' && currentItem && (
-        <div className="style-quick-preview">
-          <h4>Style Variations</h4>
-          <div className="style-variants">
-            {(['neumorphism', 'glassmorphism', 'flat-design', 'fluentui'] as const).map((style) => (
-              <motion.button
-                key={style}
-                className={`style-variant ${config.style === style ? 'active' : ''}`}
-                onClick={() => onConfigChange?.({ ...config, style })}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className={`variant-preview ${style}`}>
-                  <div className="sample-icon" />
-                </div>
-                <span>{style.charAt(0).toUpperCase() + style.slice(1).replace('-', ' ')}</span>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

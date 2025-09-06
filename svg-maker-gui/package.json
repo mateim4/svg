@@ -5,6 +5,7 @@
   "dependencies": {
     "@fluentui/react-components": "^9.69.0",
     "@fluentui/react-icons": "^2.0.309",
+    "@fluentui/svg-icons": "^1.1.309",
     "@fluentui/tokens": "^1.0.0-alpha.22",
     "@octokit/rest": "^22.0.0",
     "@reactflow/core": "^11.11.4",
@@ -27,6 +28,8 @@
     "react-dropzone": "^14.3.8",
     "react-router-dom": "^7.8.2",
     "react-scripts": "5.0.1",
+    "react-window": "^2.0.2",
+    "react-window-infinite-loader": "^1.0.10",
     "reactflow": "^11.11.4",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"

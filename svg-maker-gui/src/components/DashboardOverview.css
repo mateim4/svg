@@ -339,4 +339,116 @@
   .features-grid {
     grid-template-columns: 1fr;
   }
+
+  .iconpack-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* Icon Pack Selection */
+.iconpack-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.iconpack-selection h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  text-align: center;
+}
+
+.iconpack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.iconpack-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.iconpack-card:hover {
+  border-color: var(--accent-gradient-start, #00e5ff);
+  box-shadow: 0 12px 40px rgba(0, 229, 255, 0.2);
+}
+
+.iconpack-header {
+  height: 80px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconpack-count {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1a1a1a;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.iconpack-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.iconpack-content h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.iconpack-content p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.browse-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--accent-gradient-start, #00e5ff) 0%, var(--accent-gradient-end, #84fab0) 100%);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: auto;
+}
+
+.browse-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 229, 255, 0.3);
+}
+
+/* Icon Packs Mode Card */
+.mode-card.iconpacks-mode {
+  background: linear-gradient(135deg, rgba(132, 250, 176, 0.15) 0%, rgba(0, 229, 255, 0.1) 100%);
+  border-color: rgba(132, 250, 176, 0.3);
+}
+
+.mode-card.iconpacks-mode:hover {
+  border-color: var(--accent-gradient-end, #84fab0);
+  box-shadow: 0 20px 60px rgba(132, 250, 176, 0.2);
 }

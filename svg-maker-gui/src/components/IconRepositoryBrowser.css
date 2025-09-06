@@ -70,10 +70,14 @@
   grid-template-columns: 1fr;
 }
 
-/* Repository Cards */
+/* Repository Cards - Frosted Glass Design */
 .repository-card {
-  background: var(--bg-primary);
-  border: 2px solid var(--gray-200);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   position: relative;
@@ -81,66 +85,88 @@
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   overflow: hidden;
+  min-height: 280px;
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
+/* Glass edge shine effect - top edge */
 .repository-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: var(--gray-300);
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.5) 50%, 
+    transparent 100%);
+  opacity: 0.8;
   transition: all var(--transition-base);
+}
+
+/* Glass edge shine effect - left edge */
+.repository-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.5) 0%, 
+    transparent 50%);
+  opacity: 0.8;
+}
+
+/* Additional glass shine on corners */
+.repository-card > *:first-child {
+  position: relative;
+}
+
+.repository-card > *:first-child::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle at center, 
+    rgba(255, 255, 255, 0.3) 0%, 
+    transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .repository-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--primary-color);
-}
-
-/* Local Repository Styling */
-.repository-card.local {
-  border-color: #ff69b4;
   background: linear-gradient(135deg, 
-    rgba(255, 105, 180, 0.03) 0%, 
-    var(--bg-primary) 100%);
+    rgba(0, 229, 255, 0.15) 0%, 
+    rgba(132, 250, 176, 0.15) 100%);
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 
+    0 12px 48px 0 rgba(0, 229, 255, 0.2),
+    inset 0 0 0 1px rgba(0, 229, 255, 0.2);
 }
 
-.repository-card.local::before {
-  background: linear-gradient(90deg, #ff69b4, #ff85c1);
+.repository-card:hover::before {
+  background: var(--primary-gradient);
+  height: 2px;
+  opacity: 1;
 }
 
-.repository-card.local:hover {
-  border-color: #ff69b4;
-  box-shadow: 0 10px 40px rgba(255, 105, 180, 0.25);
-}
-
-/* External Repository Styling */
-.repository-card.external {
-  border-color: var(--info-color);
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.02) 0%, 
-    var(--bg-primary) 100%);
-}
-
-.repository-card.external::before {
-  background: linear-gradient(90deg, var(--info-color), var(--info-light));
-}
-
-.repository-card.external:hover {
-  border-color: var(--info-color);
-  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.2);
-}
+/* Both local and external cards use the same frosted glass design */
+/* Only difference is the badge indicator */
 
 /* Repository Badges */
 .repository-badge {
   position: absolute;
-  top: var(--space-md);
-  left: var(--space-md);
+  top: var(--space-lg);
+  left: var(--space-lg);
   z-index: 2;
 }
 
@@ -148,75 +174,91 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-full);
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .local-badge {
-  background: rgba(255, 105, 180, 0.12);
-  color: #ff69b4;
+  background: rgba(34, 197, 94, 0.15);
+  color: rgb(22, 163, 74);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .external-badge {
-  background: var(--info-bg);
-  color: var(--info-color);
+  background: rgba(59, 130, 246, 0.15);
+  color: rgb(37, 99, 235);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 /* Connection Status */
 .connection-status {
   position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
+  top: var(--space-lg);
+  right: var(--space-lg);
   z-index: 2;
 }
 
 .offline-available, .online-required {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .offline-available {
-  background: rgba(255, 105, 180, 0.12);
-  color: #ff69b4;
+  background: rgba(34, 197, 94, 0.15);
+  color: rgb(22, 163, 74);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .online-required {
-  background: var(--warning-bg);
-  color: var(--warning-color);
+  background: rgba(245, 158, 11, 0.15);
+  color: rgb(217, 119, 6);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 /* Repository Info */
 .repository-info {
-  margin-top: 2rem; /* Space for badges */
+  margin-top: 3rem; /* Space for badges */
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .repository-name {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   color: var(--text-primary);
-  margin: 0 0 var(--space-sm);
+  margin: 0;
+  line-height: 1.4;
 }
 
 .repository-description {
   color: var(--text-secondary);
   font-size: var(--text-sm);
   line-height: 1.5;
-  margin: 0 0 var(--space-md);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Repository Meta */
 .repository-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
+  gap: var(--space-sm);
+  align-items: center;
 }
 
 .meta-item {
@@ -225,18 +267,21 @@
   gap: var(--space-xs);
   font-size: var(--text-xs);
   color: var(--text-tertiary);
+  white-space: nowrap;
 }
 
 .meta-item svg {
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .license-badge {
-  background: var(--gray-100);
-  color: var(--text-secondary);
+  background: rgba(99, 102, 241, 0.1);
+  color: rgb(79, 70, 229);
   padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   font-weight: var(--font-medium);
+  font-size: var(--text-xs);
 }
 
 /* Repository Tags */
@@ -244,52 +289,91 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
-  margin-bottom: var(--space-md);
 }
 
 .tag {
-  background: var(--gray-100);
-  color: var(--text-secondary);
+  background: rgba(107, 114, 128, 0.1);
+  color: rgb(75, 85, 99);
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-full);
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
+  border: 1px solid rgba(107, 114, 128, 0.2);
 }
 
 /* Repository Preview */
 .repository-preview {
-  margin: var(--space-md) 0;
+  margin: var(--space-sm) 0;
 }
 
 .preview-icons {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
 }
 
 .preview-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gray-100);
-  border-radius: var(--radius-sm);
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(203, 213, 225, 0.5);
+  backdrop-filter: blur(4px);
 }
 
 .icon-placeholder {
-  width: 16px;
-  height: 16px;
-  opacity: 0.7;
+  width: 18px;
+  height: 18px;
+  opacity: 0.8;
 }
 
 /* Action Button */
 .repository-action {
   margin-top: auto;
+  padding-top: var(--space-sm);
 }
 
 .action-button {
   width: 100%;
   justify-content: space-between;
+  font-weight: 600;
+  transition: all var(--transition-base);
+  padding: 0.875rem 1.25rem;
+  font-size: 0.95rem;
+}
+
+/* Theme the primary Browse Icons button with gradient */
+.action-button.ds-button-primary {
+  background: var(--primary-gradient);
+  border: none;
+  color: #1a1a1a;
+  box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3);
+  padding: 0.875rem 1.25rem;
+  font-weight: 600;
+}
+
+.action-button.ds-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 229, 255, 0.4);
+  color: #000000;
+}
+
+/* Theme the secondary Load Repository button */
+.action-button.ds-button-secondary {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(132, 250, 176, 0.1) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: #1a1a1a;
+  padding: 0.875rem 1.25rem;
+  font-weight: 600;
+}
+
+.action-button.ds-button-secondary:hover {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(132, 250, 176, 0.15) 100%);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  color: #000000;
 }
 
 /* Loading State */

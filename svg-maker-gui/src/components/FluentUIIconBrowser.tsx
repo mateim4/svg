@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Grid3X3, List, Download, Filter, Eye, Info } from 'lucide-react';
+import { Search, Grid3X3, List, Download, Filter, Eye, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import './FluentUIIconBrowser.css';
 import { styleSvg } from '../utils/svgStyler';
+import { useDebouncedSearch } from '../hooks/useDebounce';
 
 interface FluentUIIcon {
   name: string;
@@ -25,12 +26,14 @@ const FluentUIIconBrowser: React.FC<FluentUIIconBrowserProps> = ({
   onIconSelect,
   onBulkSelect
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const { displayValue: searchTerm, searchValue: debouncedSearchTerm, setDisplayValue: setSearchTerm } = useDebouncedSearch('', 300);
   const [selectedVariant, setSelectedVariant] = useState<string>('all');
   const [selectedSize, setSelectedSize] = useState<number | 'all'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedIcons, setSelectedIcons] = useState<Set<string>>(new Set());
   const [previewIcon, setPreviewIcon] = useState<FluentUIIcon | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const iconsPerPage = 24;
 
   // Get all available variants and sizes across icons
   const { allVariants, allSizes } = useMemo(() => {
@@ -48,18 +51,51 @@ const FluentUIIconBrowser: React.FC<FluentUIIconBrowserProps> = ({
     };
   }, [icons]);
 
+  // Optimized filtering with memoized search terms
+  const { normalizedSearchTerms, hasSearchTerm } = useMemo(() => {
+    const terms = debouncedSearchTerm.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    return {
+      normalizedSearchTerms: terms,
+      hasSearchTerm: terms.length > 0
+    };
+  }, [debouncedSearchTerm]);
+
   // Filter icons based on search and filters
   const filteredIcons = useMemo(() => {
-    return icons.filter(icon => {
-      const matchesSearch = icon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (icon.metadata?.description?.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filtered = icons.filter(icon => {
+      // Early return for variant/size filters (most selective)
+      if (selectedVariant !== 'all' && !icon.variants.includes(selectedVariant)) {
+        return false;
+      }
+      if (selectedSize !== 'all' && !icon.sizes.includes(selectedSize as number)) {
+        return false;
+      }
+
+      // Skip search if no search terms
+      if (!hasSearchTerm) {
+        return true;
+      }
+
+      // Optimize search: pre-normalize text once
+      const iconNameLower = icon.name.toLowerCase();
+      const iconDescLower = icon.metadata?.description?.toLowerCase() || '';
       
-      const matchesVariant = selectedVariant === 'all' || icon.variants.includes(selectedVariant);
-      const matchesSize = selectedSize === 'all' || icon.sizes.includes(selectedSize as number);
-      
-      return matchesSearch && matchesVariant && matchesSize;
+      // All search terms must match (AND logic)
+      return normalizedSearchTerms.every(term => 
+        iconNameLower.includes(term) || iconDescLower.includes(term)
+      );
     });
-  }, [icons, searchTerm, selectedVariant, selectedSize]);
+    
+    // Reset to first page when filters change
+    setCurrentPage(0);
+    return filtered;
+  }, [icons, normalizedSearchTerms, hasSearchTerm, selectedVariant, selectedSize]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredIcons.length / iconsPerPage);
+  const startIndex = currentPage * iconsPerPage;
+  const endIndex = Math.min(startIndex + iconsPerPage, filteredIcons.length);
+  const paginatedIcons = filteredIcons.slice(startIndex, endIndex);
 
   const toggleIconSelection = (iconName: string) => {
     const newSelected = new Set(selectedIcons);
@@ -74,13 +110,21 @@ const FluentUIIconBrowser: React.FC<FluentUIIconBrowserProps> = ({
   const handleBulkDownload = () => {
     if (onBulkSelect) {
       const selectedFiles: File[] = [];
-      filteredIcons.forEach(icon => {
+      icons.forEach(icon => {
         if (selectedIcons.has(icon.name)) {
           selectedFiles.push(...icon.svgFiles);
         }
       });
       onBulkSelect(selectedFiles);
     }
+  };
+
+  const nextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages - 1));
+  };
+
+  const prevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 0));
   };
 
   const getIconPreview = async (icon: FluentUIIcon): Promise<string | null> => {
@@ -102,6 +146,39 @@ const FluentUIIconBrowser: React.FC<FluentUIIconBrowserProps> = ({
       }
     }
     return null;
+  };
+
+  const renderPaginationControls = () => {
+    if (totalPages <= 1) return null;
+    
+    return (
+      <div className="pagination-controls">
+        <button 
+          className="pagination-btn" 
+          onClick={prevPage} 
+          disabled={currentPage === 0}
+        >
+          <ChevronLeft size={16} />
+          Previous
+        </button>
+        
+        <div className="pagination-info">
+          <span>
+            Page {currentPage + 1} of {totalPages} 
+            ({startIndex + 1}-{endIndex} of {filteredIcons.length})
+          </span>
+        </div>
+        
+        <button 
+          className="pagination-btn" 
+          onClick={nextPage} 
+          disabled={currentPage >= totalPages - 1}
+        >
+          Next
+          <ChevronRight size={16} />
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -185,21 +262,25 @@ const FluentUIIconBrowser: React.FC<FluentUIIconBrowserProps> = ({
         </div>
       </div>
 
+      {renderPaginationControls()}
+
       <div className={`icons-container ${viewMode}`}>
-        {filteredIcons.map((icon, index) => (
-            <FluentIconCard
-              key={icon.name}
-              icon={icon}
-              config={config}
-              isSelected={selectedIcons.has(icon.name)}
-              onSelect={() => toggleIconSelection(icon.name)}
-              onPreview={() => setPreviewIcon(icon)}
-              onProcess={() => onIconSelect && onIconSelect(icon, icon.svgFiles)}
-              viewMode={viewMode}
-              index={index}
-            />
-          ))}
+        {paginatedIcons.map((icon, index) => (
+          <FluentIconCard
+            key={icon.name}
+            icon={icon}
+            config={config}
+            isSelected={selectedIcons.has(icon.name)}
+            onSelect={() => toggleIconSelection(icon.name)}
+            onPreview={() => setPreviewIcon(icon)}
+            onProcess={() => onIconSelect && onIconSelect(icon, icon.svgFiles)}
+            viewMode={viewMode}
+            index={startIndex + index}
+          />
+        ))}
       </div>
+
+      {renderPaginationControls()}
 
       {filteredIcons.length === 0 && (
         <div className="empty-state">
@@ -255,8 +336,10 @@ const FluentIconCard = React.memo<{
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.02, 0.5) }}
       layout={false}
+      onClick={onSelect}
+      style={{ cursor: 'pointer' }}
     >
-      <div className="icon-preview" onClick={onPreview}>
+      <div className="icon-preview" onClick={(e) => { e.stopPropagation(); onPreview(); }}>
         {previewSvg ? (
           <div dangerouslySetInnerHTML={{ __html: previewSvg }} />
         ) : (
@@ -286,10 +369,10 @@ const FluentIconCard = React.memo<{
         <input
           type="checkbox"
           checked={isSelected}
-          onChange={onSelect}
+          onChange={(e) => { e.stopPropagation(); onSelect(); }}
           className="icon-checkbox"
         />
-        <button className="process-btn" onClick={onProcess}>
+        <button className="process-btn" onClick={(e) => { e.stopPropagation(); onProcess(); }}>
           <Eye size={16} />
           Process
         </button>

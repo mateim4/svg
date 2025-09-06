@@ -6,7 +6,7 @@ import {
 } from '@fluentui/react-components';
 import { tokens } from '@fluentui/tokens';
 
-// Custom brand colors for SVG Icon Maker
+// Custom brand colors for SVG Designer
 const svgMakerBrand: BrandVariants = {
   10: "#020305",
   20: "#111318",

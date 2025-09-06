@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -8,7 +8,11 @@ import {
   Sparkles,
   FolderOpen,
   Image,
-  Download
+  Download,
+  HardDrive,
+  Calendar,
+  Zap,
+  ChevronRight
 } from 'lucide-react';
 import '../styles/design-system.css';
 import './FileUploadNew.css';
@@ -28,6 +32,7 @@ const FileUploadNew: React.FC<FileUploadProps> = ({
   const [isDragActive, setIsDragActive] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [processingFiles, setProcessingFiles] = useState(false);
+  const [svgPreviews, setSvgPreviews] = useState<Map<string, string>>(new Map());
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setProcessingFiles(true);
@@ -94,6 +99,46 @@ const FileUploadNew: React.FC<FileUploadProps> = ({
     link.download = 'sample-icon.svg';
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  // Load SVG previews when files change
+  useEffect(() => {
+    const loadPreviews = async () => {
+      const newPreviews = new Map(svgPreviews);
+      
+      for (const file of uploadedFiles) {
+        const fileKey = `${file.name}-${file.size}`;
+        if (!newPreviews.has(fileKey)) {
+          try {
+            const text = await file.text();
+            newPreviews.set(fileKey, text);
+          } catch (error) {
+            console.warn('Failed to load SVG preview for', file.name);
+          }
+        }
+      }
+      
+      setSvgPreviews(newPreviews);
+    };
+    
+    if (uploadedFiles.length > 0) {
+      loadPreviews();
+    }
+  }, [uploadedFiles]);
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const formatDate = (date: Date): string => {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
   };
 
   return (
@@ -245,39 +290,81 @@ const FileUploadNew: React.FC<FileUploadProps> = ({
           <h4 className="file-list-title">Uploaded Files</h4>
           <div className="file-grid">
             <AnimatePresence>
-              {uploadedFiles.map((file, index) => (
-                <motion.div
-                  key={`${file.name}-${index}`}
-                  className="file-item"
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="file-preview">
-                    {/* SVG Preview would go here */}
-                    <Image size={32} />
-                  </div>
-                  
-                  <div className="file-info">
-                    <div className="file-name" title={file.name}>
-                      {file.name}
-                    </div>
-                    <div className="file-size">
-                      {(file.size / 1024).toFixed(1)} KB
-                    </div>
-                  </div>
-                  
-                  <button
-                    className="file-remove"
-                    onClick={() => removeFile(index)}
-                    title="Remove file"
+              {uploadedFiles.map((file, index) => {
+                const fileKey = `${file.name}-${file.size}`;
+                const svgContent = svgPreviews.get(fileKey);
+                const uploadDate = new Date(file.lastModified);
+                
+                return (
+                  <motion.div
+                    key={`${file.name}-${index}`}
+                    className="file-item"
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ scale: 1.02 }}
                   >
-                    <X size={16} />
-                  </button>
-                </motion.div>
-              ))}
+                    {/* File Type Badge */}
+                    <div className="file-badge">
+                      <HardDrive size={14} />
+                      <span>Local</span>
+                    </div>
+
+                    {/* Remove Button */}
+                    <button
+                      className="file-remove"
+                      onClick={() => removeFile(index)}
+                      title="Remove file"
+                    >
+                      <X size={16} />
+                    </button>
+
+                    {/* File Info */}
+                    <div className="file-info">
+                      <h3 className="file-name" title={file.name}>
+                        {file.name.replace(/\.svg$/i, '')}
+                      </h3>
+                      
+                      <div className="file-meta">
+                        <div className="file-meta-item">
+                          <Calendar size={12} />
+                          <span>{formatDate(uploadDate)}</span>
+                        </div>
+                        
+                        <div className="file-meta-item">
+                          <span className="file-size-badge">{formatFileSize(file.size)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* File Preview */}
+                    <div className="file-preview">
+                      <div className="preview-icons">
+                        {svgContent ? (
+                          <div 
+                            className="svg-preview"
+                            dangerouslySetInnerHTML={{ __html: svgContent }}
+                          />
+                        ) : (
+                          <div className="preview-icon">
+                            <Image size={18} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="file-action">
+                      <button className="ds-button ds-button-primary action-button">
+                        <Zap size={16} />
+                        Ready to Process
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
         </motion.div>

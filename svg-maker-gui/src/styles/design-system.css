@@ -1,12 +1,12 @@
-/* SVG Maker Design System - Global Design Tokens */
+/* SVG Designer Design System - Global Design Tokens */
 
 :root {
   /* Color Palette */
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --primary-color: #667eea;
-  --primary-dark: #5a67d8;
-  --primary-light: #7c8ff0;
-  --secondary-color: #764ba2;
+  --primary-gradient: linear-gradient(135deg, #00e5ff 0%, #84fab0 100%);
+  --primary-color: #00e5ff;
+  --primary-dark: #00bcd4;
+  --primary-light: #26c6da;
+  --secondary-color: #84fab0;
   
   /* Semantic Colors */
   --success-color: #10b981;
@@ -71,8 +71,8 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-primary: 0 10px 40px rgba(102, 126, 234, 0.15);
-  --shadow-primary-intense: 0 10px 40px rgba(102, 126, 234, 0.3);
+  --shadow-primary: 0 10px 40px rgba(0, 229, 255, 0.15);
+  --shadow-primary-intense: 0 10px 40px rgba(0, 229, 255, 0.3);
   
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -176,14 +176,15 @@
 }
 
 .ds-button-secondary {
-  background: var(--gray-100);
-  color: var(--gray-700);
-  border: 1px solid var(--gray-300);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(132, 250, 176, 0.1) 100%);
+  color: var(--primary-color);
+  border: 1px solid rgba(0, 229, 255, 0.3);
 }
 
 .ds-button-secondary:hover {
-  background: var(--gray-200);
-  border-color: var(--gray-400);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(132, 250, 176, 0.15) 100%);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
 }
 
 .ds-button-ghost {
@@ -212,7 +213,7 @@
 .ds-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
 }
 
 .ds-input-error {

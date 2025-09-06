@@ -31,8 +31,8 @@ interface IconPreviewProps {
   onToggle: (selected: boolean) => void;
 }
 
-// Individual Icon Preview Component
-const IconPreview: React.FC<IconPreviewProps> = ({ icon, isSelected, onToggle }) => {
+// Individual Icon Preview Component with memoization
+const IconPreview: React.FC<IconPreviewProps> = React.memo(({ icon, isSelected, onToggle }) => {
   const [svgContent, setSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -172,7 +172,7 @@ const IconPreview: React.FC<IconPreviewProps> = ({ icon, isSelected, onToggle })
       </div>
     </motion.div>
   );
-};
+});
 
 const IconSelectionGrid: React.FC<IconSelectionGridProps> = ({
   icons,
@@ -188,44 +188,68 @@ const IconSelectionGrid: React.FC<IconSelectionGridProps> = ({
   const [sizeFilter, setSizeFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  // Filter and search icons
-  const filteredIcons = useMemo(() => {
-    return icons.filter(icon => {
-      // Search filter
-      const matchesSearch = icon.name.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      // Variant filter
+  // Cache lowercase search term to avoid repeated toLowerCase calls
+  const normalizedSearchTerm = useMemo(() => searchTerm.toLowerCase(), [searchTerm]);
+
+  // Pre-compute icon metadata for better performance
+  const iconsWithMetadata = useMemo(() => {
+    return icons.map(icon => {
       const variantMatch = icon.name.match(/_(regular|filled|light)\.svg$/);
-      const iconVariant = variantMatch ? variantMatch[1] : 'regular';
-      const matchesVariant = variantFilter === 'all' || iconVariant === variantFilter;
-      
-      // Size filter
       const sizeMatch = icon.name.match(/_(\d+)_/);
-      const iconSize = sizeMatch ? sizeMatch[1] : '24';
-      const matchesSize = sizeFilter === 'all' || iconSize === sizeFilter;
+      
+      return {
+        ...icon,
+        normalizedName: icon.name.toLowerCase(),
+        variant: variantMatch ? variantMatch[1] : 'regular',
+        extractedSize: sizeMatch ? sizeMatch[1] : '24' // Use different name to avoid conflict
+      };
+    });
+  }, [icons]);
+
+  // Filter and search icons with pre-computed metadata
+  const filteredIcons = useMemo(() => {
+    if (!normalizedSearchTerm && variantFilter === 'all' && sizeFilter === 'all') {
+      // Return original icons if no filters applied
+      return icons;
+    }
+
+    return iconsWithMetadata.filter(icon => {
+      // Search filter with pre-computed normalized name
+      const matchesSearch = !normalizedSearchTerm || icon.normalizedName.includes(normalizedSearchTerm);
+      
+      // Variant filter with pre-computed variant
+      const matchesVariant = variantFilter === 'all' || icon.variant === variantFilter;
+      
+      // Size filter with pre-computed size
+      const matchesSize = sizeFilter === 'all' || icon.extractedSize === sizeFilter;
       
       return matchesSearch && matchesVariant && matchesSize;
-    });
-  }, [icons, searchTerm, variantFilter, sizeFilter]);
+    }).map((icon): GitHubFile => ({
+      name: icon.name,
+      path: icon.path,
+      type: icon.type,
+      download_url: icon.download_url,
+      size: icon.size, // Keep original size property (number | undefined)
+      sha: icon.sha
+    }));
+  }, [iconsWithMetadata, normalizedSearchTerm, variantFilter, sizeFilter, icons]);
 
-  // Get unique variants and sizes for filters
+  // Get unique variants and sizes from pre-computed metadata
   const availableVariants = useMemo(() => {
     const variants = new Set<string>();
-    icons.forEach(icon => {
-      const match = icon.name.match(/_(regular|filled|light)\.svg$/);
-      if (match) variants.add(match[1]);
+    iconsWithMetadata.forEach(icon => {
+      if (icon.variant) variants.add(icon.variant);
     });
     return Array.from(variants).sort();
-  }, [icons]);
+  }, [iconsWithMetadata]);
 
   const availableSizes = useMemo(() => {
     const sizes = new Set<string>();
-    icons.forEach(icon => {
-      const match = icon.name.match(/_(\d+)_/);
-      if (match) sizes.add(match[1]);
+    iconsWithMetadata.forEach(icon => {
+      if (icon.extractedSize) sizes.add(icon.extractedSize);
     });
     return Array.from(sizes).sort((a, b) => parseInt(a) - parseInt(b));
-  }, [icons]);
+  }, [iconsWithMetadata]);
 
   const clearSearch = () => {
     setSearchTerm('');
@@ -326,15 +350,34 @@ const IconSelectionGrid: React.FC<IconSelectionGridProps> = ({
       {/* Icons Grid */}
       <div className={`icons-container ${viewMode}`}>
         <AnimatePresence>
-          {filteredIcons.map(icon => (
-            <IconPreview
-              key={icon.path}
-              icon={icon}
-              isSelected={selectedIcons.has(icon.path)}
-              onToggle={(selected) => onIconToggle(icon.path, selected)}
-            />
-          ))}
+          {filteredIcons.length > 200 ? (
+            // For large datasets, limit initial render and add lazy loading
+            filteredIcons.slice(0, 200).map(icon => (
+              <IconPreview
+                key={icon.path}
+                icon={icon}
+                isSelected={selectedIcons.has(icon.path)}
+                onToggle={(selected) => onIconToggle(icon.path, selected)}
+              />
+            ))
+          ) : (
+            // For smaller datasets, render all
+            filteredIcons.map(icon => (
+              <IconPreview
+                key={icon.path}
+                icon={icon}
+                isSelected={selectedIcons.has(icon.path)}
+                onToggle={(selected) => onIconToggle(icon.path, selected)}
+              />
+            ))
+          )}
         </AnimatePresence>
+        
+        {filteredIcons.length > 200 && (
+          <div className="large-dataset-notice">
+            Showing first 200 of {filteredIcons.length} icons. Use search/filters to narrow results.
+          </div>
+        )}
       </div>
 
       {filteredIcons.length === 0 && (

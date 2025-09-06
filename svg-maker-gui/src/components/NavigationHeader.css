@@ -18,13 +18,27 @@
   gap: var(--space-lg);
 }
 
-.back-button {
-  color: var(--text-secondary) !important;
-  font-weight: var(--font-medium) !important;
+.clickable-title {
+  background: none;
+  border: none;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
-.back-button:hover {
-  color: var(--text-primary) !important;
+.clickable-title:hover {
+  background: var(--gray-100);
+}
+
+.brand-name {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--primary-600);
+  text-decoration: none;
 }
 
 .nav-title {

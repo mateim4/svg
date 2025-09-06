@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Palette, Settings, Layers, Download } from 'lucide-react';
+import { Palette, Download } from 'lucide-react';
 import { IconConfig, StylePreset, Gradient } from '../types/IconConfig';
 import './StyleControls.css';
 
@@ -9,30 +9,79 @@ interface StyleControlsProps {
   onConfigChange: (config: IconConfig) => void;
 }
 
-const StyleControls: React.FC<StyleControlsProps> = ({ config, onConfigChange }) => {
+const StyleControls = React.memo<StyleControlsProps>(({ config, onConfigChange }) => {
   const [showPaletteImport, setShowPaletteImport] = useState(false);
   const [paletteInput, setPaletteInput] = useState('');
   const [paletteError, setPaletteError] = useState('');
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const updateConfig = (updates: Partial<IconConfig>) => {
+  // Debounced config update to prevent excessive re-renders
+  const debouncedConfigChange = useCallback((updates: Partial<IconConfig>) => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    
+    debounceTimeoutRef.current = setTimeout(() => {
+      onConfigChange({ ...config, ...updates });
+    }, 150); // 150ms debounce delay
+  }, [config, onConfigChange]);
+
+  // Immediate update for non-performance-critical changes like style presets
+  const updateConfig = useCallback((updates: Partial<IconConfig>) => {
     onConfigChange({ ...config, ...updates });
+  }, [config, onConfigChange]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Gradient caching
+  const cacheGradient = (gradient: Gradient) => {
+    localStorage.setItem('lastUsedGradient', JSON.stringify(gradient));
+  };
+
+  const getLastUsedGradient = (): Gradient => {
+    try {
+      const cached = localStorage.getItem('lastUsedGradient');
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (error) {
+      console.warn('Failed to load cached gradient:', error);
+    }
+    // Default gradient
+    return {
+      angle: 45,
+      startColor: '#667eea',
+      stopColor: '#764ba2'
+    };
   };
 
   const updateGradient = (gradientUpdates: Partial<Gradient>) => {
+    let newGradient: Gradient;
+    
     if (!config.gradient) {
-      updateConfig({
-        gradient: {
-          angle: 90,
-          startColor: '#ff0000',
-          stopColor: '#00ff00',
-          ...gradientUpdates,
-        },
-      });
+      // Use cached gradient as base, or default
+      const baseGradient = getLastUsedGradient();
+      newGradient = {
+        ...baseGradient,
+        ...gradientUpdates,
+      };
     } else {
-      updateConfig({
-        gradient: { ...config.gradient, ...gradientUpdates },
-      });
+      newGradient = { ...config.gradient, ...gradientUpdates };
     }
+    
+    // Cache the new gradient
+    cacheGradient(newGradient);
+    
+    updateConfig({
+      gradient: newGradient,
+    });
   };
 
   const importColorPalette = () => {
@@ -93,101 +142,15 @@ const StyleControls: React.FC<StyleControlsProps> = ({ config, onConfigChange })
   return (
     <div className="style-controls">
       <motion.div
-        className="control-section"
+        className="control-section merged-controls"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
         <div className="section-header">
-          <Layers size={20} />
-          <h3>Style Preset</h3>
-        </div>
-        
-        <div className="preset-buttons">
-          {(['neumorphism', 'glassmorphism', 'flat-design', 'fluentui'] as StylePreset[]).map((preset) => (
-            <motion.button
-              key={preset}
-              className={`preset-button ${config.style === preset ? 'active' : ''}`}
-              onClick={() => updateConfig({ style: preset })}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className={`preset-preview ${preset}`}></div>
-              {preset.charAt(0).toUpperCase() + preset.slice(1).replace(/[-]/g, ' ')}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="control-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="section-header">
-          <Settings size={20} />
-          <h3>Dimensions</h3>
-        </div>
-        
-        <div className="control-grid">
-          <div className="control-item">
-            <label>Width</label>
-            <input
-              type="number"
-              value={config.width}
-              onChange={(e) => updateConfig({ width: parseInt(e.target.value) || 128 })}
-              min="32"
-              max="512"
-            />
-          </div>
-          
-          <div className="control-item">
-            <label>Height</label>
-            <input
-              type="number"
-              value={config.height}
-              onChange={(e) => updateConfig({ height: parseInt(e.target.value) || 128 })}
-              min="32"
-              max="512"
-            />
-          </div>
-          
-          <div className="control-item">
-            <label>Corner Radius</label>
-            <input
-              type="number"
-              value={config.cornerRadius}
-              onChange={(e) => updateConfig({ cornerRadius: parseFloat(e.target.value) || 25 })}
-              min="0"
-              max="50"
-              step="0.5"
-            />
-          </div>
-          
-          <div className="control-item">
-            <label>Padding</label>
-            <input
-              type="number"
-              value={config.padding}
-              onChange={(e) => updateConfig({ padding: parseInt(e.target.value) || 16 })}
-              min="0"
-              max="50"
-            />
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="control-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="section-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Palette size={20} />
-            <h3>Colors</h3>
+            <h3>Style & Options</h3>
           </div>
           <motion.button
             className="palette-import-btn"
@@ -201,23 +164,430 @@ const StyleControls: React.FC<StyleControlsProps> = ({ config, onConfigChange })
           </motion.button>
         </div>
         
-        <div className="color-controls">
-          <div className="control-item">
-            <label>Icon Color</label>
-            <div className="color-input-wrapper">
-              <input
-                type="color"
-                value={config.iconColor}
-                onChange={(e) => updateConfig({ iconColor: e.target.value })}
-              />
-              <input
-                type="text"
-                value={config.iconColor}
-                onChange={(e) => updateConfig({ iconColor: e.target.value })}
-                placeholder="#333333"
-              />
+        <div className="merged-content">
+          {/* Style Presets */}
+          <div className="preset-row">
+            <label>Style:</label>
+            <div className="preset-buttons-horizontal">
+              {(['neumorphism', 'glassmorphism', 'pixel-art'] as StylePreset[]).map((preset) => (
+                <motion.button
+                  key={preset}
+                  className={`preset-button-mini ${config.style === preset ? 'active' : ''}`}
+                  onClick={() => updateConfig({ style: preset })}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title={preset.charAt(0).toUpperCase() + preset.slice(1).replace(/[-]/g, ' ')}
+                >
+                  <div className={`preset-preview-mini ${preset}`}></div>
+                </motion.button>
+              ))}
             </div>
           </div>
+          
+          {/* Compact Controls Grid */}
+          <div className="compact-controls">
+            <div className="control-row">
+              <div className="control-item-mini">
+                <label>Size</label>
+                <div className="size-inputs">
+                  <input
+                    type="number"
+                    value={config.width}
+                    onChange={(e) => debouncedConfigChange({ width: parseInt(e.target.value) || 128 })}
+                    min="32"
+                    max="512"
+                  />
+                  <span>×</span>
+                  <input
+                    type="number"
+                    value={config.height}
+                    onChange={(e) => debouncedConfigChange({ height: parseInt(e.target.value) || 128 })}
+                    min="32"
+                    max="512"
+                  />
+                </div>
+              </div>
+              
+              <div className="control-item-mini">
+                <label>Radius</label>
+                <input
+                  type="number"
+                  value={config.cornerRadius}
+                  onChange={(e) => debouncedConfigChange({ cornerRadius: parseFloat(e.target.value) || 25 })}
+                  min="0"
+                  max="50"
+                  step="0.5"
+                />
+              </div>
+              
+              <div className="control-item-mini">
+                <label>Padding</label>
+                <input
+                  type="number"
+                  value={config.padding}
+                  onChange={(e) => debouncedConfigChange({ padding: parseInt(e.target.value) || 16 })}
+                  min="0"
+                  max="50"
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Five Column Settings Layout */}
+          <div className="five-column-settings">
+            {/* Column 1: Background Controls (Glassmorphism) */}
+            {config.style === 'glassmorphism' ? (
+              <div className="glass-background-section">
+                <div className="gradient-toggle">
+                  <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, color: '#6b46c1' }}>Background</h5>
+                </div>
+                <div className="control-item-mini">
+                  <label>Transparency</label>
+                  <div className="range-input">
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={config.glassBackgroundTransparency || 0.3}
+                      onChange={(e) => updateConfig({ glassBackgroundTransparency: parseFloat(e.target.value) })}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={Math.round((config.glassBackgroundTransparency || 0.3) * 100)}
+                      onChange={(e) => updateConfig({ glassBackgroundTransparency: (parseInt(e.target.value) || 0) / 100 })}
+                      className="range-text-input"
+                    />
+                    <span>%</span>
+                  </div>
+                </div>
+                
+              </div>
+            ) : <div></div>}
+
+            {/* Column 2: Icon Controls (Glassmorphism) */}
+            {config.style === 'glassmorphism' ? (
+              <div className="glass-icon-section">
+                <div className="gradient-toggle">
+                  <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, color: '#6b46c1' }}>Icon</h5>
+                </div>
+                <div className="control-item-mini">
+                  <label>Transparency</label>
+                  <div className="range-input">
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={config.glassIconTransparency || 0.8}
+                      onChange={(e) => updateConfig({ glassIconTransparency: parseFloat(e.target.value) })}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={Math.round((config.glassIconTransparency || 0.8) * 100)}
+                      onChange={(e) => updateConfig({ glassIconTransparency: (parseInt(e.target.value) || 0) / 100 })}
+                      className="range-text-input"
+                    />
+                    <span>%</span>
+                  </div>
+                </div>
+                
+                <div className="control-item-mini">
+                  <label>Blur</label>
+                  <div className="range-input">
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      step="0.5"
+                      value={config.glassIconBlur || 0}
+                      onChange={(e) => updateConfig({ glassIconBlur: parseFloat(e.target.value) })}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="10"
+                      step="0.5"
+                      value={config.glassIconBlur || 0}
+                      onChange={(e) => updateConfig({ glassIconBlur: parseFloat(e.target.value) || 0 })}
+                      className="range-text-input"
+                    />
+                    <span>px</span>
+                  </div>
+                </div>
+              </div>
+            ) : <div></div>}
+
+            {/* Column 3: Drop Shadow Controls */}
+            <div className="drop-shadow-section">
+            <div className="gradient-toggle">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={config.dropShadowEnabled || false}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      updateConfig({ 
+                        dropShadowEnabled: true,
+                        dropShadowX: config.dropShadowX || 4,
+                        dropShadowY: config.dropShadowY || 4,
+                        dropShadowBlur: config.dropShadowBlur || 8,
+                        dropShadowOpacity: config.dropShadowOpacity || 0.3,
+                        dropShadowColor: config.dropShadowColor || '#000000'
+                      });
+                    } else {
+                      updateConfig({ dropShadowEnabled: false });
+                    }
+                  }}
+                />
+                Drop Shadow
+              </label>
+            </div>
+            
+            {config.dropShadowEnabled && (
+              <motion.div
+                className="drop-shadow-controls"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+              >
+                <div className="shadow-position-row">
+                  <div className="control-item-mini">
+                    <label>X Offset</label>
+                    <div className="range-input">
+                      <input
+                        type="range"
+                        min="-20"
+                        max="20"
+                        value={config.dropShadowX || 4}
+                        onChange={(e) => updateConfig({ dropShadowX: parseInt(e.target.value) })}
+                      />
+                      <input
+                        type="number"
+                        min="-20"
+                        max="20"
+                        value={config.dropShadowX || 4}
+                        onChange={(e) => updateConfig({ dropShadowX: parseInt(e.target.value) || 0 })}
+                        className="range-text-input"
+                      />
+                      <span>px</span>
+                    </div>
+                  </div>
+                  
+                  <div className="control-item-mini">
+                    <label>Y Offset</label>
+                    <div className="range-input">
+                      <input
+                        type="range"
+                        min="-20"
+                        max="20"
+                        value={config.dropShadowY || 4}
+                        onChange={(e) => updateConfig({ dropShadowY: parseInt(e.target.value) })}
+                      />
+                      <input
+                        type="number"
+                        min="-20"
+                        max="20"
+                        value={config.dropShadowY || 4}
+                        onChange={(e) => updateConfig({ dropShadowY: parseInt(e.target.value) || 0 })}
+                        className="range-text-input"
+                      />
+                      <span>px</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="shadow-settings-row">
+                  <div className="control-item-mini">
+                    <label>Blur</label>
+                    <div className="range-input">
+                      <input
+                        type="range"
+                        min="0"
+                        max="30"
+                        value={config.dropShadowBlur || 8}
+                        onChange={(e) => updateConfig({ dropShadowBlur: parseInt(e.target.value) })}
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="30"
+                        value={config.dropShadowBlur || 8}
+                        onChange={(e) => updateConfig({ dropShadowBlur: parseInt(e.target.value) || 0 })}
+                        className="range-text-input"
+                      />
+                      <span>px</span>
+                    </div>
+                  </div>
+                  
+                  <div className="control-item-mini">
+                    <label>Opacity</label>
+                    <div className="range-input">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value={config.dropShadowOpacity || 0.3}
+                        onChange={(e) => updateConfig({ dropShadowOpacity: parseFloat(e.target.value) })}
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={Math.round((config.dropShadowOpacity || 0.3) * 100)}
+                        onChange={(e) => updateConfig({ dropShadowOpacity: (parseInt(e.target.value) || 0) / 100 })}
+                        className="range-text-input"
+                      />
+                      <span>%</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="shadow-color-row">
+                  <div className="control-item">
+                    <label>Shadow Color</label>
+                    <div className="color-input-wrapper">
+                      <input
+                        type="color"
+                        value={config.dropShadowColor || '#000000'}
+                        onChange={(e) => updateConfig({ dropShadowColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        value={config.dropShadowColor || '#000000'}
+                        onChange={(e) => updateConfig({ dropShadowColor: e.target.value })}
+                        placeholder="#000000"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="control-item">
+                    <label>Icon Color</label>
+                    <div className="color-input-wrapper">
+                      <input
+                        type="color"
+                        value={config.iconColor}
+                        onChange={(e) => updateConfig({ iconColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        value={config.iconColor}
+                        onChange={(e) => updateConfig({ iconColor: e.target.value })}
+                        placeholder="#333333"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Outline Controls */}
+          <div className="outline-section">
+            <div className="gradient-toggle">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={config.outlineEnabled || false}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      updateConfig({ 
+                        outlineEnabled: true,
+                        outlineWidth: config.outlineWidth || 2,
+                        outlineColor: config.outlineColor || '#000000',
+                        outlineOpacity: config.outlineOpacity || 1
+                      });
+                    } else {
+                      updateConfig({ outlineEnabled: false });
+                    }
+                  }}
+                />
+                Outline
+              </label>
+            </div>
+            
+            {config.outlineEnabled && (
+              <motion.div
+                className="outline-controls"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+              >
+                <div className="outline-settings-row">
+                  <div className="control-item-mini">
+                    <label>Width</label>
+                    <div className="range-input">
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={config.outlineWidth || 2}
+                        onChange={(e) => updateConfig({ outlineWidth: parseFloat(e.target.value) })}
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={config.outlineWidth || 2}
+                        onChange={(e) => updateConfig({ outlineWidth: parseFloat(e.target.value) || 0 })}
+                        className="range-text-input"
+                      />
+                      <span>px</span>
+                    </div>
+                  </div>
+                  
+                  <div className="control-item-mini">
+                    <label>Opacity</label>
+                    <div className="range-input">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value={config.outlineOpacity || 1}
+                        onChange={(e) => updateConfig({ outlineOpacity: parseFloat(e.target.value) })}
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={Math.round((config.outlineOpacity || 1) * 100)}
+                        onChange={(e) => updateConfig({ outlineOpacity: (parseInt(e.target.value) || 0) / 100 })}
+                        className="range-text-input"
+                      />
+                      <span>%</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="control-item">
+                  <label>Outline Color</label>
+                  <div className="color-input-wrapper">
+                    <input
+                      type="color"
+                      value={config.outlineColor || '#000000'}
+                      onChange={(e) => updateConfig({ outlineColor: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      value={config.outlineColor || '#000000'}
+                      onChange={(e) => updateConfig({ outlineColor: e.target.value })}
+                      placeholder="#000000"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+
+          {/* Color Controls */}
+          <div className="color-controls">
           
           <div className="gradient-section">
             <div className="gradient-toggle">
@@ -245,50 +615,92 @@ const StyleControls: React.FC<StyleControlsProps> = ({ config, onConfigChange })
               >
                 <div className="control-item">
                   <label>Angle</label>
-                  <input
-                    type="range"
-                    value={config.gradient.angle}
-                    onChange={(e) => updateGradient({ angle: parseInt(e.target.value) })}
-                    min="0"
-                    max="360"
-                  />
-                  <span>{config.gradient.angle}°</span>
-                </div>
-                
-                <div className="control-item">
-                  <label>Start Color</label>
-                  <div className="color-input-wrapper">
+                  <div className="range-input">
                     <input
-                      type="color"
-                      value={config.gradient.startColor}
-                      onChange={(e) => updateGradient({ startColor: e.target.value })}
+                      type="range"
+                      value={config.gradient.angle}
+                      onChange={(e) => updateGradient({ angle: parseInt(e.target.value) })}
+                      min="0"
+                      max="360"
                     />
                     <input
-                      type="text"
-                      value={config.gradient.startColor}
-                      onChange={(e) => updateGradient({ startColor: e.target.value })}
+                      type="number"
+                      value={config.gradient.angle}
+                      onChange={(e) => updateGradient({ angle: parseInt(e.target.value) || 0 })}
+                      min="0"
+                      max="360"
+                      className="range-text-input"
                     />
+                    <span>°</span>
                   </div>
                 </div>
                 
-                <div className="control-item">
-                  <label>Stop Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      value={config.gradient.stopColor}
-                      onChange={(e) => updateGradient({ stopColor: e.target.value })}
-                    />
-                    <input
-                      type="text"
-                      value={config.gradient.stopColor}
-                      onChange={(e) => updateGradient({ stopColor: e.target.value })}
-                    />
+                <div className="gradient-colors-row">
+                  <div className="control-item">
+                    <label>Start Color</label>
+                    <div className="color-input-wrapper">
+                      <input
+                        type="color"
+                        value={config.gradient.startColor}
+                        onChange={(e) => updateGradient({ startColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        value={config.gradient.startColor}
+                        onChange={(e) => updateGradient({ startColor: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="control-item">
+                    <label>Stop Color</label>
+                    <div className="color-input-wrapper">
+                      <input
+                        type="color"
+                        value={config.gradient.stopColor}
+                        onChange={(e) => updateGradient({ stopColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        value={config.gradient.stopColor}
+                        onChange={(e) => updateGradient({ stopColor: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
           </div>
+          
+          </div>
+          
+          {/* Pixel Art Controls */}
+          {config.style === 'pixel-art' && (
+            <div className="pixel-controls">
+              <div className="control-item-mini">
+                <label>Pixel Size</label>
+                <div className="range-input">
+                  <input
+                    type="range"
+                    min="1"
+                    max="16"
+                    step="1"
+                    value={config.pixelSize || 4}
+                    onChange={(e) => updateConfig({ pixelSize: parseInt(e.target.value) })}
+                  />
+                  <input
+                    type="number"
+                    min="1"
+                    max="16"
+                    value={config.pixelSize || 4}
+                    onChange={(e) => updateConfig({ pixelSize: parseInt(e.target.value) || 1 })}
+                    className="range-text-input"
+                  />
+                  <span>px</span>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Palette Import Modal */}
           {showPaletteImport && (
@@ -367,9 +779,10 @@ const StyleControls: React.FC<StyleControlsProps> = ({ config, onConfigChange })
             </motion.div>
           )}
         </div>
+        </div>
       </motion.div>
     </div>
   );
-};
+});
 
 export default StyleControls;

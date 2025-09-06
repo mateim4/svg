@@ -29,9 +29,14 @@ class IconCacheService {
   private cache = new Map<string, CachedIcon>();
   private loadingPromises = new Map<string, Promise<string>>();
   private preloadProgress = new Map<string, PreloadProgress>();
+  private batchQueue: ParsedIcon[] = [];
+  private batchTimer: NodeJS.Timeout | null = null;
   private readonly CACHE_VERSION = '1.0.0';
   private readonly MAX_CACHE_SIZE = 50 * 1024 * 1024; // 50MB limit
   private readonly CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days
+  private readonly BATCH_SIZE = 10; // Process 10 icons per batch
+  private readonly BATCH_DELAY = 100; // 100ms debounce delay
+  private readonly MAX_CONCURRENT = 5; // Max concurrent requests
   private db: IDBDatabase | null = null;
   
   constructor() {
@@ -155,6 +160,114 @@ class IconCacheService {
   }
 
   /**
+   * Get multiple SVG contents with batched loading for optimal performance
+   */
+  async getSvgContentBatch(icons: ParsedIcon[]): Promise<Map<string, string>> {
+    const results = new Map<string, string>();
+    const toLoad: ParsedIcon[] = [];
+
+    // Check cache for each icon first
+    for (const icon of icons) {
+      const cacheKey = `${icon.repository}-${icon.id}`;
+      const cached = this.cache.get(cacheKey);
+      
+      if (cached && this.isCacheValid(cached)) {
+        results.set(cacheKey, cached.svgContent);
+      } else {
+        toLoad.push(icon);
+      }
+    }
+
+    // If we have icons to load, process them in batches
+    if (toLoad.length > 0) {
+      const loadedResults = await this.loadSvgBatch(toLoad);
+      loadedResults.forEach((value, key) => {
+        results.set(key, value);
+      });
+    }
+
+    return results;
+  }
+
+  /**
+   * Add icons to batch loading queue
+   */
+  queueForBatchLoad(icons: ParsedIcon[]): void {
+    this.batchQueue.push(...icons);
+    
+    // Clear existing timer
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer);
+    }
+
+    // Set new timer to process batch
+    this.batchTimer = setTimeout(() => {
+      this.processBatchQueue();
+    }, this.BATCH_DELAY);
+  }
+
+  /**
+   * Process the batch queue
+   */
+  private async processBatchQueue(): Promise<void> {
+    if (this.batchQueue.length === 0) return;
+
+    // Take items from queue
+    const toProcess = this.batchQueue.splice(0, this.BATCH_SIZE);
+    
+    try {
+      await this.loadSvgBatch(toProcess);
+    } catch (error) {
+      console.error('Batch processing failed:', error);
+    }
+
+    // Continue processing if more items in queue
+    if (this.batchQueue.length > 0) {
+      setTimeout(() => this.processBatchQueue(), 50);
+    }
+  }
+
+  /**
+   * Load multiple SVGs in parallel with concurrency control
+   */
+  private async loadSvgBatch(icons: ParsedIcon[]): Promise<Map<string, string>> {
+    const results = new Map<string, string>();
+    const promises: Promise<void>[] = [];
+    let activeRequests = 0;
+
+    for (const icon of icons) {
+      const promise = new Promise<void>((resolve) => {
+        const processIcon = async (): Promise<void> => {
+          if (activeRequests >= this.MAX_CONCURRENT) {
+            // Wait for an active request to complete
+            await new Promise(r => setTimeout(r, 10));
+            return processIcon();
+          }
+
+          activeRequests++;
+          try {
+            const cacheKey = `${icon.repository}-${icon.id}`;
+            const svgContent = await this.loadAndCacheSvg(icon);
+            results.set(cacheKey, svgContent);
+          } catch (error) {
+            console.warn(`Failed to load ${icon.id}:`, error);
+          } finally {
+            activeRequests--;
+            resolve();
+          }
+        };
+
+        processIcon();
+      });
+
+      promises.push(promise);
+    }
+
+    await Promise.all(promises);
+    return results;
+  }
+
+  /**
    * Load SVG content and store in cache
    */
   private async loadAndCacheSvg(icon: ParsedIcon): Promise<string> {
@@ -222,11 +335,12 @@ class IconCacheService {
         progress.total = result.icons.length;
         onProgress?.(progress);
         
-        // Pre-load SVG content in batches to avoid overwhelming the API
-        const batchSize = 10;
+        // Pre-load SVG content in smaller batches for large repositories
+        const batchSize = result.icons.length > 100 ? 5 : 10; // Smaller batches for large repos
         const batches = this.createBatches(result.icons, batchSize);
         
-        for (const batch of batches) {
+        for (let i = 0; i < batches.length; i++) {
+          const batch = batches[i];
           const batchPromises = batch.map(async (icon) => {
             try {
               await this.getSvgContent(icon);
@@ -241,8 +355,9 @@ class IconCacheService {
           
           await Promise.all(batchPromises);
           
-          // Brief pause between batches to be respectful to GitHub API
-          await new Promise(resolve => setTimeout(resolve, 100));
+          // Longer pause between batches for large repositories to respect API limits
+          const delay = result.icons.length > 100 ? 500 : 100; // 500ms for large repos
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
         
         progress.isComplete = true;

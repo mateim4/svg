@@ -6,21 +6,23 @@ import {
   Zap, 
   Palette, 
   Download,
-  ArrowRight,
-  Sparkles,
-  Layers
+  Layers,
+  Package
 } from 'lucide-react';
 import './DashboardOverview.css';
 
-type AppMode = 'local' | 'github';
+type AppMode = 'local' | 'github' | 'iconpacks';
+type IconPack = 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent';
 
 interface DashboardOverviewProps {
   onModeSelect: (mode: AppMode) => void;
+  onIconPackSelect?: (iconPack: IconPack) => void;
   onGetStarted: () => void;
 }
 
 const DashboardOverview: React.FC<DashboardOverviewProps> = ({ 
   onModeSelect, 
+  onIconPackSelect,
   onGetStarted 
 }) => {
   const containerVariants = {
@@ -45,48 +47,6 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       initial="hidden"
       animate="visible"
     >
-      {/* Hero Section */}
-      <motion.div className="hero-section" variants={itemVariants}>
-        <div className="hero-content">
-          <div className="hero-icon">
-            <Sparkles size={48} />
-          </div>
-          <h1>SVG Icon Maker</h1>
-          <p>Transform SVG icons with beautiful styles like neumorphism, glassmorphism, and more. 
-             Perfect for creating consistent icon sets for your design system.</p>
-          
-          <motion.button
-            className="cta-button"
-            onClick={onGetStarted}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Get Started
-            <ArrowRight size={20} />
-          </motion.button>
-        </div>
-
-        {/* Preview Gallery */}
-        <motion.div className="preview-gallery" variants={itemVariants}>
-          <div className="preview-item">
-            <div className="preview-before">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="#666">
-                <path d="M12 2L2 22h20L12 2z"/>
-              </svg>
-              <span>Original</span>
-            </div>
-            <ArrowRight size={16} />
-            <div className="preview-after neumorphism">
-              <div className="styled-icon neumorphism-style">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#333">
-                  <path d="M12 2L2 22h20L12 2z"/>
-                </svg>
-              </div>
-              <span>Neumorphism</span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
 
       {/* Mode Selection Cards */}
       <motion.div className="mode-selection" variants={itemVariants}>
@@ -166,6 +126,114 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <span className="best-for">Best for: Large icon sets</span>
             </div>
           </motion.div>
+
+          {/* Icon Packs Mode */}
+          <motion.div 
+            className="mode-card iconpacks-mode"
+            whileHover={{ scale: 1.02, y: -4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onModeSelect('iconpacks')}
+          >
+            <div className="card-icon">
+              <Package size={32} />
+            </div>
+            <h3>Browse Icon Packs</h3>
+            <p>Explore and customize icons from popular icon libraries</p>
+            
+            <div className="workflow-steps">
+              <div className="step">
+                <div className="step-number">1</div>
+                <span>Choose icon library</span>
+              </div>
+              <div className="step">
+                <div className="step-number">2</div>
+                <span>Browse & select icons</span>
+              </div>
+              <div className="step">
+                <div className="step-number">3</div>
+                <span>Style & download</span>
+              </div>
+            </div>
+
+            <div className="card-footer">
+              <span className="time-estimate">
+                <Zap size={14} />
+                ~3-5 minutes
+              </span>
+              <span className="best-for">Best for: Individual icons</span>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Icon Pack Selection */}
+      <motion.div className="iconpack-selection" variants={itemVariants}>
+        <h2>Popular Icon Libraries</h2>
+        <div className="iconpack-grid">
+          {[
+            { 
+              pack: 'lucide' as IconPack, 
+              name: 'Lucide Icons', 
+              description: 'Beautiful & consistent SVG icons',
+              count: '1,400+',
+              gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+            },
+            { 
+              pack: 'heroicons' as IconPack, 
+              name: 'Heroicons', 
+              description: 'Hand-crafted by Tailwind CSS team',
+              count: '300+',
+              gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+            },
+            { 
+              pack: 'feather' as IconPack, 
+              name: 'Feather', 
+              description: 'Simply beautiful open source icons',
+              count: '280+',
+              gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+            },
+            { 
+              pack: 'phosphor' as IconPack, 
+              name: 'Phosphor', 
+              description: 'Flexible icon family for interfaces',
+              count: '7,000+',
+              gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+            },
+            { 
+              pack: 'tabler' as IconPack, 
+              name: 'Tabler Icons', 
+              description: 'Free MIT-licensed SVG icons',
+              count: '5,800+',
+              gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+            },
+            { 
+              pack: 'fluent' as IconPack, 
+              name: 'Fluent UI', 
+              description: 'Microsoft Fluent Design System',
+              count: '2,100+',
+              gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+            }
+          ].map(({ pack, name, description, count, gradient }) => (
+            <motion.div
+              key={pack}
+              className="iconpack-card"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onIconPackSelect?.(pack)}
+            >
+              <div className="iconpack-header" style={{ background: gradient }}>
+                <div className="iconpack-count">{count}</div>
+              </div>
+              <div className="iconpack-content">
+                <h4>{name}</h4>
+                <p>{description}</p>
+                <button className="browse-button">
+                  <Package size={16} />
+                  Browse Library
+                </button>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </motion.div>
 

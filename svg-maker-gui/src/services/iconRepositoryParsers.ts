@@ -2,6 +2,10 @@
 
 import { IconRepository } from '../data/icon-repositories';
 import { githubApiService, GitHubFile } from './githubApiService';
+import { lucideService } from './lucideService';
+import { heroiconsService } from './heroiconsService';
+import { featherService } from './featherService';
+import { phosphorService } from './phosphorService';
 
 export interface ParsedIcon {
   id: string;
@@ -211,21 +215,207 @@ export class TablerIconsParser extends GitHubSvgParser implements RepositoryPars
   }
 }
 
-// Lucide Icons Parser
-export class LucideIconsParser extends GitHubSvgParser implements RepositoryParser {
+// Heroicons Parser - Uses Official Heroicons Service  
+export class HeroiconsParser implements RepositoryParser {
   async parse(repository: IconRepository, githubUrl: string): Promise<RepositoryParseResult> {
-    const result = await super.parse(repository, githubUrl);
-    
-    // Filter to only icons from the icons/ directory
-    const lucideIcons = result.icons.filter(icon => 
-      icon.path.startsWith('icons/') && icon.path.endsWith('.svg')
-    );
+    try {
+      console.log('Parsing Heroicons using official service...');
+      
+      // Get icons from our dedicated Heroicons service
+      const heroiconsIcons = heroiconsService.getAvailableIcons();
+      
+      // Convert Heroicons to ParsedIcon format
+      const icons: ParsedIcon[] = [];
+      
+      for (const heroIcon of heroiconsIcons) {
+        // Create variants for each icon (outline, solid, mini)
+        for (const variant of heroIcon.variants) {
+          for (const size of heroIcon.sizes) {
+            try {
+              const icon: ParsedIcon = {
+                id: `heroicons-${heroIcon.name}-${variant}-${size}`,
+                name: `${heroIcon.name}-${variant}`,
+                displayName: `${heroIcon.displayName} (${variant})`,
+                category: heroIcon.categories[0] || 'General',
+                tags: [...heroIcon.tags, variant, `size-${size}`],
+                repository: repository.id,
+                svgContent: '', // Will be loaded on demand via heroiconsService
+                fileName: `${heroIcon.name}-${variant}-${size}.svg`,
+                path: `optimized/${size}/${variant}/${heroIcon.name}.svg`,
+                size: 0, // SVG size not applicable for generated icons
+                downloadUrl: '' // Generated icons don't have download URLs
+              };
+              
+              icons.push(icon);
+            } catch (error) {
+              console.warn(`Failed to process Heroicons ${heroIcon.name} variant ${variant}:`, error);
+            }
+          }
+        }
+      }
 
-    return {
-      ...result,
-      icons: lucideIcons,
-      totalCount: lucideIcons.length
-    };
+      console.log(`Generated ${icons.length} Heroicons variants using official service`);
+
+      return {
+        icons,
+        totalCount: icons.length,
+        repository,
+        sourceUrl: githubUrl
+      };
+    } catch (error) {
+      console.error('Error parsing Heroicons repository with official service:', error);
+      throw error;
+    }
+  }
+}
+
+// Feather Icons Parser - Uses Official Feather Service  
+export class FeatherIconsParser implements RepositoryParser {
+  async parse(repository: IconRepository, githubUrl: string): Promise<RepositoryParseResult> {
+    try {
+      console.log('Parsing Feather icons using official service...');
+      
+      // Get icons from our dedicated Feather service
+      const featherIcons = featherService.getAvailableIcons();
+      
+      // Convert Feather icons to ParsedIcon format
+      const icons: ParsedIcon[] = [];
+      
+      for (const featherIcon of featherIcons) {
+        try {
+          const icon: ParsedIcon = {
+            id: `feather-${featherIcon.name}`,
+            name: featherIcon.name,
+            displayName: featherIcon.displayName,
+            category: featherIcon.categories[0] || 'General',
+            tags: featherIcon.tags,
+            repository: repository.id,
+            svgContent: '', // Will be loaded on demand via featherService
+            fileName: `${featherIcon.name}.svg`,
+            path: `icons/${featherIcon.name}.svg`,
+            size: 0, // SVG size not applicable for generated icons
+            downloadUrl: '' // Generated icons don't have download URLs
+          };
+          
+          icons.push(icon);
+        } catch (error) {
+          console.warn(`Failed to process Feather icon ${featherIcon.name}:`, error);
+        }
+      }
+
+      console.log(`Generated ${icons.length} Feather icons using official service`);
+
+      return {
+        icons,
+        totalCount: icons.length,
+        repository,
+        sourceUrl: githubUrl
+      };
+    } catch (error) {
+      console.error('Error parsing Feather repository with official service:', error);
+      throw error;
+    }
+  }
+}
+
+// Phosphor Icons Parser - Uses Official Phosphor Service  
+export class PhosphorIconsParser implements RepositoryParser {
+  async parse(repository: IconRepository, githubUrl: string): Promise<RepositoryParseResult> {
+    try {
+      console.log('Parsing Phosphor icons using official service...');
+      
+      // Get icons from our dedicated Phosphor service
+      const phosphorIcons = phosphorService.getAvailableIcons();
+      
+      // Convert Phosphor icons to ParsedIcon format
+      const icons: ParsedIcon[] = [];
+      
+      for (const phosphorIcon of phosphorIcons) {
+        // Create variants for each icon weight
+        for (const weight of phosphorIcon.weights) {
+          try {
+            const icon: ParsedIcon = {
+              id: `phosphor-${phosphorIcon.name}-${weight}`,
+              name: `${phosphorIcon.name}-${weight}`,
+              displayName: `${phosphorIcon.displayName} (${weight})`,
+              category: phosphorIcon.categories[0] || 'General',
+              tags: [...phosphorIcon.tags, weight],
+              repository: repository.id,
+              svgContent: '', // Will be loaded on demand via phosphorService
+              fileName: `${phosphorIcon.name}-${weight}.svg`,
+              path: `assets/${weight}/${phosphorIcon.name}-${weight}.svg`,
+              size: 0, // SVG size not applicable for generated icons
+              downloadUrl: '' // Generated icons don't have download URLs
+            };
+            
+            icons.push(icon);
+          } catch (error) {
+            console.warn(`Failed to process Phosphor icon ${phosphorIcon.name} weight ${weight}:`, error);
+          }
+        }
+      }
+
+      console.log(`Generated ${icons.length} Phosphor icon variants using official service`);
+
+      return {
+        icons,
+        totalCount: icons.length,
+        repository,
+        sourceUrl: githubUrl
+      };
+    } catch (error) {
+      console.error('Error parsing Phosphor repository with official service:', error);
+      throw error;
+    }
+  }
+}
+
+// Lucide Icons Parser - Uses Official Lucide Service
+export class LucideIconsParser implements RepositoryParser {
+  async parse(repository: IconRepository, githubUrl: string): Promise<RepositoryParseResult> {
+    try {
+      console.log('Parsing Lucide icons using official service...');
+      
+      // Get icons from our dedicated Lucide service
+      const lucideIcons = lucideService.getAvailableIcons();
+      
+      // Convert Lucide icons to ParsedIcon format
+      const icons: ParsedIcon[] = [];
+      
+      for (const lucideIcon of lucideIcons) {
+        try {
+          const icon: ParsedIcon = {
+            id: `lucide-${lucideIcon.name}`,
+            name: lucideIcon.name,
+            displayName: lucideIcon.displayName,
+            category: lucideIcon.categories[0] || 'General',
+            tags: lucideIcon.tags,
+            repository: repository.id,
+            svgContent: '', // Will be loaded on demand via lucideService
+            fileName: `${lucideIcon.name}.svg`,
+            path: `icons/${lucideIcon.name}.svg`,
+            size: 0, // SVG size not applicable for generated icons
+            downloadUrl: '' // Generated icons don't have download URLs
+          };
+          
+          icons.push(icon);
+        } catch (error) {
+          console.warn(`Failed to process Lucide icon ${lucideIcon.name}:`, error);
+        }
+      }
+
+      console.log(`Generated ${icons.length} Lucide icons using official service`);
+
+      return {
+        icons,
+        totalCount: icons.length,
+        repository,
+        sourceUrl: githubUrl
+      };
+    } catch (error) {
+      console.error('Error parsing Lucide repository with official service:', error);
+      throw error;
+    }
   }
 }
 
@@ -239,6 +429,12 @@ export class RepositoryParserFactory {
         return new TablerIconsParser();
       case 'lucide':
         return new LucideIconsParser();
+      case 'heroicons':
+        return new HeroiconsParser();
+      case 'feather':
+        return new FeatherIconsParser();
+      case 'phosphor':
+        return new PhosphorIconsParser();
       default:
         return new GitHubSvgParser();
     }

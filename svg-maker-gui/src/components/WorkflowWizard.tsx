@@ -22,6 +22,7 @@ export interface WizardStep {
   isComplete: boolean;
   isActive: boolean;
   canProceed: boolean;
+  onProceed?: () => Promise<void> | void;
 }
 
 interface WorkflowWizardProps {
@@ -256,7 +257,13 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
           ) : (
             <motion.button
               className="nav-button primary"
-              onClick={onNext}
+              onClick={async () => {
+                if (currentStepData.onProceed) {
+                  await currentStepData.onProceed();
+                } else {
+                  onNext();
+                }
+              }}
               disabled={!currentStepData.canProceed || isLoading}
               whileHover={currentStepData.canProceed ? { scale: 1.02 } : {}}
               whileTap={currentStepData.canProceed ? { scale: 0.98 } : {}}

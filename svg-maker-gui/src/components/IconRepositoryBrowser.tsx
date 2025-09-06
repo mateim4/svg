@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   HardDrive,
@@ -19,6 +19,7 @@ import {
 import iconRepositoryService, { RepositorySource } from '../services/iconRepositoryService';
 import '../styles/design-system.css';
 import './IconRepositoryBrowser.css';
+import { useDebouncedSearch } from '../hooks/useDebounce';
 
 interface IconRepositoryBrowserProps {
   onRepositorySelect: (repository: RepositorySource) => void;
@@ -29,7 +30,7 @@ const IconRepositoryBrowser: React.FC<IconRepositoryBrowserProps> = ({
 }) => {
   const [repositories, setRepositories] = useState<RepositorySource[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { displayValue: searchQuery, searchValue: debouncedSearchQuery, setDisplayValue: setSearchQuery } = useDebouncedSearch('', 300);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -48,16 +49,26 @@ const IconRepositoryBrowser: React.FC<IconRepositoryBrowserProps> = ({
     }
   };
 
-  const filteredRepositories = repositories.filter(repo => {
-    const matchesSearch = repo.repository.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         repo.repository.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' || 
-                           selectedCategory === repo.type ||
-                           repo.repository.categories.includes(selectedCategory);
-    
-    return matchesSearch && matchesCategory;
-  });
+  const filteredRepositories = useMemo(() => {
+    return repositories.filter(repo => {
+      // Category filter first (most selective)
+      const matchesCategory = selectedCategory === 'all' || 
+                             selectedCategory === repo.type ||
+                             repo.repository.categories.includes(selectedCategory);
+      
+      if (!matchesCategory) return false;
+
+      // Skip search if no search query
+      if (!debouncedSearchQuery.trim()) return true;
+
+      // Optimized search
+      const query = debouncedSearchQuery.toLowerCase();
+      const matchesSearch = repo.repository.name.toLowerCase().includes(query) ||
+                           repo.repository.description.toLowerCase().includes(query);
+      
+      return matchesSearch;
+    });
+  }, [repositories, debouncedSearchQuery, selectedCategory]);
 
   const categories = [
     'all',

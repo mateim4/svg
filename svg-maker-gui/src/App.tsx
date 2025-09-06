@@ -2,13 +2,15 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Github, FolderOpen, Palette, Download } from 'lucide-react';
+import { Github, FolderOpen, Palette, Download, AlertCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Components
+import LandingPage from './components/LandingPage';
 import DashboardOverview from './components/DashboardOverview';
-import NavigationHeader from './components/NavigationHeader';
 import WorkflowWizard, { WizardStep } from './components/WorkflowWizard';
+import IconPackBrowser from './components/IconPackBrowser';
 import PreviewComparison from './components/PreviewComparison';
+import { scaleOriginalSvg } from './utils/scaleOriginalSvg';
 import FileUpload from './components/FileUpload';
 import FileUploadNew from './components/FileUploadNew';
 import IconRepositoryBrowser from './components/IconRepositoryBrowser';
@@ -28,10 +30,12 @@ import './styles/design-system.css';
 import githubService, { RepoInfo, FolderTree, GitHubFile, SVGFile } from './services/githubService';
 import { fluentUIService, FluentUIIcon as FluentUIServiceIcon } from './services/fluentUIService';
 import { IconConfig } from './types/IconConfig';
+import { processSvgWithStyle } from './utils/processSvgStyle';
 
 import './App.css';
 
-type AppMode = 'local' | 'github' | 'dashboard';
+type AppMode = 'local' | 'github' | 'dashboard' | 'iconpacks';
+type IconPack = 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent';
 
 interface FluentUIIcon {
   name: string;
@@ -43,8 +47,10 @@ interface FluentUIIcon {
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<AppMode>('dashboard');
+  const [showLandingPage, setShowLandingPage] = useState(true);
   const [currentWizardStep, setCurrentWizardStep] = useState(0);
   const [showWizard, setShowWizard] = useState(false);
+  const [selectedIconPack, setSelectedIconPack] = useState<IconPack | null>(null);
   
   // Configuration
   const [config, setConfig] = useState<IconConfig>({
@@ -56,15 +62,102 @@ const App: React.FC = () => {
     iconColor: '#333333',
     gradient: null,
   });
+  const [isStyleConfigured, setIsStyleConfigured] = useState<boolean>(false);
+  const [selectedPreviewIndex, setSelectedPreviewIndex] = useState<number>(0);
+
+  // Handle config changes and mark styling as configured
+  const handleConfigChange = (newConfig: IconConfig) => {
+    setConfig(newConfig);
+    if (!isStyleConfigured) {
+      setIsStyleConfigured(true);
+    }
+  };
+
+  // Reset all state when switching modes
+  const resetApplicationState = () => {
+    // GitHub workflow state
+    setSvgFiles([]);
+    setSelectedFiles(new Set());
+    setDownloadedFiles([]);
+    setPreviewFile(null);
+    setRepoAnalysis({ hasDirectSvgs: false, hasPackageJsons: false, hasAssetsFolders: false, hasIconManifests: false, suggestedFormat: 'unknown', iconFiles: [] });
+    setRepoTree([]);
+    setIsLoadingRepo(false);
+    
+    // Local workflow state
+    setUploadedFiles([]);
+    setLocalProcessedIcons([]);
+    setConvertedLocalFiles([]);
+    
+    // FluentUI state
+    setFluentUIIcons([]);
+    
+    // Common state
+    setProcessedFiles([]);
+    setIsStyleConfigured(false);
+    
+    // Wizard state
+    setCurrentWizardStep(0);
+  };
+
+  // Convert File objects to SVGFile objects by reading their content
+  const convertFilesToSVGFiles = async (files: File[]): Promise<SVGFile[]> => {
+    const svgFiles: SVGFile[] = [];
+    
+    for (const file of files) {
+      try {
+        const content = await file.text();
+        svgFiles.push({
+          name: file.name,
+          path: file.name,
+          content: content,
+          download_url: '', // Not needed for local files
+          relativePath: file.name,
+          size: file.size
+        });
+      } catch (error) {
+        console.error(`Failed to read file ${file.name}:`, error);
+      }
+    }
+    
+    return svgFiles;
+  };
 
   // Local files
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [localProcessedIcons, setLocalProcessedIcons] = useState<string[]>([]);
+  const [convertedLocalFiles, setConvertedLocalFiles] = useState<SVGFile[]>([]);
   const [fluentUIIcons, setFluentUIIcons] = useState<FluentUIIcon[]>([]);
+
+  // Convert uploaded files to SVGFiles when they change
+  React.useEffect(() => {
+    if (uploadedFiles.length > 0) {
+      setFileConversionError(null);
+      convertFilesToSVGFiles(uploadedFiles)
+        .then(converted => {
+          setConvertedLocalFiles(converted);
+          if (converted.length === 0 && uploadedFiles.length > 0) {
+            setFileConversionError('No valid SVG files could be processed');
+          }
+        })
+        .catch(error => {
+          console.error('File conversion error:', error);
+          setFileConversionError(`Failed to process files: ${error.message}`);
+          setConvertedLocalFiles([]);
+        });
+    } else {
+      setConvertedLocalFiles([]);
+      setFileConversionError(null);
+    }
+  }, [uploadedFiles]);
 
   // GitHub integration
   const [isLoadingRepo, setIsLoadingRepo] = useState(false);
   const [repoError, setRepoError] = useState('');
+  
+  // Error handling
+  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [fileConversionError, setFileConversionError] = useState<string | null>(null);
   const [repoTree, setRepoTree] = useState<FolderTree[]>([]);
   const [svgFiles, setSvgFiles] = useState<GitHubFile[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
@@ -261,6 +354,32 @@ const App: React.FC = () => {
     }
   };
 
+  // Download selected files for processing (not exporting)
+  const handleDownloadForProcessing = async () => {
+    if (selectedFiles.size === 0) return;
+
+    const selectedSvgFiles = svgFiles.filter(f => selectedFiles.has(f.path));
+    
+    try {
+      console.log(`Downloading ${selectedSvgFiles.length} files for processing...`);
+      // Download the selected SVG files
+      const downloadedSvgs = await githubService.downloadSvgFiles(
+        selectedSvgFiles,
+        (completed, total, currentFile) => {
+          console.log(`Downloading: ${completed}/${total} - ${currentFile}`);
+        }
+      );
+      
+      // Store downloaded files for processing
+      setDownloadedFiles(downloadedSvgs);
+      console.log(`Successfully downloaded ${downloadedSvgs.length} files for processing`);
+      
+    } catch (error) {
+      console.error('Download for processing failed:', error);
+      setGlobalError('Failed to download selected files for processing');
+    }
+  };
+
   // Mock processing function for GitHub files
   const processGitHubFiles = useCallback(async (
     filesToProcess: SVGFile[], 
@@ -273,31 +392,14 @@ const App: React.FC = () => {
       
       let processedSvg: string;
       
-      if (iconConfig.style === 'fluentui') {
-        // Use FluentUI-specific processing
-        try {
-          processedSvg = fluentUIService.convertToThemedSvg(file.content, iconConfig.style, {
-            width: iconConfig.width,
-            height: iconConfig.height,
-            cornerRadius: iconConfig.cornerRadius,
-            padding: iconConfig.padding,
-            iconColor: iconConfig.iconColor,
-            gradient: iconConfig.gradient
-          });
-        } catch (error) {
-          console.warn('FluentUI processing failed, using fallback:', error);
-          processedSvg = file.content; // Fallback to original
-        }
-      } else {
-        // Standard processing for other styles
-        processedSvg = `<svg width="${iconConfig.width}" height="${iconConfig.height}" viewBox="0 0 ${iconConfig.width} ${iconConfig.height}" xmlns="http://www.w3.org/2000/svg">
+      // Standard processing for all styles
+      processedSvg = `<svg width="${iconConfig.width}" height="${iconConfig.height}" viewBox="0 0 ${iconConfig.width} ${iconConfig.height}" xmlns="http://www.w3.org/2000/svg">
   <defs></defs>
   <rect width="${iconConfig.width}" height="${iconConfig.height}" rx="${iconConfig.cornerRadius}" fill="#e0e0e0"/>
   <g transform="translate(${iconConfig.padding}, ${iconConfig.padding})">
     ${file.content.match(/<path[^>]*d="[^"]*"/)?.[0] || '<circle cx="32" cy="32" r="16" fill="' + iconConfig.iconColor + '"/>'}
   </g>
 </svg>`;
-      }
 
       const processingTime = Date.now() - startTime;
       
@@ -318,26 +420,53 @@ const App: React.FC = () => {
   // Handle batch processing
   const handleBatchProcess = async (files: SVGFile[], iconConfig: IconConfig): Promise<ProcessedFile[]> => {
     setIsProcessing(true);
+    setGlobalError(null);
     
     try {
-      // Download selected files if not already downloaded
-      const selectedSvgFiles = svgFiles.filter(f => selectedFiles.has(f.path));
-      
-      if (downloadedFiles.length === 0) {
+      // Validate input files
+      if (!files || files.length === 0) {
+        throw new Error('No files selected for processing');
+      }
+
+      // For GitHub workflow: Download selected files if not already downloaded
+      let filesToProcess = files;
+      if (downloadedFiles.length === 0 && svgFiles.length > 0) {
+        const selectedSvgFiles = svgFiles.filter(f => selectedFiles.has(f.path));
+        
+        if (selectedSvgFiles.length === 0) {
+          throw new Error('No files selected from repository');
+        }
+
         const downloaded = await githubService.downloadSvgFiles(
           selectedSvgFiles,
           (completed, total, currentFile) => {
-            // Progress callback could be used here
             console.log(`Downloading: ${completed}/${total} - ${currentFile}`);
           }
         );
         setDownloadedFiles(downloaded);
+        filesToProcess = downloaded;
+      }
+
+      // Validate files have content
+      const filesWithoutContent = filesToProcess.filter(f => !f.content || f.content.trim() === '');
+      if (filesWithoutContent.length > 0) {
+        console.warn(`${filesWithoutContent.length} files have no content and will be skipped`);
+      }
+
+      const validFiles = filesToProcess.filter(f => f.content && f.content.trim() !== '');
+      if (validFiles.length === 0) {
+        throw new Error('No valid files with content to process');
       }
       
-      const result = await processGitHubFiles(downloadedFiles, iconConfig);
+      const result = await processGitHubFiles(validFiles, iconConfig);
       setProcessedFiles(result);
       return result;
       
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred during processing';
+      setGlobalError(errorMessage);
+      console.error('Batch processing failed:', error);
+      throw error;
     } finally {
       setIsProcessing(false);
     }
@@ -527,7 +656,12 @@ const App: React.FC = () => {
       ),
       isComplete: selectedFiles.size > 0,
       isActive: currentWizardStep === 1,
-      canProceed: selectedFiles.size > 0
+      canProceed: selectedFiles.size > 0,
+      onProceed: async () => {
+        // Download selected files for processing when proceeding to next step
+        await handleDownloadForProcessing();
+        setCurrentWizardStep(2);
+      }
     },
     {
       id: 'style-configuration',
@@ -535,29 +669,47 @@ const App: React.FC = () => {
       description: 'Choose style preset and customize appearance',
       icon: <Palette size={20} />,
       component: (
-        <div style={{ display: 'grid', gridTemplateColumns: '400px 1fr', gap: '2rem' }}>
-          <StyleControls
-            config={config}
-            onConfigChange={setConfig}
-          />
-          <div>
-            <h3>Preview</h3>
-            {downloadedFiles.length > 0 && (
-              <PreviewComparison
-                items={downloadedFiles.slice(0, 3).map(file => ({
-                  id: file.relativePath,
-                  name: file.name,
-                  originalSvg: file.content,
-                  processedSvg: undefined // Will be generated in real-time
-                }))}
-                config={config}
-                onConfigChange={setConfig}
-              />
-            )}
+        <div className="workspace-cards-grid" style={{ height: 'calc(100vh - 200px)', minHeight: '600px' }}>
+          {/* Style & Options Card - Full Width */}
+          <div className="workspace-card controls-card">
+            
+            <StyleControls
+              config={config}
+              onConfigChange={handleConfigChange}
+            />
+          </div>
+
+          {/* Preview Card - Takes more space */}
+          <div className="workspace-card preview-card">
+            {(downloadedFiles.length > 0 || convertedLocalFiles.length > 0) && (() => {
+              const files = downloadedFiles.length > 0 ? downloadedFiles : convertedLocalFiles;
+              const previewItems = files.map(file => ({
+                id: file.relativePath,
+                name: file.name,
+                originalSvg: scaleOriginalSvg(file.content, config.width, config.height, config.padding), // Scale to match processed size
+                processedSvg: processSvgWithStyle(file.content, config) // Generate processed SVG
+              }));
+              const selectedItem = previewItems[selectedPreviewIndex] || previewItems[0];
+              
+              return (
+                <PreviewComparison
+                  items={previewItems}
+                  config={config}
+                  onConfigChange={handleConfigChange}
+                  selectedItem={selectedItem}
+                  onItemSelect={(item) => {
+                    const index = previewItems.findIndex(i => i.id === item.id);
+                    if (index !== -1) {
+                      setSelectedPreviewIndex(index);
+                    }
+                  }}
+                />
+              );
+            })()}
           </div>
         </div>
       ),
-      isComplete: true, // Style can always be configured
+      isComplete: isStyleConfigured, // Complete after user configures styling
       isActive: currentWizardStep === 2,
       canProceed: true
     },
@@ -568,7 +720,7 @@ const App: React.FC = () => {
       icon: <Download size={20} />,
       component: (
         <BatchProcessor
-          files={downloadedFiles}
+          files={downloadedFiles.length > 0 ? downloadedFiles : convertedLocalFiles}
           config={config}
           onProcess={handleBatchProcess}
           onDownloadAll={handleDownloadAll}
@@ -576,23 +728,52 @@ const App: React.FC = () => {
       ),
       isComplete: processedFiles.length > 0,
       isActive: currentWizardStep === 3,
-      canProceed: processedFiles.length > 0
+      canProceed: downloadedFiles.length > 0 || convertedLocalFiles.length > 0
     }
   ];
 
+  // Handle icon pack selection
+  const handleIconPackSelect = (iconPack: IconPack) => {
+    setSelectedIconPack(iconPack);
+    setMode('iconpacks');
+  };
+
+  // Handle icon selection from pack browser
+  const handleIconSelectFromPack = (iconName: string, svgContent: string) => {
+    // Convert the selected icon to a File object and add to uploaded files
+    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+    const file = new File([blob], `${iconName}.svg`, { type: 'image/svg+xml' });
+    
+    const currentFiles = [...uploadedFiles];
+    if (!currentFiles.some(existing => existing.name === file.name)) {
+      currentFiles.push(file);
+      setUploadedFiles(currentFiles);
+    }
+    
+    // Switch to local mode for processing
+    setMode('local');
+  };
+
   // Mode Change Handlers
   const handleModeSelect = (newMode: AppMode) => {
+    // Reset all state when switching modes to prevent data leakage
+    resetApplicationState();
+    
     setMode(newMode);
     if (newMode === 'github') {
       setShowWizard(true);
       setCurrentWizardStep(0);
+    } else if (newMode === 'iconpacks') {
+      setShowWizard(false);
+      // Don't reset icon pack selection when going to iconpacks mode
     } else {
       setShowWizard(false);
     }
   };
 
   const handleGetStarted = () => {
-    // Show both modes for user to choose
+    // Hide landing page and show dashboard with mode selection
+    setShowLandingPage(false);
     setMode('dashboard');
   };
 
@@ -622,36 +803,44 @@ const App: React.FC = () => {
     setCurrentWizardStep(0);
   };
 
-  // Auto-load FluentUI icons when FluentUI preset is selected
-  React.useEffect(() => {
-    if (config.style === 'fluentui') {
-      // Auto-populate with popular FluentUI icons
-      fluentUIService.getAvailableIcons()
-        .then(icons => {
-          if (icons.length > 0) {
-            setFluentUIIcons(icons);
-          }
-        })
-        .catch(error => {
-          console.warn('Could not load FluentUI icons:', error);
-          // Fallback to mock icons
-          setFluentUIIcons([]);
-        });
-    }
-  }, [config.style]);
 
   return (
     <div className="app-container">
-      {/* Navigation Header */}
-      <NavigationHeader
-        mode={mode}
-        title={mode === 'local' ? 'Local File Processing' : 'GitHub Repository Processing'}
-        onBackToDashboard={() => setMode('dashboard')}
-      />
+
+      {/* Error Notifications */}
+      {globalError && (
+        <motion.div
+          className="error-notification global-error"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+        >
+          <div className="error-content">
+            <AlertCircle size={20} />
+            <span>{globalError}</span>
+            <button onClick={() => setGlobalError(null)} className="error-dismiss">×</button>
+          </div>
+        </motion.div>
+      )}
+      
+      {fileConversionError && (
+        <motion.div
+          className="error-notification file-error"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+        >
+          <div className="error-content">
+            <AlertCircle size={20} />
+            <span>{fileConversionError}</span>
+            <button onClick={() => setFileConversionError(null)} className="error-dismiss">×</button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Icon Cache Loader */}
       <IconCacheLoader
-        autoStart={true}
+        autoStart={false} // Disable auto-start to prevent overwhelming GitHub API
         showProgress={showCacheLoader}
         onComplete={() => {
           setIsCacheComplete(true);
@@ -661,31 +850,132 @@ const App: React.FC = () => {
 
       {/* Main Content */}
       <div className="app-content">
-        {/* Dashboard Overview - Landing Page */}
-        {mode === 'dashboard' && (
-          <DashboardOverview
-            onModeSelect={handleModeSelect}
+        {/* Landing Page */}
+        {showLandingPage && (
+          <LandingPage
             onGetStarted={handleGetStarted}
           />
         )}
 
-        {/* GitHub Workflow with Wizard */}
-        {mode === 'github' && showWizard && (
-          <WorkflowWizard
-            steps={githubWizardSteps}
-            currentStep={currentWizardStep}
-            onStepChange={handleWizardStepChange}
-            onNext={handleWizardNext}
-            onPrevious={handleWizardPrevious}
-            onFinish={handleWizardFinish}
-            isLoading={isLoadingRepo}
-            error={repoError}
+        {/* Dashboard Overview - Mode Selection */}
+        {!showLandingPage && mode === 'dashboard' && (
+          <DashboardOverview
+            onModeSelect={handleModeSelect}
+            onIconPackSelect={handleIconPackSelect}
+            onGetStarted={handleGetStarted}
           />
         )}
 
-        {/* Local Mode - Clean Layout */}
-        {mode === 'local' && (
-          <div className="local-mode">
+        {/* GitHub Workflow with Sidebar */}
+        {!showLandingPage && mode === 'github' && showWizard && (
+          <div className="github-workflow-container">
+            {/* Sidebar Navigation */}
+            <div className="workflow-sidebar">
+              <div className="sidebar-header">
+                <h2>GitHub Workflow</h2>
+                <div className="overall-progress">
+                  <div className="progress-track">
+                    <div 
+                      className="progress-fill"
+                      style={{ width: `${(currentWizardStep / (githubWizardSteps.length - 1)) * 100}%` }}
+                    />
+                  </div>
+                  <span className="progress-text">Step {currentWizardStep + 1} of {githubWizardSteps.length}</span>
+                </div>
+              </div>
+
+              <nav className="sidebar-steps">
+                {githubWizardSteps.map((step, index) => (
+                  <div
+                    key={step.id}
+                    className={`sidebar-step ${
+                      index === currentWizardStep ? 'active' : ''
+                    } ${step.isComplete ? 'completed' : ''} ${
+                      index < currentWizardStep || step.isComplete ? 'clickable' : 'disabled'
+                    }`}
+                    onClick={() => (index <= currentWizardStep || step.isComplete) ? handleWizardStepChange(index) : undefined}
+                  >
+                    <div className="step-indicator">
+                      <div className="step-number">
+                        {step.isComplete ? <Check size={16} /> : index + 1}
+                      </div>
+                    </div>
+                    <div className="step-content">
+                      <div className="step-title">{step.title}</div>
+                      <div className="step-description">{step.description}</div>
+                      {index === currentWizardStep && (
+                        <div className="step-status">Current</div>
+                      )}
+                      {step.isComplete && index !== currentWizardStep && (
+                        <div className="step-status completed">Completed</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </nav>
+
+              {/* Navigation Controls */}
+              <div className="sidebar-controls">
+                <button
+                  className="nav-btn secondary"
+                  onClick={handleWizardPrevious}
+                  disabled={currentWizardStep === 0}
+                >
+                  <ChevronLeft size={16} />
+                  Previous
+                </button>
+                
+                {currentWizardStep < githubWizardSteps.length - 1 ? (
+                  <button
+                    className="nav-btn primary"
+                    onClick={async () => {
+                      const currentStep = githubWizardSteps[currentWizardStep];
+                      if (currentStep.onProceed) {
+                        await currentStep.onProceed();
+                      } else {
+                        handleWizardNext();
+                      }
+                    }}
+                    disabled={!githubWizardSteps[currentWizardStep]?.canProceed || isLoadingRepo}
+                  >
+                    Next
+                    <ChevronRight size={16} />
+                  </button>
+                ) : (
+                  <button
+                    className="nav-btn primary"
+                    onClick={handleWizardFinish}
+                    disabled={!githubWizardSteps[currentWizardStep]?.canProceed}
+                  >
+                    Finish
+                    <Check size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="workflow-main-content">
+              {/* Error Display */}
+              {repoError && (
+                <div className="workflow-error">
+                  <AlertCircle size={20} />
+                  <span>{repoError}</span>
+                </div>
+              )}
+
+              {/* Current Step Content */}
+              <div className="step-content-area">
+                {githubWizardSteps[currentWizardStep]?.component}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Local Mode - Responsive Card Layout */}
+        {!showLandingPage && mode === 'local' && (
+          <div className="local-mode-responsive">
+            
             {/* Animated background */}
             <div className="bg-animation">
               {[...Array(3)].map((_, i) => (
@@ -710,61 +1000,138 @@ const App: React.FC = () => {
               ))}
             </div>
 
-            <div className="content-wrapper">
-              <div className="workspace-grid">
+            <div className="responsive-workspace">
+              <div className="workspace-cards-grid">
+                {/* Style & Options Card - Full Width */}
                 <motion.div
+                  className="workspace-card controls-card"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1, duration: 0.6 }}
                 >
-                  <FileUploadNew
-                    onFilesUploaded={setUploadedFiles}
-                    uploadedFiles={uploadedFiles}
-                    onFluentUIIcons={handleFluentUIIcons}
-                  />
+                  {/* Complete Progress Tracker Inside Card */}
+                  {convertedLocalFiles.length > 0 && processedFiles.length > 0 && (
+                    <div className="card-progress-section">
+                      <div className="progress-summary">
+                        <span className="progress-text">
+                          {processedFiles.filter(f => f.status === 'completed').length} of {convertedLocalFiles.length} files processed
+                        </span>
+                        <span className="progress-percentage">
+                          {Math.round((processedFiles.filter(f => f.status === 'completed').length / convertedLocalFiles.length) * 100)}%
+                        </span>
+                      </div>
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill completed"
+                          style={{ 
+                            width: `${(processedFiles.filter(f => f.status === 'completed').length / convertedLocalFiles.length) * 100}%` 
+                          }}
+                        />
+                        <div
+                          className="progress-fill failed"
+                          style={{ 
+                            width: `${(processedFiles.filter(f => f.status === 'failed').length / convertedLocalFiles.length) * 100}%`,
+                            left: `${(processedFiles.filter(f => f.status === 'completed').length / convertedLocalFiles.length) * 100}%`
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="controls-layout">
+                    <div className="upload-section">
+                      <FileUploadNew
+                        onFilesUploaded={setUploadedFiles}
+                        uploadedFiles={uploadedFiles}
+                        onFluentUIIcons={handleFluentUIIcons}
+                      />
+                      {fluentUIIcons.length > 0 && (
+                        <FluentUIIconBrowser
+                          icons={fluentUIIcons}
+                          config={config}
+                          onIconSelect={handleFluentUIIconSelect}
+                          onBulkSelect={handleFluentUIBulkSelect}
+                        />
+                      )}
+                    </div>
+                    <div className="style-section">
+                      <StyleControls
+                        config={config}
+                        onConfigChange={handleConfigChange}
+                      />
+                    </div>
+                  </div>
                 </motion.div>
 
-                {/* FluentUI Icon Browser */}
-                {fluentUIIcons.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15, duration: 0.6 }}
-                  >
-                    <FluentUIIconBrowser
-                      icons={fluentUIIcons}
-                      onIconSelect={handleFluentUIIconSelect}
-                      onBulkSelect={handleFluentUIBulkSelect}
-                    />
-                  </motion.div>
-                )}
-
+                {/* Preview Card - Takes more space */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.6 }}
-                >
-                  <StyleControls
-                    config={config}
-                    onConfigChange={setConfig}
-                  />
-                </motion.div>
-
-                <motion.div
+                  className="workspace-card preview-card"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.6 }}
                 >
-                  <PreviewPanel
-                    config={config}
-                    uploadedFiles={uploadedFiles}
-                    processedIcons={localProcessedIcons}
-                    onProcessedIcons={setLocalProcessedIcons}
-                  />
+                  {(downloadedFiles.length > 0 || convertedLocalFiles.length > 0) ? (() => {
+                    const files = downloadedFiles.length > 0 ? downloadedFiles : convertedLocalFiles;
+                    const previewItems = files.map(file => ({
+                      id: file.relativePath,
+                      name: file.name,
+                      originalSvg: scaleOriginalSvg(file.content, config.width, config.height, config.padding), // Scale to match processed size
+                      processedSvg: processSvgWithStyle(file.content, config)
+                    }));
+                    const selectedItem = previewItems[selectedPreviewIndex] || previewItems[0];
+                    
+                    return (
+                      <PreviewComparison
+                        items={previewItems}
+                        config={config}
+                        onConfigChange={handleConfigChange}
+                        selectedItem={selectedItem}
+                        onItemSelect={(item) => {
+                          const index = previewItems.findIndex(i => i.id === item.id);
+                          if (index !== -1) {
+                            setSelectedPreviewIndex(index);
+                          }
+                        }}
+                      />
+                    );
+                  })() : (
+                    <PreviewPanel
+                      config={config}
+                      uploadedFiles={uploadedFiles}
+                      processedIcons={localProcessedIcons}
+                      onProcessedIcons={setLocalProcessedIcons}
+                    />
+                  )}
                 </motion.div>
+
+                {/* Batch Processing Card */}
+                {convertedLocalFiles.length > 0 && (
+                  <motion.div
+                    className="workspace-card batch-card"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.6 }}
+                  >
+                    <BatchProcessor
+                      files={convertedLocalFiles}
+                      config={config}
+                      onProcess={handleBatchProcess}
+                      onDownloadAll={handleDownloadAll}
+                    />
+                  </motion.div>
+                )}
               </div>
             </div>
           </div>
+        )}
+
+        {/* Icon Pack Browser */}
+        {!showLandingPage && mode === 'iconpacks' && selectedIconPack && (
+          <IconPackBrowser
+            iconPack={selectedIconPack}
+            onBack={() => setMode('dashboard')}
+            onIconSelect={handleIconSelectFromPack}
+          />
         )}
       </div>
     </div>

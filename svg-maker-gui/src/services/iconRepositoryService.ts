@@ -89,16 +89,23 @@ class IconRepositoryService {
       const parser = RepositoryParserFactory.createParser(source.repository);
       const result = await parser.parse(source.repository, source.repository.githubUrl);
       
-      // Cache the results
-      this.cachedIcons.set(repositoryId, result.icons);
+      // Only limit external repositories, not built-in icon packs
+      const isBuiltInRepository = ICON_REPOSITORIES.some(repo => repo.id === repositoryId);
+      const maxIcons = isBuiltInRepository ? Infinity : 200; // No limit for built-in packs
+      const limitedIcons = result.totalCount > maxIcons 
+        ? result.icons.slice(0, maxIcons)
+        : result.icons;
+      
+      // Cache the results (limited set only for external repos)
+      this.cachedIcons.set(repositoryId, limitedIcons);
       source.status = 'ready';
       source.lastUpdated = new Date();
 
-      // Update the repository's icon count with real data
+      // Update the repository's icon count with real data but note if limited
       source.repository.iconCount = result.totalCount;
 
       return {
-        icons: result.icons,
+        icons: limitedIcons,
         totalCount: result.totalCount,
         repository: source
       };
@@ -216,6 +223,80 @@ class IconRepositoryService {
       return icon.svgContent;
     }
 
+    // Handle icons from dedicated services (like Lucide and Heroicons)
+    if (repositoryId === 'lucide' && !icon.downloadUrl) {
+      try {
+        const { lucideService } = await import('./lucideService');
+        const svgContent = await lucideService.getIconSvg(icon.name, 24);
+        
+        if (svgContent) {
+          // Cache the content
+          icon.svgContent = svgContent;
+          return svgContent;
+        }
+      } catch (error) {
+        console.error(`Failed to load Lucide icon ${iconId}:`, error);
+      }
+    }
+
+    if (repositoryId === 'heroicons' && !icon.downloadUrl) {
+      try {
+        const { heroiconsService } = await import('./heroiconsService');
+        
+        // Parse Heroicons name format: icon-name-variant
+        const parts = icon.name.split('-');
+        const variant = parts.pop() as 'outline' | 'solid' | 'mini'; // Last part is variant
+        const iconName = parts.join('-'); // Rejoin remaining parts as icon name
+        
+        const svgContent = await heroiconsService.getIconSvg(iconName, 24, variant);
+        
+        if (svgContent) {
+          // Cache the content
+          icon.svgContent = svgContent;
+          return svgContent;
+        }
+      } catch (error) {
+        console.error(`Failed to load Heroicons icon ${iconId}:`, error);
+      }
+    }
+
+    if (repositoryId === 'feather' && !icon.downloadUrl) {
+      try {
+        const { featherService } = await import('./featherService');
+        
+        const svgContent = await featherService.getIconSvg(icon.name, 24);
+        
+        if (svgContent) {
+          // Cache the content
+          icon.svgContent = svgContent;
+          return svgContent;
+        }
+      } catch (error) {
+        console.error(`Failed to load Feather icon ${iconId}:`, error);
+      }
+    }
+
+    if (repositoryId === 'phosphor' && !icon.downloadUrl) {
+      try {
+        const { phosphorService } = await import('./phosphorService');
+        
+        // Parse Phosphor name format: icon-name-weight
+        const parts = icon.name.split('-');
+        const weight = parts.pop() as 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone'; // Last part is weight
+        const iconName = parts.join('-'); // Rejoin remaining parts as icon name
+        
+        const svgContent = await phosphorService.getIconSvg(iconName, 32, weight);
+        
+        if (svgContent) {
+          // Cache the content
+          icon.svgContent = svgContent;
+          return svgContent;
+        }
+      } catch (error) {
+        console.error(`Failed to load Phosphor icon ${iconId}:`, error);
+      }
+    }
+
     // Load SVG content from GitHub
     if (icon.downloadUrl) {
       try {
@@ -235,7 +316,7 @@ class IconRepositoryService {
       }
     }
 
-    throw new Error(`No download URL available for icon ${iconId}`);
+    throw new Error(`No download URL or service available for icon ${iconId}`);
   }
 
   /**

@@ -16,6 +16,7 @@ import {
 import { FolderTree, GitHubFile } from '../services/githubService';
 import { ParsedIcon } from '../services/iconRepositoryParsers';
 import { iconCacheService } from '../services/iconCacheService';
+import { useDebouncedSearch } from '../hooks/useDebounce';
 import './FolderTreeBrowser.css';
 
 interface FolderTreeBrowserProps {
@@ -39,13 +40,97 @@ interface TreeItemProps {
   onPreviewFile: (file: GitHubFile) => void;
 }
 
-// SVG Icon Preview Component - Uses cache service for instant loading
-const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
+// Priority loading queue for managing load order
+class PriorityLoadQueue {
+  private static instance: PriorityLoadQueue;
+  private queue: Array<{ load: () => Promise<void>, priority: number, id: string }> = [];
+  private loading = new Set<string>();
+  private maxConcurrent = 3; // Load max 3 icons simultaneously
+
+  static getInstance() {
+    if (!PriorityLoadQueue.instance) {
+      PriorityLoadQueue.instance = new PriorityLoadQueue();
+    }
+    return PriorityLoadQueue.instance;
+  }
+
+  addToQueue(id: string, loadFn: () => Promise<void>, priority: number) {
+    if (this.loading.has(id)) return;
+    
+    // Remove existing entry for this id if any
+    this.queue = this.queue.filter(item => item.id !== id);
+    
+    // Add new entry
+    this.queue.push({ load: loadFn, priority, id });
+    this.queue.sort((a, b) => b.priority - a.priority); // Higher priority first
+    
+    this.processQueue();
+  }
+
+  private async processQueue() {
+    if (this.loading.size >= this.maxConcurrent || this.queue.length === 0) return;
+
+    const next = this.queue.shift();
+    if (!next) return;
+
+    this.loading.add(next.id);
+    
+    try {
+      await next.load();
+    } catch (error) {
+      console.warn(`Failed to load icon ${next.id}:`, error);
+    } finally {
+      this.loading.delete(next.id);
+      // Process next item
+      setTimeout(() => this.processQueue(), 10);
+    }
+  }
+}
+
+// SVG Icon Preview Component - Uses priority loading based on viewport visibility
+const IconPreview = React.memo<{ file: GitHubFile }>(({ file }) => {
   const [svgContent, setSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [priority, setPriority] = useState(0);
+  const elementRef = React.useRef<HTMLDivElement>(null);
+  const loadQueue = PriorityLoadQueue.getInstance();
+
+  // Enhanced Intersection Observer for priority loading
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Higher priority for more visible icons
+            const visibilityRatio = entry.intersectionRatio;
+            const newPriority = Math.floor(visibilityRatio * 100);
+            setPriority(newPriority);
+            setShouldLoad(true);
+          } else {
+            // Lower priority when not visible
+            setPriority(0);
+          }
+        });
+      },
+      { 
+        threshold: [0, 0.25, 0.5, 0.75, 1.0], // Multiple thresholds for priority calculation
+        rootMargin: '100px' // Start loading slightly before coming into view
+      }
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   React.useEffect(() => {
+    if (!shouldLoad) return;
+    
+    const iconId = file.sha || file.path;
     const loadSvgContent = async () => {
       if (!file.download_url) {
         setError(true);
@@ -57,12 +142,10 @@ const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
         setIsLoading(true);
         setError(false);
         
-        // Use the imported cache service
-        
         // Create a ParsedIcon-like object from GitHubFile
         const iconForCache: ParsedIcon = {
-          id: file.sha || file.path,
-          repository: 'github-file', // Generic repository identifier
+          id: iconId,
+          repository: 'github-file',
           downloadUrl: file.download_url || '',
           name: file.name,
           displayName: file.name.replace('.svg', ''),
@@ -71,7 +154,7 @@ const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
           fileName: file.name,
           path: file.path,
           size: file.size || 0,
-          svgContent: '' // Required by ParsedIcon interface
+          svgContent: ''
         };
         
         // Try to get from cache first, fall back to direct download
@@ -88,7 +171,6 @@ const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
         }
         
         // Clean and resize the SVG for preview (20x20 size)
-        // Remove any existing width/height attributes and set preview size
         const cleanedSvg = rawSvg
           .replace(/width="[^"]*"/gi, '')
           .replace(/height="[^"]*"/gi, '')
@@ -103,13 +185,14 @@ const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
       }
     };
 
-    loadSvgContent();
-  }, [file.download_url]);
+    // Add to priority queue instead of loading immediately
+    loadQueue.addToQueue(iconId, loadSvgContent, priority);
+  }, [shouldLoad, file.download_url, priority, loadQueue]);
 
-  if (isLoading) {
+  if (!shouldLoad || isLoading) {
     return (
-      <div className="icon-preview icon-preview-loading">
-        <div className="loading-spinner" />
+      <div ref={elementRef} className="icon-preview icon-preview-loading">
+        {shouldLoad ? <div className="loading-spinner" /> : <FileImage size={20} className="icon-preview-placeholder" />}
       </div>
     );
   }
@@ -120,14 +203,15 @@ const IconPreview: React.FC<{ file: GitHubFile }> = ({ file }) => {
 
   return (
     <div 
+      ref={elementRef}
       className="icon-preview" 
       dangerouslySetInnerHTML={{ __html: svgContent }}
       title={file.name}
     />
   );
-};
+});
 
-const TreeItem: React.FC<TreeItemProps> = ({
+const TreeItem = React.memo<TreeItemProps>(({
   item,
   level,
   svgFiles,
@@ -143,6 +227,9 @@ const TreeItem: React.FC<TreeItemProps> = ({
   const handleToggle = () => {
     if (item.type === 'dir') {
       setIsExpanded(!isExpanded);
+    } else if (isSvgFile) {
+      // For SVG files, clicking anywhere selects/deselects them
+      onFileSelect(item.path, !isSelected);
     }
   };
 
@@ -272,9 +359,9 @@ const TreeItem: React.FC<TreeItemProps> = ({
       </AnimatePresence>
     </div>
   );
-};
+});
 
-const FolderTreeBrowser: React.FC<FolderTreeBrowserProps> = ({
+const FolderTreeBrowser = React.memo<FolderTreeBrowserProps>(({
   tree,
   svgFiles,
   selectedFiles,
@@ -285,18 +372,18 @@ const FolderTreeBrowser: React.FC<FolderTreeBrowserProps> = ({
   onExportSelected,
   isLoading = false,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const { displayValue: searchQuery, searchValue: debouncedSearchQuery, setDisplayValue: setSearchQuery } = useDebouncedSearch('', 300);
   
-  // Filter SVG files based on search query
+  // Filter SVG files based on debounced search query
   const filteredSvgFiles = useMemo(() => {
-    if (!searchQuery.trim()) return svgFiles;
+    if (!debouncedSearchQuery.trim()) return svgFiles;
     
-    const query = searchQuery.toLowerCase().trim();
+    const query = debouncedSearchQuery.toLowerCase().trim();
     return svgFiles.filter(file => 
       file.name.toLowerCase().includes(query) ||
       file.path.toLowerCase().includes(query)
     );
-  }, [svgFiles, searchQuery]);
+  }, [svgFiles, debouncedSearchQuery]);
   
   const totalSvgFiles = filteredSvgFiles.length;
   const selectedCount = selectedFiles.size;
@@ -306,17 +393,33 @@ const FolderTreeBrowser: React.FC<FolderTreeBrowserProps> = ({
   
   // Create filtered tree with search results
   const filteredTree = useMemo(() => {
-    if (!searchQuery.trim()) return tree;
+    if (!debouncedSearchQuery.trim()) {
+      // For large datasets without search, limit initial render to first 100 items
+      if (tree.length === 1 && tree[0].children && tree[0].children.length > 100) {
+        const rootFolder = tree[0];
+        return [{
+          ...rootFolder,
+          children: rootFolder.children!.slice(0, 100).concat([{
+            name: `... and ${rootFolder.children!.length - 100} more files (use search to narrow results)`,
+            path: '__more_files__',
+            type: 'file' as const,
+            sha: '__more__'
+          }])
+        }];
+      }
+      return tree;
+    }
     
-    // For search results, create a flat list of matching files
+    // For search results, limit to 200 files for performance
+    const limitedResults = filteredSvgFiles.slice(0, 200);
     return [{
-      name: 'Search Results',
+      name: `Search Results (${limitedResults.length} of ${filteredSvgFiles.length})`,
       path: 'search-results',
       type: 'dir' as const,
-      children: filteredSvgFiles,
+      children: limitedResults,
       sha: 'search-results'
     }];
-  }, [tree, filteredSvgFiles, searchQuery]);
+  }, [tree, filteredSvgFiles, debouncedSearchQuery]);
 
   if (isLoading) {
     return (
@@ -462,6 +565,6 @@ const FolderTreeBrowser: React.FC<FolderTreeBrowserProps> = ({
       )}
     </div>
   );
-};
+});
 
 export default FolderTreeBrowser;

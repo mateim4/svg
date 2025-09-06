@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
 import '../styles/design-system.css';
 import './NavigationHeader.css';
 
@@ -10,12 +9,14 @@ interface NavigationHeaderProps {
   mode: AppMode;
   title: string;
   onBackToDashboard: () => void;
+  onBackToLanding?: () => void;
 }
 
 const NavigationHeader: React.FC<NavigationHeaderProps> = ({
   mode,
   title,
-  onBackToDashboard
+  onBackToDashboard,
+  onBackToLanding
 }) => {
   if (mode === 'dashboard') {
     return null;
@@ -25,13 +26,12 @@ const NavigationHeader: React.FC<NavigationHeaderProps> = ({
     <header className="navigation-header">
       <div className="nav-container">
         <motion.button
-          className="back-button ds-button ds-button-ghost"
-          onClick={onBackToDashboard}
+          className="brand-title clickable-title"
+          onClick={onBackToLanding || onBackToDashboard}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <ArrowLeft size={18} />
-          Back to Dashboard
+          <span className="brand-name">SVG Designer</span>
         </motion.button>
         
         <h1 className="nav-title">{title}</h1>
