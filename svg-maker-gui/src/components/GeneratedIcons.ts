@@ -15,7 +15,7 @@ const initializeIcons = async () => {
     
     if (realIconSvg) {
       // Original icon with light color
-      originalIcon = realIconSvg.replace('fill="currentColor"', 'fill="#94a3b8"');
+      originalIcon = realIconSvg.replace('fill="currentColor"', 'fill="var(--text-tertiary)"');
       
       // Glassmorphism version with dark icon on teal/lime gradient
       const glassmorphismConfig: IconConfig = {
@@ -24,7 +24,7 @@ const initializeIcons = async () => {
         height: 64,
         cornerRadius: 20,
         padding: 12,
-        iconColor: '#1a1a1a', // Dark icon
+        iconColor: 'var(--text-primary)', // Dark icon
         gradient: {
           angle: 135,
           startColor: '#00e5ff', // Teal
@@ -38,7 +38,7 @@ const initializeIcons = async () => {
         dropShadowY: 4,
         dropShadowBlur: 12,
         dropShadowOpacity: 0.25,
-        dropShadowColor: '#00e5ff'
+        dropShadowColor: 'var(--brand-primary)'
       };
       glassmorphismIcon = processSvgWithStyle(realIconSvg, glassmorphismConfig);
       
@@ -49,7 +49,7 @@ const initializeIcons = async () => {
         height: 64,
         cornerRadius: 20,
         padding: 12,
-        iconColor: '#1a1a1a', // Dark icon
+        iconColor: 'var(--text-primary)', // Dark icon
         gradient: {
           angle: 135,
           startColor: '#00e5ff', // Teal
@@ -60,14 +60,14 @@ const initializeIcons = async () => {
         dropShadowY: 8,
         dropShadowBlur: 16,
         dropShadowOpacity: 0.4,
-        dropShadowColor: '#94a3b8'
+        dropShadowColor: 'var(--text-tertiary)'
       };
       neumorphismIcon = processSvgWithStyle(realIconSvg, neumorphismConfig);
     }
   } catch (error) {
     console.error('Error loading real Fluent UI icons:', error);
     // Fallback to a simple placeholder if service fails
-    const fallback = '<svg width="64" height="64" viewBox="0 0 24 24" fill="#94a3b8"><circle cx="12" cy="12" r="8"/></svg>';
+    const fallback = '<svg width="64" height="64" viewBox="0 0 24 24" fill="var(--text-tertiary)"><circle cx="12" cy="12" r="8"/></svg>';
     originalIcon = fallback;
     glassmorphismIcon = fallback;
     neumorphismIcon = fallback;

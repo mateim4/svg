@@ -28,19 +28,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   };
 
   return (
-    <motion.div 
+    <motion.main 
       className="landing-page"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      role="main"
+      aria-label="SVG Designer landing page"
     >
-      {/* Hero Card */}
-      <motion.div className="hero-section" variants={itemVariants}>
-        <div className="hero-card">
-          <div className="hero-icon">
+      {/* Hero Section */}
+      <motion.section className="hero-section" variants={itemVariants} aria-labelledby="hero-heading">
+        <header className="hero-card">
+          <div className="hero-icon" aria-hidden="true">
             <Sparkles size={48} />
           </div>
-          <h1>SVG Designer</h1>
+          <h1 id="hero-heading">SVG Designer</h1>
           <p>Transform SVG icons with beautiful styles like neumorphism, glassmorphism, and more. 
              Perfect for creating consistent icon sets for your design system.</p>
           
@@ -49,18 +51,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             onClick={onGetStarted}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Get started with SVG Designer - Begin creating styled icons"
+            type="button"
           >
             Get Started
-            <ArrowRight size={20} />
+            <ArrowRight size={20} aria-hidden="true" />
           </motion.button>
-        </div>
+        </header>
 
-        {/* Single Card with Two Rows */}
-        <motion.div className="preview-showcase-card" variants={itemVariants}>
+        {/* Preview Section */}
+        <motion.section className="preview-showcase-card" variants={itemVariants} aria-labelledby="preview-heading">
+          <h2 id="preview-heading" className="sr-only">Icon Style Preview</h2>
           <FluentUIIconDemo />
-        </motion.div>
-      </motion.div>
-    </motion.div>
+        </motion.section>
+      </motion.section>
+    </motion.main>
   );
 };
 

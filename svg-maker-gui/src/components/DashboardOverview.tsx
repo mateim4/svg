@@ -6,12 +6,11 @@ import {
   Zap, 
   Palette, 
   Download,
-  Layers,
-  Package
+  Layers
 } from 'lucide-react';
 import './DashboardOverview.css';
 
-type AppMode = 'local' | 'github' | 'iconpacks';
+type AppMode = 'local' | 'github';
 type IconPack = 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent';
 
 interface DashboardOverviewProps {
@@ -56,8 +55,6 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           {/* Local Files Mode */}
           <motion.div 
             className="mode-card local-mode"
-            whileHover={{ scale: 1.02, y: -4 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => onModeSelect('local')}
           >
             <div className="card-icon">
@@ -93,8 +90,6 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           {/* GitHub Mode */}
           <motion.div 
             className="mode-card github-mode"
-            whileHover={{ scale: 1.02, y: -4 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => onModeSelect('github')}
           >
             <div className="card-icon">
@@ -127,113 +122,6 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
           </motion.div>
 
-          {/* Icon Packs Mode */}
-          <motion.div 
-            className="mode-card iconpacks-mode"
-            whileHover={{ scale: 1.02, y: -4 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => onModeSelect('iconpacks')}
-          >
-            <div className="card-icon">
-              <Package size={32} />
-            </div>
-            <h3>Browse Icon Packs</h3>
-            <p>Explore and customize icons from popular icon libraries</p>
-            
-            <div className="workflow-steps">
-              <div className="step">
-                <div className="step-number">1</div>
-                <span>Choose icon library</span>
-              </div>
-              <div className="step">
-                <div className="step-number">2</div>
-                <span>Browse & select icons</span>
-              </div>
-              <div className="step">
-                <div className="step-number">3</div>
-                <span>Style & download</span>
-              </div>
-            </div>
-
-            <div className="card-footer">
-              <span className="time-estimate">
-                <Zap size={14} />
-                ~3-5 minutes
-              </span>
-              <span className="best-for">Best for: Individual icons</span>
-            </div>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Icon Pack Selection */}
-      <motion.div className="iconpack-selection" variants={itemVariants}>
-        <h2>Popular Icon Libraries</h2>
-        <div className="iconpack-grid">
-          {[
-            { 
-              pack: 'lucide' as IconPack, 
-              name: 'Lucide Icons', 
-              description: 'Beautiful & consistent SVG icons',
-              count: '1,400+',
-              gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-            },
-            { 
-              pack: 'heroicons' as IconPack, 
-              name: 'Heroicons', 
-              description: 'Hand-crafted by Tailwind CSS team',
-              count: '300+',
-              gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-            },
-            { 
-              pack: 'feather' as IconPack, 
-              name: 'Feather', 
-              description: 'Simply beautiful open source icons',
-              count: '280+',
-              gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
-            },
-            { 
-              pack: 'phosphor' as IconPack, 
-              name: 'Phosphor', 
-              description: 'Flexible icon family for interfaces',
-              count: '7,000+',
-              gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
-            },
-            { 
-              pack: 'tabler' as IconPack, 
-              name: 'Tabler Icons', 
-              description: 'Free MIT-licensed SVG icons',
-              count: '5,800+',
-              gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
-            },
-            { 
-              pack: 'fluent' as IconPack, 
-              name: 'Fluent UI', 
-              description: 'Microsoft Fluent Design System',
-              count: '2,100+',
-              gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
-            }
-          ].map(({ pack, name, description, count, gradient }) => (
-            <motion.div
-              key={pack}
-              className="iconpack-card"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onIconPackSelect?.(pack)}
-            >
-              <div className="iconpack-header" style={{ background: gradient }}>
-                <div className="iconpack-count">{count}</div>
-              </div>
-              <div className="iconpack-content">
-                <h4>{name}</h4>
-                <p>{description}</p>
-                <button className="browse-button">
-                  <Package size={16} />
-                  Browse Library
-                </button>
-              </div>
-            </motion.div>
-          ))}
         </div>
       </motion.div>
 

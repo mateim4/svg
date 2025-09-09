@@ -1,16 +1,16 @@
 .github-repo-input {
-  background: transparent;
+  background: var(--surface-primary);
   backdrop-filter: blur(30px) saturate(125%);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border-primary);
   border-radius: 16px;
   padding: 2.25rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -21,15 +21,15 @@
 }
 
 .header-icon {
-  background: transparent;
+  background: var(--surface-secondary);
   padding: 0.75rem;
   border-radius: 12px;
-  color: #4b5563;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
 }
 
 .repo-input-header h3 {
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   font-size: 1.375rem;
   font-weight: 600;
@@ -38,7 +38,7 @@
 }
 
 .repo-input-header p {
-  color: #6b7280;
+  color: var(--text-disabled);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -63,11 +63,11 @@
 
 .input-wrapper input {
   flex: 1;
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: var(--surface-tertiary);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   padding: 0.875rem 1rem;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 0.95rem;
   transition: all 0.3s ease;
   font-family: 'Poppins', sans-serif;
@@ -76,8 +76,8 @@
 
 .input-wrapper input:focus {
   outline: none;
-  border-color: #3b82f6;
-  background: transparent;
+  border-color: var(--brand-primary);
+  background: var(--surface-tertiary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -87,7 +87,7 @@
 }
 
 .input-wrapper input::placeholder {
-  color: #9ca3af;
+  color: var(--text-quaternary);
 }
 
 .input-wrapper input:disabled {
@@ -96,11 +96,11 @@
 }
 
 .load-button {
-  background: transparent;
-  border: 1px solid #3b82f6;
+  background: var(--surface-primary);
+  border: 1px solid var(--brand-primary);
   border-radius: 12px;
   padding: 0.875rem 1.5rem;
-  color: #3b82f6;
+  color: var(--brand-primary);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -118,9 +118,9 @@
 
 .load-button:hover:not(:disabled) {
   background: rgba(59, 130, 246, 0.1);
-  border-color: #1d4ed8;
+  border-color: var(--brand-primary-active);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-  color: #1d4ed8;
+  color: var(--brand-primary-active);
   transform: translateY(-1px) scale(1.02);
 }
 
@@ -132,8 +132,8 @@
 .loading-spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  border-top: 2px solid #3b82f6;
+  border: 2px solid var(--border-secondary);
+  border-top: 2px solid var(--brand-primary);
   border-radius: 50%;
 }
 
@@ -141,10 +141,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #dc2626;
+  color: var(--danger-active);
   font-size: 0.85rem;
   padding: 0.75rem 1rem;
-  background: transparent;
+  background: var(--surface-primary);
   border: 1px solid rgba(220, 38, 38, 0.3);
   border-radius: 8px;
 }
@@ -156,7 +156,7 @@
 }
 
 .repo-examples h4 {
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
   font-size: 0.9rem;
   font-weight: 600;
@@ -170,11 +170,11 @@
 }
 
 .example-link {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: 10px;
   padding: 0.75rem;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -189,9 +189,9 @@
 }
 
 .example-link:hover:not(:disabled) {
-  background: transparent;
-  border-color: rgba(0, 0, 0, 0.25);
-  color: #1f2937;
+  background: var(--surface-tertiary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
@@ -205,14 +205,14 @@
   flex-direction: column;
   gap: 0.75rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--border-secondary);
 }
 
 .info-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #6b7280;
+  color: var(--text-disabled);
   font-size: 0.85rem;
 }
 

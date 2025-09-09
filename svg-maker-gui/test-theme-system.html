@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme System Test</title>
+    <link rel="stylesheet" href="src/styles/design-system.css">
+    <style>
+        .test-container {
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .theme-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .demo-card {
+            background: var(--surface-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .demo-button {
+            background: var(--primary-gradient);
+            color: var(--text-on-primary);
+            padding: var(--space-3) var(--space-6);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: var(--font-medium);
+            cursor: pointer;
+            margin: var(--space-2);
+        }
+        
+        .demo-input {
+            background: var(--surface-secondary);
+            border: 1px solid var(--border-secondary);
+            color: var(--text-primary);
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            margin: var(--space-2) 0;
+        }
+        
+        .color-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-md);
+            margin: var(--space-1);
+            display: inline-block;
+        }
+        
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-full);
+            padding: var(--space-3);
+            cursor: pointer;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <button class="toggle-btn" onclick="toggleTheme()">🌓</button>
+        
+        <h1 style="color: var(--text-primary);">Theme System Test</h1>
+        <p style="color: var(--text-secondary);">Testing the new Coolors palette with light and dark themes</p>
+        
+        <div class="theme-demo">
+            <div class="demo-card">
+                <h3 style="color: var(--text-primary);">Color Palette</h3>
+                <div>
+                    <div class="color-preview" style="background: var(--deep-teal);" title="Deep Teal"></div>
+                    <div class="color-preview" style="background: var(--coral-pink);" title="Coral Pink"></div>
+                    <div class="color-preview" style="background: var(--cream);" title="Cream"></div>
+                    <div class="color-preview" style="background: var(--light-sage);" title="Light Sage"></div>
+                    <div class="color-preview" style="background: var(--warm-gray);" title="Warm Gray"></div>
+                    <div class="color-preview" style="background: var(--dark-navy);" title="Dark Navy"></div>
+                    <div class="color-preview" style="background: var(--almost-black);" title="Almost Black"></div>
+                </div>
+            </div>
+            
+            <div class="demo-card">
+                <h3 style="color: var(--text-primary);">Components</h3>
+                <button class="demo-button">Primary Button</button>
+                <input type="text" class="demo-input" placeholder="Test input field">
+                <p style="color: var(--text-secondary);">Secondary text</p>
+                <p style="color: var(--text-tertiary);">Tertiary text</p>
+            </div>
+            
+            <div class="demo-card">
+                <h3 style="color: var(--text-primary);">Text Hierarchy</h3>
+                <p style="color: var(--text-primary);">Primary text - main content</p>
+                <p style="color: var(--text-secondary);">Secondary text - subtitles</p>
+                <p style="color: var(--text-tertiary);">Tertiary text - accents</p>
+                <p style="color: var(--text-quaternary);">Quaternary text - muted</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</body>
+</html>

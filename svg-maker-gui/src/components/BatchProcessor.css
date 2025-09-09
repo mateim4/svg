@@ -27,7 +27,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  color: #6b7280;
+  color: var(--text-disabled);
   text-align: center;
 }
 
@@ -37,7 +37,7 @@
 
 .empty-content h3 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .empty-content p {
@@ -53,7 +53,7 @@
 }
 
 .header-info h3 {
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 1rem 0;
   font-size: 1.375rem;
   font-weight: 600;
@@ -71,7 +71,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #6b7280;
+  color: var(--text-disabled);
   background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0.4rem 0.75rem;
@@ -89,7 +89,7 @@
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 10px;
   padding: 0.75rem 1rem;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -110,37 +110,37 @@
 .start-btn {
   background: transparent;
   border: 1px solid #22c55e;
-  color: #22c55e;
+  color: var(--success-color);
 }
 
 .start-btn:hover {
   background: rgba(34, 197, 94, 0.1);
-  border-color: #16a34a;
-  color: #16a34a;
+  border-color: var(--success-active);
+  color: var(--success-active);
 }
 
 .cancel-btn {
   background: transparent;
-  border: 1px solid #ef4444;
-  color: #ef4444;
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
 }
 
 .cancel-btn:hover {
   background: rgba(239, 68, 68, 0.1);
-  border-color: #dc2626;
-  color: #dc2626;
+  border-color: var(--danger-active);
+  color: var(--danger-active);
 }
 
 .download-btn {
   background: transparent;
-  border: 1px solid #3b82f6;
-  color: #3b82f6;
+  border: 1px solid var(--brand-primary);
+  color: var(--brand-primary);
 }
 
 .download-btn:hover {
   background: rgba(59, 130, 246, 0.1);
-  border-color: #1d4ed8;
-  color: #1d4ed8;
+  border-color: var(--brand-primary-active);
+  color: var(--brand-primary-active);
 }
 
 .progress-section {
@@ -158,12 +158,12 @@
 }
 
 .progress-text {
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 .progress-percentage {
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 1.1rem;
   font-weight: 600;
 }
@@ -192,7 +192,7 @@
 }
 
 .progress-fill.failed {
-  background: linear-gradient(90deg, #ff9696, #ef4444);
+  background: linear-gradient(90deg, #ff9696, var(--danger-color));
   box-shadow: 0 0 10px rgba(255, 150, 150, 0.3);
 }
 
@@ -200,7 +200,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   padding: 0.75rem;
   background: transparent;
@@ -299,7 +299,7 @@
 }
 
 .status-icon.pending {
-  color: #9ca3af;
+  color: var(--text-quaternary);
 }
 
 .processing-spinner {
@@ -316,7 +316,7 @@
 }
 
 .file-name {
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 0.95rem;
   font-weight: 500;
   margin-bottom: 0.25rem;
@@ -324,7 +324,7 @@
 }
 
 .file-meta {
-  color: #6b7280;
+  color: var(--text-disabled);
   font-size: 0.8rem;
   word-break: break-all;
 }
@@ -349,7 +349,7 @@
 }
 
 .file-preview h4 {
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
@@ -368,7 +368,7 @@
   padding: 0.75rem;
   background: transparent;
   border-radius: 8px;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -378,7 +378,7 @@
 }
 
 .preview-path {
-  color: #9ca3af;
+  color: var(--text-quaternary);
   font-size: 0.8rem;
   margin-left: auto;
 }
@@ -386,7 +386,7 @@
 .preview-more {
   padding: 0.75rem;
   text-align: center;
-  color: #9ca3af;
+  color: var(--text-quaternary);
   font-size: 0.85rem;
   font-style: italic;
 }

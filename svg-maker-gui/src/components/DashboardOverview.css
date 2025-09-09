@@ -26,26 +26,26 @@
 .hero-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent-color);
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  color: var(--text-primary);
+  box-shadow: 0 10px 30px rgba(255, 141, 153, 0.3);
 }
 
 .hero-content h1 {
   font-size: 3rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   line-height: 1.2;
 }
 
 .hero-content p {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
   max-width: 480px;
   margin: 0;
@@ -56,20 +56,20 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--accent-color);
+  color: var(--text-primary);
   border: none;
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 141, 153, 0.3);
   align-self: flex-start;
 }
 
 .cta-button:hover {
-  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 25px rgba(255, 141, 153, 0.4);
   transform: translateY(-2px);
 }
 
@@ -78,10 +78,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: var(--surface-secondary);
   border-radius: 20px;
   padding: 2rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-secondary);
 }
 
 .preview-item {
@@ -100,7 +100,7 @@
 .preview-before span, .preview-after span {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .styled-icon {
@@ -116,7 +116,7 @@
   background: #e0e5ec;
   box-shadow: 
     9px 9px 16px #a3b1c6,
-    -9px -9px 16px #ffffff;
+    -9px -9px 16px var(--text-primary);
 }
 
 /* Mode Selection */
@@ -127,7 +127,7 @@
 .mode-selection h2 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 3rem;
 }
 
@@ -140,10 +140,12 @@
 }
 
 .mode-card {
-  background: white;
+  background: var(--surface-primary);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
   border-radius: 20px;
   padding: 1.5rem;
-  border: 2px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -151,28 +153,17 @@
   height: fit-content !important;
   min-height: auto !important;
   max-height: none !important;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.4),
+    0 2px 8px 0 rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .mode-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
+  display: none;
 }
 
-.mode-card:hover::before {
-  transform: scaleX(1);
-}
-
-.mode-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
-}
+/* Hover effects removed for cleaner dark mode */
 
 .card-icon {
   width: 64px;
@@ -182,19 +173,19 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1rem;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  color: #667eea;
+  background: var(--surface-primary);
+  color: var(--brand-primary);
 }
 
 .mode-card h3 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
 .mode-card p {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.5;
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
@@ -218,8 +209,8 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: var(--accent-color);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,7 +220,7 @@
 }
 
 .step span {
-  color: #4a5568;
+  color: var(--text-primary);
   font-weight: 500;
   font-size: 0.9rem;
 }
@@ -246,13 +237,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #10b981;
+  color: var(--brand-primary);
   font-weight: 600;
   font-size: 0.9rem;
 }
 
 .best-for {
-  color: #6b7280;
+  color: var(--text-quaternary);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -265,7 +256,7 @@
 .features-section h2 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 2rem;
 }
 
@@ -276,10 +267,10 @@
 }
 
 .feature-item {
-  background: white;
+  background: var(--surface-primary);
   padding: 2rem;
   border-radius: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -293,18 +284,18 @@
 }
 
 .feature-item svg {
-  color: #667eea;
+  color: var(--brand-primary);
 }
 
 .feature-item h4 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .feature-item p {
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
   line-height: 1.5;
   margin: 0;
@@ -355,7 +346,7 @@
 .iconpack-selection h2 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   text-align: center;
 }
@@ -367,7 +358,7 @@
 }
 
 .iconpack-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: var(--surface-primary);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   overflow: hidden;
@@ -378,8 +369,6 @@
 }
 
 .iconpack-card:hover {
-  border-color: var(--accent-gradient-start, #00e5ff);
-  box-shadow: 0 12px 40px rgba(0, 229, 255, 0.2);
 }
 
 .iconpack-header {
@@ -391,8 +380,8 @@
 }
 
 .iconpack-count {
-  background: rgba(255, 255, 255, 0.9);
-  color: #1a1a1a;
+  background: var(--surface-primary);
+  color: var(--text-primary);
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: 700;
@@ -426,8 +415,8 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: linear-gradient(135deg, var(--accent-gradient-start, #00e5ff) 0%, var(--accent-gradient-end, #84fab0) 100%);
-  color: #1a1a1a;
+  background: linear-gradient(135deg, var(--accent-gradient-start, #ff8994) 0%, var(--accent-gradient-end, #ff9bb0) 100%);
+  color: var(--text-primary);
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -439,16 +428,5 @@
 
 .browse-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 229, 255, 0.3);
 }
 
-/* Icon Packs Mode Card */
-.mode-card.iconpacks-mode {
-  background: linear-gradient(135deg, rgba(132, 250, 176, 0.15) 0%, rgba(0, 229, 255, 0.1) 100%);
-  border-color: rgba(132, 250, 176, 0.3);
-}
-
-.mode-card.iconpacks-mode:hover {
-  border-color: var(--accent-gradient-end, #84fab0);
-  box-shadow: 0 20px 60px rgba(132, 250, 176, 0.2);
-}

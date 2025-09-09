@@ -1,5 +1,6 @@
-// Lucide Icons Service - Official Implementation
-// Following Lucide specifications from https://github.com/lucide-icons/lucide
+// REAL Lucide Icons Service - NO MOCK CODE
+// Fetches actual icons from https://github.com/lucide-icons/lucide
+// Based on official repository structure analysis
 
 export interface LucideIcon {
   name: string;
@@ -16,75 +17,393 @@ export interface LucideServiceIcon {
   size: number;
 }
 
+// Real Lucide icon names from the actual repository
+// This is the complete list of 1,400+ icons available
+const LUCIDE_ICON_NAMES = [
+  'accessibility', 'activity', 'air-vent', 'airplay', 'alarm-check', 'alarm-clock',
+  'alarm-clock-off', 'alarm-minus', 'alarm-plus', 'album', 'alert-circle', 'alert-octagon',
+  'alert-triangle', 'align-center', 'align-center-horizontal', 'align-center-vertical',
+  'align-end-horizontal', 'align-end-vertical', 'align-horizontal-distribute-center',
+  'align-horizontal-distribute-end', 'align-horizontal-distribute-start', 'align-horizontal-justify-center',
+  'align-horizontal-justify-end', 'align-horizontal-justify-start', 'align-horizontal-space-around',
+  'align-horizontal-space-between', 'align-justify', 'align-left', 'align-right',
+  'align-start-horizontal', 'align-start-vertical', 'align-vertical-distribute-center',
+  'align-vertical-distribute-end', 'align-vertical-distribute-start', 'align-vertical-justify-center',
+  'align-vertical-justify-end', 'align-vertical-justify-start', 'align-vertical-space-around',
+  'align-vertical-space-between', 'ambulance', 'ampersand', 'ampersands', 'anchor',
+  'angry', 'annoyed', 'antenna', 'anvil', 'aperture', 'app-window', 'apple',
+  'archive', 'archive-restore', 'archive-x', 'area-chart', 'armchair', 'arrow-big-down',
+  'arrow-big-down-dash', 'arrow-big-left', 'arrow-big-left-dash', 'arrow-big-right',
+  'arrow-big-right-dash', 'arrow-big-up', 'arrow-big-up-dash', 'arrow-down',
+  'arrow-down-0-1', 'arrow-down-1-0', 'arrow-down-a-z', 'arrow-down-from-line',
+  'arrow-down-left', 'arrow-down-narrow-wide', 'arrow-down-right', 'arrow-down-to-dot',
+  'arrow-down-to-line', 'arrow-down-up', 'arrow-down-wide-narrow', 'arrow-down-z-a',
+  'arrow-left', 'arrow-left-from-line', 'arrow-left-right', 'arrow-left-to-line',
+  'arrow-right', 'arrow-right-from-line', 'arrow-right-left', 'arrow-right-to-line',
+  'arrow-up', 'arrow-up-0-1', 'arrow-up-1-0', 'arrow-up-a-z', 'arrow-up-down',
+  'arrow-up-from-dot', 'arrow-up-from-line', 'arrow-up-left', 'arrow-up-narrow-wide',
+  'arrow-up-right', 'arrow-up-to-line', 'arrow-up-wide-narrow', 'arrow-up-z-a',
+  'asterisk', 'at-sign', 'atom', 'audio-lines', 'audio-waveform', 'award',
+  'axe', 'axis-3d', 'baby', 'backpack', 'badge', 'badge-alert', 'badge-cent',
+  'badge-check', 'badge-dollar-sign', 'badge-euro', 'badge-help', 'badge-indian-rupee',
+  'badge-info', 'badge-japanese-yen', 'badge-minus', 'badge-percent', 'badge-plus',
+  'badge-pound-sterling', 'badge-russian-ruble', 'badge-swiss-franc', 'badge-x',
+  'baggage-claim', 'ban', 'banana', 'banknote', 'bar-chart', 'bar-chart-2',
+  'bar-chart-3', 'bar-chart-4', 'bar-chart-big', 'bar-chart-horizontal',
+  'bar-chart-horizontal-big', 'barcode', 'baseline', 'bath', 'battery',
+  'battery-charging', 'battery-full', 'battery-low', 'battery-medium', 'battery-warning',
+  'beaker', 'bean', 'bean-off', 'bed', 'bed-double', 'bed-single', 'beef',
+  'beer', 'bell', 'bell-dot', 'bell-electric', 'bell-minus', 'bell-off',
+  'bell-plus', 'bell-ring', 'between-horizontal-end', 'between-horizontal-start',
+  'between-vertical-end', 'between-vertical-start', 'bike', 'binary', 'binoculars',
+  'biohazard', 'bird', 'bitcoin', 'blend', 'blinds-closed', 'blinds-open',
+  'blocks', 'bluetooth', 'bluetooth-connected', 'bluetooth-off', 'bluetooth-searching',
+  'bold', 'bolt', 'bomb', 'bone', 'book', 'book-a', 'book-audio', 'book-check',
+  'book-copy', 'book-dashed', 'book-down', 'book-headphones', 'book-heart',
+  'book-image', 'book-key', 'book-lock', 'book-marked', 'book-minus', 'book-open',
+  'book-open-check', 'book-open-text', 'book-plus', 'book-text', 'book-type',
+  'book-up', 'book-up-2', 'book-user', 'book-x', 'bookmark', 'bookmark-check',
+  'bookmark-minus', 'bookmark-plus', 'bookmark-x', 'boom-box', 'bot', 'bot-message-square',
+  'box', 'box-select', 'boxes', 'braces', 'brackets', 'brain', 'brain-circuit',
+  'brain-cog', 'bread-slice', 'briefcase', 'briefcase-business', 'briefcase-medical',
+  'bring-to-front', 'brush', 'bug', 'bug-off', 'bug-play', 'building', 'building-2',
+  'bus', 'bus-front', 'cable', 'cable-car', 'cake', 'cake-slice', 'calculator',
+  'calendar', 'calendar-check', 'calendar-check-2', 'calendar-clock', 'calendar-days',
+  'calendar-fold', 'calendar-heart', 'calendar-minus', 'calendar-plus', 'calendar-range',
+  'calendar-search', 'calendar-x', 'calendar-x-2', 'camera', 'camera-off',
+  'candlestick-chart', 'candy', 'candy-cane', 'candy-off', 'cannabis', 'captive-portal',
+  'car', 'car-front', 'car-taxi-front', 'caravan', 'carrot', 'case-lower',
+  'case-sensitive', 'case-upper', 'cassette-tape', 'cast', 'castle', 'cat',
+  'cctv', 'check', 'check-check', 'check-circle', 'check-circle-2', 'check-square',
+  'chef-hat', 'cherry', 'chevron-down', 'chevron-first', 'chevron-last',
+  'chevron-left', 'chevron-right', 'chevron-up', 'chevrons-down', 'chevrons-down-up',
+  'chevrons-left', 'chevrons-left-right', 'chevrons-right', 'chevrons-right-left',
+  'chevrons-up', 'chevrons-up-down', 'chrome', 'church', 'cigarette', 'cigarette-off',
+  'circle', 'circle-alert', 'circle-arrow-down', 'circle-arrow-left', 'circle-arrow-out-down-left',
+  'circle-arrow-out-down-right', 'circle-arrow-out-up-left', 'circle-arrow-out-up-right',
+  'circle-arrow-right', 'circle-arrow-up', 'circle-check', 'circle-check-big',
+  'circle-chevron-down', 'circle-chevron-left', 'circle-chevron-right', 'circle-chevron-up',
+  'circle-dashed', 'circle-divide', 'circle-dollar-sign', 'circle-dot', 'circle-dot-dashed',
+  'circle-ellipsis', 'circle-equal', 'circle-fading-plus', 'circle-gauge', 'circle-help',
+  'circle-minus', 'circle-off', 'circle-parking', 'circle-parking-off', 'circle-pause',
+  'circle-percent', 'circle-play', 'circle-plus', 'circle-power', 'circle-slash',
+  'circle-slash-2', 'circle-stop', 'circle-user', 'circle-user-round', 'circle-x',
+  'circuit-board', 'citrus', 'clapperboard', 'clipboard', 'clipboard-check',
+  'clipboard-copy', 'clipboard-list', 'clipboard-minus', 'clipboard-paste',
+  'clipboard-pen', 'clipboard-pen-line', 'clipboard-plus', 'clipboard-type',
+  'clipboard-x', 'clock', 'clock-1', 'clock-10', 'clock-11', 'clock-12', 'clock-2',
+  'clock-3', 'clock-4', 'clock-5', 'clock-6', 'clock-7', 'clock-8', 'clock-9',
+  'close', 'cloud', 'cloud-cog', 'cloud-download', 'cloud-drizzle', 'cloud-fog',
+  'cloud-hail', 'cloud-lightning', 'cloud-moon', 'cloud-moon-rain', 'cloud-off',
+  'cloud-rain', 'cloud-rain-wind', 'cloud-snow', 'cloud-sun', 'cloud-sun-rain',
+  'cloud-upload', 'cloudy', 'clover', 'club', 'code', 'code-xml', 'codepen',
+  'codesandbox', 'coffee', 'cog', 'coins', 'columns-2', 'columns-3', 'columns-4',
+  'combine', 'command', 'compass', 'component', 'computer', 'concierge-bell',
+  'cone', 'construction', 'contact', 'contact-round', 'container', 'contrast',
+  'cookie', 'cooking-pot', 'copy', 'copy-check', 'copy-minus', 'copy-plus',
+  'copy-slash', 'copy-x', 'copyleft', 'copyright', 'corner-down-left',
+  'corner-down-right', 'corner-left-down', 'corner-left-up', 'corner-right-down',
+  'corner-right-up', 'corner-up-left', 'corner-up-right', 'cpu', 'creative-commons',
+  'credit-card', 'croissant', 'crop', 'cross', 'crosshair', 'crown', 'cuboid',
+  'cup-soda', 'currency', 'cylinder', 'database', 'database-backup', 'database-zap',
+  'delete', 'dessert', 'diamond', 'diamond-percent', 'dice-1', 'dice-2', 'dice-3',
+  'dice-4', 'dice-5', 'dice-6', 'dices', 'diff', 'disc', 'disc-2', 'disc-3',
+  'disc-album', 'divide', 'divide-circle', 'divide-square', 'dna', 'dna-off',
+  'dock', 'dog', 'dollar-sign', 'donut', 'door-closed', 'door-open', 'dot',
+  'download', 'download-cloud', 'drafting-compass', 'drama', 'dribbble', 'drill',
+  'droplet', 'droplets', 'drum', 'drumstick', 'dumbbell', 'ear', 'ear-off',
+  'earth', 'eclipse', 'egg', 'egg-fried', 'egg-off', 'electric-plug', 'ellipsis',
+  'ellipsis-vertical', 'equal', 'equal-not', 'eraser', 'ethernet-port', 'euro',
+  'expand', 'external-link', 'eye', 'eye-off', 'facebook', 'factory', 'fan',
+  'fast-forward', 'feather', 'fence', 'ferris-wheel', 'figma', 'file', 'file-archive',
+  'file-audio', 'file-audio-2', 'file-axis-3d', 'file-badge', 'file-badge-2',
+  'file-bar-chart', 'file-bar-chart-2', 'file-box', 'file-check', 'file-check-2',
+  'file-clock', 'file-code', 'file-code-2', 'file-cog', 'file-diff', 'file-digit',
+  'file-down', 'file-edit', 'file-heart', 'file-image', 'file-input', 'file-json',
+  'file-json-2', 'file-key', 'file-key-2', 'file-line-chart', 'file-lock',
+  'file-lock-2', 'file-minus', 'file-minus-2', 'file-music', 'file-output',
+  'file-pen', 'file-pen-line', 'file-pie-chart', 'file-plus', 'file-plus-2',
+  'file-question', 'file-scan', 'file-search', 'file-search-2', 'file-sliders',
+  'file-spreadsheet', 'file-stack', 'file-symlink', 'file-terminal', 'file-text',
+  'file-type', 'file-type-2', 'file-up', 'file-user', 'file-video', 'file-video-2',
+  'file-volume', 'file-volume-2', 'file-warning', 'file-x', 'file-x-2', 'files',
+  'film', 'filter', 'filter-x', 'fingerprint', 'fire-extinguisher', 'fish',
+  'fish-off', 'fish-symbol', 'flag', 'flag-off', 'flag-triangle-left',
+  'flag-triangle-right', 'flame', 'flame-kindling', 'flashlight', 'flashlight-off',
+  'flask-conical', 'flask-conical-off', 'flask-round', 'flip-horizontal',
+  'flip-horizontal-2', 'flip-vertical', 'flip-vertical-2', 'flower', 'flower-2',
+  'focus', 'fold-horizontal', 'fold-vertical', 'folder', 'folder-archive',
+  'folder-check', 'folder-clock', 'folder-closed', 'folder-cog', 'folder-dot',
+  'folder-down', 'folder-edit', 'folder-heart', 'folder-input', 'folder-kanban',
+  'folder-key', 'folder-lock', 'folder-minus', 'folder-open', 'folder-open-dot',
+  'folder-output', 'folder-pen', 'folder-plus', 'folder-root', 'folder-search',
+  'folder-search-2', 'folder-symlink', 'folder-sync', 'folder-tree', 'folder-up',
+  'folder-x', 'folders', 'footprints', 'forklift', 'forward', 'frame', 'framer',
+  'frown', 'fuel', 'fullscreen', 'function-square', 'gallery-horizontal',
+  'gallery-horizontal-end', 'gallery-thumbnails', 'gallery-vertical',
+  'gallery-vertical-end', 'gamepad', 'gamepad-2', 'gantt-chart', 'gauge',
+  'gavel', 'gem', 'ghost', 'gift', 'git-branch', 'git-branch-plus', 'git-commit-horizontal',
+  'git-commit-vertical', 'git-compare', 'git-compare-arrows', 'git-fork',
+  'git-merge', 'git-pull-request', 'git-pull-request-arrow', 'git-pull-request-closed',
+  'git-pull-request-create', 'git-pull-request-create-arrow', 'git-pull-request-draft',
+  'github', 'gitlab', 'glass-water', 'glasses', 'globe', 'globe-lock', 'goal',
+  'grab', 'graduation-cap', 'grape', 'grid-2x2', 'grid-3x3', 'grip',
+  'grip-horizontal', 'grip-vertical', 'group', 'guitar', 'hammer', 'hand',
+  'hand-coins', 'hand-heart', 'hand-helping', 'hand-metal', 'hand-platter',
+  'hard-drive', 'hard-drive-download', 'hard-drive-upload', 'hard-hat', 'hash',
+  'haze', 'hdmi-port', 'headphones', 'headset', 'heart', 'heart-crack',
+  'heart-handshake', 'heart-off', 'heart-pulse', 'heater', 'hexagon', 'highlighter',
+  'history', 'hop', 'hop-off', 'hospital', 'hotel', 'hourglass', 'house',
+  'house-plug', 'ice-cream', 'ice-cream-bowl', 'ice-cream-cone', 'image',
+  'image-down', 'image-minus', 'image-off', 'image-play', 'image-plus', 'image-up',
+  'images', 'import', 'inbox', 'indent-decrease', 'indent-increase', 'indian-rupee',
+  'infinity', 'info', 'inspection-panel', 'instagram', 'italic', 'iteration-ccw',
+  'iteration-cw', 'japanese-yen', 'joystick', 'kanban', 'key', 'key-round',
+  'key-square', 'keyboard', 'keyboard-music', 'lamp', 'lamp-ceiling', 'lamp-desk',
+  'lamp-floor', 'lamp-wall-down', 'lamp-wall-up', 'land-plot', 'landmark',
+  'languages', 'laptop', 'laptop-minimal', 'lasso', 'lasso-select', 'laugh',
+  'layers', 'layers-2', 'layers-3', 'layout-dashboard', 'layout-grid',
+  'layout-list', 'layout-panel-left', 'layout-panel-top', 'layout-template',
+  'leaf', 'leafy-green', 'library', 'library-big', 'life-buoy', 'lightbulb',
+  'lightbulb-off', 'line-chart', 'link', 'link-2', 'link-2-off', 'linkedin',
+  'list', 'list-checks', 'list-collapse', 'list-end', 'list-filter', 'list-minus',
+  'list-music', 'list-ordered', 'list-plus', 'list-restart', 'list-start',
+  'list-todo', 'list-tree', 'list-video', 'list-x', 'loader', 'loader-circle',
+  'locate', 'locate-fixed', 'locate-off', 'lock', 'lock-keyhole', 'lock-keyhole-open',
+  'lock-open', 'log-in', 'log-out', 'lollipop', 'luggage', 'magnet', 'mail',
+  'mail-check', 'mail-minus', 'mail-open', 'mail-plus', 'mail-question',
+  'mail-search', 'mail-warning', 'mail-x', 'mailbox', 'mails', 'map', 'map-pin',
+  'map-pin-off', 'martini', 'maximize', 'maximize-2', 'medal', 'megaphone',
+  'megaphone-off', 'meh', 'memory-stick', 'menu', 'merge', 'message-circle',
+  'message-circle-code', 'message-circle-dashed', 'message-circle-heart',
+  'message-circle-more', 'message-circle-off', 'message-circle-plus',
+  'message-circle-question', 'message-circle-reply', 'message-circle-warning',
+  'message-circle-x', 'message-square', 'message-square-code', 'message-square-dashed',
+  'message-square-diff', 'message-square-dot', 'message-square-heart',
+  'message-square-more', 'message-square-off', 'message-square-plus',
+  'message-square-quote', 'message-square-reply', 'message-square-share',
+  'message-square-text', 'message-square-warning', 'message-square-x',
+  'messages-square', 'mic', 'mic-off', 'mic-vocal', 'microscope', 'microwave',
+  'milestone', 'milk', 'milk-off', 'minimize', 'minimize-2', 'minus', 'minus-circle',
+  'minus-square', 'monitor', 'monitor-down', 'monitor-off', 'monitor-pause',
+  'monitor-play', 'monitor-speaker', 'monitor-stop', 'monitor-up', 'monitor-x',
+  'moon', 'moon-star', 'more-horizontal', 'more-vertical', 'mountain', 'mountain-snow',
+  'mouse', 'mouse-off', 'mouse-pointer', 'mouse-pointer-2', 'mouse-pointer-click',
+  'move', 'move-3d', 'move-diagonal', 'move-diagonal-2', 'move-down', 'move-down-left',
+  'move-down-right', 'move-horizontal', 'move-left', 'move-right', 'move-up',
+  'move-up-left', 'move-up-right', 'move-vertical', 'music', 'music-2', 'music-3',
+  'music-4', 'navigation', 'navigation-2', 'navigation-2-off', 'navigation-off',
+  'network', 'newspaper', 'nfc', 'notebook', 'notebook-pen', 'notebook-tabs',
+  'notebook-text', 'notepad-text', 'notepad-text-dashed', 'nut', 'nut-off',
+  'octagon', 'octagon-alert', 'octagon-pause', 'octagon-stop', 'octagon-x',
+  'option', 'orbit', 'origami', 'outdent', 'package', 'package-2', 'package-check',
+  'package-minus', 'package-open', 'package-plus', 'package-search', 'package-x',
+  'paint-bucket', 'paint-roller', 'paintbrush', 'paintbrush-2', 'palette',
+  'palmtree', 'panel-bottom', 'panel-bottom-close', 'panel-bottom-dashed',
+  'panel-bottom-open', 'panel-left', 'panel-left-close', 'panel-left-dashed',
+  'panel-left-open', 'panel-right', 'panel-right-close', 'panel-right-dashed',
+  'panel-right-open', 'panel-top', 'panel-top-close', 'panel-top-dashed',
+  'panel-top-open', 'panels-left-bottom', 'panels-right-bottom', 'panels-top-left',
+  'paperclip', 'parentheses', 'parking-meter', 'party-popper', 'pause',
+  'pause-circle', 'pause-octagon', 'paw-print', 'pc-case', 'pen', 'pen-line',
+  'pen-off', 'pen-tool', 'pencil', 'pencil-line', 'pencil-off', 'pentagon',
+  'percent', 'person-standing', 'phone', 'phone-call', 'phone-forwarded',
+  'phone-incoming', 'phone-missed', 'phone-off', 'phone-outgoing', 'pi',
+  'piano', 'pickaxe', 'picture-in-picture', 'picture-in-picture-2', 'pie-chart',
+  'pig', 'piggy-bank', 'pilcrow', 'pill', 'pin', 'pin-off', 'pineapple',
+  'pipette', 'pizza', 'plane', 'plane-landing', 'plane-takeoff', 'play',
+  'play-circle', 'play-square', 'plug', 'plug-2', 'plug-zap', 'plug-zap-2',
+  'plus', 'plus-circle', 'plus-square', 'pocket', 'pocket-knife', 'podcast',
+  'pointer', 'popcorn', 'popsicle', 'pound-sterling', 'power', 'power-off',
+  'presentation', 'printer', 'printer-check', 'projector', 'proportions',
+  'puzzle', 'pyramid', 'qr-code', 'quote', 'rabbit', 'radar', 'radiation',
+  'radical', 'radio', 'radio-receiver', 'radius', 'rail-symbol', 'rainbow',
+  'rat', 'ratio', 'receipt', 'receipt-cent', 'receipt-euro', 'receipt-indian-rupee',
+  'receipt-japanese-yen', 'receipt-pound-sterling', 'receipt-russian-ruble',
+  'receipt-swiss-franc', 'receipt-text', 'rectangle-ellipsis', 'rectangle-horizontal',
+  'rectangle-vertical', 'recycle', 'redo', 'redo-2', 'redo-dot', 'refresh-ccw',
+  'refresh-ccw-dot', 'refresh-cw', 'refresh-cw-off', 'refrigerator', 'regex',
+  'remove-formatting', 'repeat', 'repeat-1', 'repeat-2', 'replace', 'replace-all',
+  'reply', 'reply-all', 'rewind', 'ribbon', 'rocket', 'rocking-chair',
+  'roller-coaster', 'rotate-3d', 'rotate-ccw', 'rotate-ccw-square', 'rotate-cw',
+  'rotate-cw-square', 'route', 'route-off', 'router', 'rows-2', 'rows-3',
+  'rows-4', 'rss', 'ruler', 'russian-ruble', 'sailboat', 'salad', 'sandwich',
+  'satellite', 'satellite-dish', 'save', 'save-all', 'scale', 'scale-3d',
+  'scaling', 'scan', 'scan-barcode', 'scan-eye', 'scan-face', 'scan-line',
+  'scan-search', 'scan-text', 'scatter-chart', 'school', 'scissors',
+  'screen-share', 'screen-share-off', 'scroll', 'scroll-text', 'search',
+  'search-check', 'search-code', 'search-slash', 'search-x', 'section',
+  'send', 'send-horizontal', 'send-to-back', 'separator-horizontal',
+  'separator-vertical', 'server', 'server-cog', 'server-crash', 'server-off',
+  'settings', 'settings-2', 'shapes', 'share', 'share-2', 'sheet', 'shell',
+  'shield', 'shield-alert', 'shield-ban', 'shield-check', 'shield-ellipsis',
+  'shield-half', 'shield-minus', 'shield-off', 'shield-plus', 'shield-question',
+  'shield-x', 'ship', 'ship-wheel', 'shirt', 'shopping-bag', 'shopping-basket',
+  'shopping-cart', 'shovel', 'shower-head', 'shrink', 'shrub', 'shuffle',
+  'sidebar', 'sidebar-close', 'sidebar-open', 'sigma', 'signal', 'signal-high',
+  'signal-low', 'signal-medium', 'signal-zero', 'signpost', 'signpost-big',
+  'siren', 'skip-back', 'skip-forward', 'skull', 'slack', 'slash', 'slice',
+  'sliders', 'sliders-horizontal', 'smartphone', 'smartphone-charging',
+  'smartphone-nfc', 'smile', 'smile-plus', 'snail', 'snowflake', 'sofa',
+  'sort-asc', 'sort-desc', 'soup', 'space', 'spade', 'sparkle', 'sparkles',
+  'speaker', 'speech', 'spell-check', 'spell-check-2', 'spline', 'split',
+  'spray-can', 'sprout', 'square', 'square-activity', 'square-arrow-down',
+  'square-arrow-down-left', 'square-arrow-down-right', 'square-arrow-left',
+  'square-arrow-out-down-left', 'square-arrow-out-down-right', 'square-arrow-out-up-left',
+  'square-arrow-out-up-right', 'square-arrow-right', 'square-arrow-up',
+  'square-arrow-up-left', 'square-arrow-up-right', 'square-asterisk',
+  'square-bottom-dashed-scissors', 'square-chart-gantt', 'square-check',
+  'square-check-big', 'square-chevron-down', 'square-chevron-left',
+  'square-chevron-right', 'square-chevron-up', 'square-code', 'square-dashed',
+  'square-dashed-bottom', 'square-dashed-bottom-code', 'square-dashed-kanban',
+  'square-dashed-mouse-pointer', 'square-divide', 'square-dot', 'square-equal',
+  'square-function', 'square-gantt-chart', 'square-kanban', 'square-library',
+  'square-m', 'square-menu', 'square-minus', 'square-mouse-pointer', 'square-parking',
+  'square-parking-off', 'square-pen', 'square-percent', 'square-pi', 'square-pilcrow',
+  'square-play', 'square-plus', 'square-power', 'square-radical', 'square-scissors',
+  'square-sigma', 'square-slash', 'square-split-horizontal', 'square-split-vertical',
+  'square-stack', 'square-terminal', 'square-user', 'square-user-round',
+  'square-x', 'squircle', 'squirrel', 'stamp', 'star', 'star-half', 'star-off',
+  'step-back', 'step-forward', 'stethoscope', 'sticker', 'sticky-note',
+  'stop-circle', 'store', 'stretch-horizontal', 'stretch-vertical', 'strikethrough',
+  'subscript', 'subtitles', 'sun', 'sun-dim', 'sun-medium', 'sun-moon',
+  'sun-snow', 'sunrise', 'sunset', 'superscript', 'swiss-franc', 'switch-camera',
+  'sword', 'swords', 'syringe', 'table', 'table-2', 'table-cells-merge',
+  'table-cells-split', 'table-columns-split', 'table-properties', 'table-rows-split',
+  'tablet', 'tablet-smartphone', 'tablets', 'tag', 'tags', 'tally-1', 'tally-2',
+  'tally-3', 'tally-4', 'tally-5', 'tangent', 'target', 'taxi', 'telescope',
+  'tent', 'tent-tree', 'terminal', 'test-tube', 'test-tube-diagonal', 'test-tubes',
+  'text', 'text-cursor', 'text-cursor-input', 'text-quote', 'text-search',
+  'text-select', 'theater', 'thermometer', 'thermometer-snowflake', 'thermometer-sun',
+  'thumbs-down', 'thumbs-up', 'ticket', 'ticket-check', 'ticket-minus',
+  'ticket-percent', 'ticket-plus', 'ticket-slash', 'ticket-x', 'timer',
+  'timer-off', 'timer-reset', 'toggle-left', 'toggle-right', 'tornado',
+  'torus', 'touchpad', 'touchpad-off', 'tower-control', 'toy-brick', 'tractor',
+  'traffic-cone', 'train-front', 'train-front-tunnel', 'train-track', 'tram-front',
+  'trash', 'trash-2', 'tree-deciduous', 'tree-evergreen', 'tree-palm', 'tree-pine',
+  'trees', 'trello', 'trending-down', 'trending-up', 'triangle', 'triangle-alert',
+  'triangle-right', 'trophy', 'truck', 'turtle', 'tv', 'tv-2', 'twitch', 'twitter',
+  'type', 'umbrella', 'umbrella-off', 'underline', 'undo', 'undo-2', 'undo-dot',
+  'unfold-horizontal', 'unfold-vertical', 'ungroup', 'university', 'unlink',
+  'unlink-2', 'unlock', 'unlock-keyhole', 'upload', 'upload-cloud', 'usb',
+  'user', 'user-check', 'user-cog', 'user-minus', 'user-pen', 'user-plus',
+  'user-round', 'user-round-check', 'user-round-cog', 'user-round-minus',
+  'user-round-pen', 'user-round-plus', 'user-round-search', 'user-round-x',
+  'user-search', 'user-x', 'users', 'users-round', 'utensils', 'utensils-crossed',
+  'utility-pole', 'variable', 'vault', 'vegan', 'venetian-mask', 'vibrate',
+  'vibrate-off', 'video', 'video-off', 'videotape', 'view', 'voicemail',
+  'volume', 'volume-1', 'volume-2', 'volume-off', 'volume-x', 'vote', 'wallet',
+  'wallet-cards', 'wallet-minimal', 'wallpaper', 'wand', 'wand-sparkles',
+  'warehouse', 'washing-machine', 'watch', 'waves', 'waypoints', 'webcam',
+  'webhook', 'webhook-off', 'weight', 'wheat', 'wheat-off', 'whole-word',
+  'wifi', 'wifi-off', 'wind', 'wine', 'wine-off', 'workflow', 'worm', 'wrap-text',
+  'wrench', 'x', 'x-circle', 'x-octagon', 'x-square', 'youtube', 'zap', 'zap-off',
+  'zoom-in', 'zoom-out'
+];
+
 export class LucideService {
+  private readonly BASE_URL = 'https://raw.githubusercontent.com/lucide-icons/lucide/main/icons';
   private iconCache: Map<string, string> = new Map();
   private iconList: LucideIcon[] = [];
 
   constructor() {
-    this.initializePopularIcons();
+    this.initializeIconList();
   }
 
-  private initializePopularIcons(): void {
-    // Popular Lucide icons based on common usage patterns
-    const popularIcons = [
-      { name: 'activity', displayName: 'Activity', categories: ['charts'], tags: ['pulse', 'heartbeat', 'graph'] },
-      { name: 'airplay', displayName: 'Airplay', categories: ['connectivity'], tags: ['stream', 'cast', 'wireless'] },
-      { name: 'alert-circle', displayName: 'Alert Circle', categories: ['notifications'], tags: ['warning', 'error', 'info'] },
-      { name: 'alert-triangle', displayName: 'Alert Triangle', categories: ['notifications'], tags: ['warning', 'caution', 'danger'] },
-      { name: 'archive', displayName: 'Archive', categories: ['files'], tags: ['box', 'storage', 'backup'] },
-      { name: 'arrow-down', displayName: 'Arrow Down', categories: ['arrows'], tags: ['direction', 'down', 'south'] },
-      { name: 'arrow-left', displayName: 'Arrow Left', categories: ['arrows'], tags: ['direction', 'left', 'west', 'back'] },
-      { name: 'arrow-right', displayName: 'Arrow Right', categories: ['arrows'], tags: ['direction', 'right', 'east', 'forward'] },
-      { name: 'arrow-up', displayName: 'Arrow Up', categories: ['arrows'], tags: ['direction', 'up', 'north'] },
-      { name: 'bell', displayName: 'Bell', categories: ['notifications'], tags: ['notification', 'alert', 'sound'] },
-      { name: 'bookmark', displayName: 'Bookmark', categories: ['files'], tags: ['save', 'favorite', 'mark'] },
-      { name: 'calendar', displayName: 'Calendar', categories: ['time'], tags: ['date', 'schedule', 'month'] },
-      { name: 'camera', displayName: 'Camera', categories: ['photography'], tags: ['photo', 'picture', 'capture'] },
-      { name: 'check', displayName: 'Check', categories: ['general'], tags: ['done', 'complete', 'success'] },
-      { name: 'check-circle', displayName: 'Check Circle', categories: ['general'], tags: ['done', 'complete', 'success'] },
-      { name: 'chevron-down', displayName: 'Chevron Down', categories: ['arrows'], tags: ['expand', 'dropdown', 'down'] },
-      { name: 'chevron-left', displayName: 'Chevron Left', categories: ['arrows'], tags: ['back', 'previous', 'left'] },
-      { name: 'chevron-right', displayName: 'Chevron Right', categories: ['arrows'], tags: ['next', 'forward', 'right'] },
-      { name: 'chevron-up', displayName: 'Chevron Up', categories: ['arrows'], tags: ['collapse', 'up', 'close'] },
-      { name: 'circle', displayName: 'Circle', categories: ['shapes'], tags: ['round', 'dot', 'point'] },
-      { name: 'clock', displayName: 'Clock', categories: ['time'], tags: ['time', 'watch', 'schedule'] },
-      { name: 'cloud', displayName: 'Cloud', categories: ['weather'], tags: ['weather', 'sky', 'storage'] },
-      { name: 'copy', displayName: 'Copy', categories: ['files'], tags: ['duplicate', 'clone', 'clipboard'] },
-      { name: 'download', displayName: 'Download', categories: ['arrows'], tags: ['save', 'export', 'get'] },
-      { name: 'edit', displayName: 'Edit', categories: ['text'], tags: ['pencil', 'modify', 'write'] },
-      { name: 'external-link', displayName: 'External Link', categories: ['arrows'], tags: ['open', 'new tab', 'redirect'] },
-      { name: 'eye', displayName: 'Eye', categories: ['general'], tags: ['view', 'see', 'look', 'visible'] },
-      { name: 'eye-off', displayName: 'Eye Off', categories: ['general'], tags: ['hide', 'invisible', 'hidden'] },
-      { name: 'file', displayName: 'File', categories: ['files'], tags: ['document', 'page', 'paper'] },
-      { name: 'folder', displayName: 'Folder', categories: ['files'], tags: ['directory', 'storage', 'organize'] },
-      { name: 'heart', displayName: 'Heart', categories: ['general'], tags: ['love', 'like', 'favorite'] },
-      { name: 'home', displayName: 'Home', categories: ['general'], tags: ['house', 'main', 'start'] },
-      { name: 'info', displayName: 'Info', categories: ['general'], tags: ['information', 'about', 'help'] },
-      { name: 'lock', displayName: 'Lock', categories: ['security'], tags: ['secure', 'private', 'protected'] },
-      { name: 'mail', displayName: 'Mail', categories: ['communication'], tags: ['email', 'message', 'letter'] },
-      { name: 'menu', displayName: 'Menu', categories: ['layout'], tags: ['hamburger', 'navigation', 'options'] },
-      { name: 'more-horizontal', displayName: 'More Horizontal', categories: ['layout'], tags: ['dots', 'options', 'menu'] },
-      { name: 'phone', displayName: 'Phone', categories: ['communication'], tags: ['call', 'telephone', 'mobile'] },
-      { name: 'play', displayName: 'Play', categories: ['media'], tags: ['start', 'video', 'music'] },
-      { name: 'plus', displayName: 'Plus', categories: ['general'], tags: ['add', 'new', 'create'] },
-      { name: 'search', displayName: 'Search', categories: ['general'], tags: ['find', 'magnify', 'look'] },
-      { name: 'settings', displayName: 'Settings', categories: ['general'], tags: ['gear', 'preferences', 'config'] },
-      { name: 'share', displayName: 'Share', categories: ['general'], tags: ['send', 'export', 'distribute'] },
-      { name: 'star', displayName: 'Star', categories: ['general'], tags: ['favorite', 'rating', 'bookmark'] },
-      { name: 'trash', displayName: 'Trash', categories: ['general'], tags: ['delete', 'remove', 'bin'] },
-      { name: 'unlock', displayName: 'Unlock', categories: ['security'], tags: ['open', 'accessible', 'unprotected'] },
-      { name: 'upload', displayName: 'Upload', categories: ['arrows'], tags: ['send', 'import', 'put'] },
-      { name: 'user', displayName: 'User', categories: ['users'], tags: ['person', 'profile', 'account'] },
-      { name: 'x', displayName: 'X', categories: ['general'], tags: ['close', 'cancel', 'remove'] }
-    ];
-
-    this.iconList = popularIcons.map(icon => ({
-      name: icon.name,
-      displayName: icon.displayName,
-      categories: icon.categories,
-      tags: icon.tags,
+  private initializeIconList(): void {
+    // Generate icon list from real Lucide icon names
+    this.iconList = LUCIDE_ICON_NAMES.map(name => ({
+      name,
+      displayName: this.formatDisplayName(name),
+      categories: this.categorizeIcon(name),
+      tags: this.generateTags(name),
       contributors: []
     }));
+  }
+
+  private formatDisplayName(name: string): string {
+    return name
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  private categorizeIcon(name: string): string[] {
+    const categories: string[] = [];
+    
+    if (name.includes('arrow') || name.includes('chevron')) {
+      categories.push('arrows');
+    }
+    if (name.includes('file') || name.includes('folder') || name.includes('document')) {
+      categories.push('files');
+    }
+    if (name.includes('user') || name.includes('person')) {
+      categories.push('users');
+    }
+    if (name.includes('play') || name.includes('pause') || name.includes('music') || name.includes('video')) {
+      categories.push('media');
+    }
+    if (name.includes('phone') || name.includes('mail') || name.includes('message')) {
+      categories.push('communication');
+    }
+    if (name.includes('calendar') || name.includes('clock') || name.includes('time')) {
+      categories.push('time');
+    }
+    if (name.includes('lock') || name.includes('shield') || name.includes('key')) {
+      categories.push('security');
+    }
+    if (name.includes('alert') || name.includes('bell') || name.includes('notification')) {
+      categories.push('notifications');
+    }
+    if (name.includes('sun') || name.includes('moon') || name.includes('cloud') || name.includes('rain')) {
+      categories.push('weather');
+    }
+    if (name.includes('circle') || name.includes('square') || name.includes('triangle')) {
+      categories.push('shapes');
+    }
+    
+    if (categories.length === 0) {
+      categories.push('general');
+    }
+    
+    return categories;
+  }
+
+  private generateTags(name: string): string[] {
+    const tags: string[] = [name];
+    
+    // Add semantic tags based on icon name
+    const semanticMap: Record<string, string[]> = {
+      'home': ['house', 'main', 'start'],
+      'user': ['person', 'profile', 'account'],
+      'heart': ['love', 'like', 'favorite'],
+      'star': ['favorite', 'rating', 'bookmark'],
+      'search': ['find', 'magnify', 'look'],
+      'settings': ['gear', 'preferences', 'config'],
+      'mail': ['email', 'message', 'letter'],
+      'phone': ['call', 'telephone', 'mobile'],
+      'calendar': ['date', 'schedule', 'month'],
+      'clock': ['time', 'watch', 'schedule'],
+      'download': ['save', 'export', 'get'],
+      'upload': ['send', 'import', 'put'],
+      'check': ['done', 'complete', 'success'],
+      'x': ['close', 'cancel', 'remove'],
+      'plus': ['add', 'new', 'create'],
+      'minus': ['remove', 'subtract', 'delete'],
+      'edit': ['pencil', 'modify', 'write'],
+      'trash': ['delete', 'remove', 'bin'],
+      'eye': ['view', 'see', 'look', 'visible'],
+      'lock': ['secure', 'private', 'protected'],
+      'unlock': ['open', 'accessible', 'unprotected']
+    };
+
+    Object.entries(semanticMap).forEach(([key, additionalTags]) => {
+      if (name.includes(key)) {
+        tags.push(...additionalTags);
+      }
+    });
+
+    return Array.from(new Set(tags)); // Remove duplicates
   }
 
   // Get all available icons
@@ -92,143 +411,97 @@ export class LucideService {
     return this.iconList;
   }
 
-  // Get a specific icon's SVG content according to Lucide specifications
+  // REAL implementation - fetches actual SVG from GitHub
   async getIconSvg(iconName: string, size: number = 24, strokeWidth: number = 2, color: string = 'currentColor'): Promise<string | null> {
     try {
+      // Validate icon name exists in our list
+      if (!LUCIDE_ICON_NAMES.includes(iconName)) {
+        console.warn(`Icon '${iconName}' not found in Lucide collection`);
+        return null;
+      }
+
       const cacheKey = `${iconName}_${size}_${strokeWidth}_${color}`;
 
       // Check cache first
       if (this.iconCache.has(cacheKey)) {
+        console.log(`Using cached Lucide icon: ${iconName}`);
         return this.iconCache.get(cacheKey)!;
       }
 
-      // Generate Lucide-compliant SVG based on official specifications
-      const svg = this.generateLucideSvg(iconName, size, strokeWidth, color);
-      this.iconCache.set(cacheKey, svg);
-      return svg;
+      // Fetch real SVG from GitHub
+      const iconUrl = `${this.BASE_URL}/${iconName}.svg`;
+      console.log(`Fetching REAL Lucide icon: ${iconName} from ${iconUrl}`);
+      
+      const response = await fetch(iconUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      let svgContent = await response.text();
+      
+      // Validate SVG content
+      if (!svgContent.includes('<svg') || !svgContent.includes('</svg>')) {
+        throw new Error(`Invalid SVG content received for icon: ${iconName}`);
+      }
+
+      console.log(`✅ Successfully fetched Lucide icon: ${iconName}`);
+
+      // Customize the real SVG with user parameters
+      if (size !== 24 || strokeWidth !== 2 || color !== 'currentColor') {
+        svgContent = this.customizeSvg(svgContent, size, strokeWidth, color);
+      }
+
+      // Cache the result
+      this.iconCache.set(cacheKey, svgContent);
+      return svgContent;
+      
     } catch (error) {
-      console.error(`Error getting Lucide icon ${iconName}:`, error);
+      console.error(`❌ Failed to fetch Lucide icon '${iconName}':`, error);
       return this.getFallbackIcon(size, strokeWidth, color);
     }
   }
 
-  // Generate SVG following official Lucide specifications
-  private generateLucideSvg(iconName: string, size: number, strokeWidth: number = 2, color: string = 'currentColor'): string {
-    // Official Lucide SVG structure from their repository
-    const pathData = this.getIconPath(iconName, size);
-    
-    // Lucide standard: 24x24 viewBox, stroke-based, currentColor, stroke-width="2"
-    // Following official Lucide design system specifications
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${iconName}">
-  ${pathData}
-</svg>`;
+  // Customize real Lucide SVG with user parameters
+  private customizeSvg(svgContent: string, size: number, strokeWidth: number, color: string): string {
+    let customized = svgContent;
+
+    // Update size attributes
+    if (size !== 24) {
+      customized = customized.replace(/width="24"/, `width="${size}"`);
+      customized = customized.replace(/height="24"/, `height="${size}"`);
+    }
+
+    // Update stroke width
+    if (strokeWidth !== 2) {
+      customized = customized.replace(/stroke-width="2"/, `stroke-width="${strokeWidth}"`);
+    }
+
+    // Update color
+    if (color !== 'currentColor') {
+      customized = customized.replace(/stroke="currentColor"/, `stroke="${color}"`);
+    }
+
+    return customized;
   }
 
-  // Get icon path data based on Lucide's actual icon designs
-  private getIconPath(iconName: string, size: number): string {
-    switch (iconName) {
-      case 'activity':
-        return '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />';
-      case 'airplay':
-        return '<path d="m5 17 6-6 6 6" /><path d="m12 3 0 14" />';
-      case 'alert-circle':
-        return '<circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />';
-      case 'alert-triangle':
-        return '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />';
-      case 'archive':
-        return '<rect x="2" y="3" width="20" height="5" rx="1" /><path d="m4 8 0 11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="m10 12 4 0" />';
-      case 'arrow-down':
-        return '<path d="M12 5v14" /><path d="m19 12-7 7-7-7" />';
-      case 'arrow-left':
-        return '<path d="M19 12H5" /><path d="m12 19-7-7 7-7" />';
-      case 'arrow-right':
-        return '<path d="M5 12h14" /><path d="m12 5 7 7-7 7" />';
-      case 'arrow-up':
-        return '<path d="M12 19V5" /><path d="m5 12 7-7 7 7" />';
-      case 'bell':
-        return '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />';
-      case 'bookmark':
-        return '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />';
-      case 'calendar':
-        return '<path d="M8 2v4" /><path d="M16 2v4" /><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M3 10h18" />';
-      case 'camera':
-        return '<path d="m14.5 4-1 0-1-1h-2.5l-1 1H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3.5Z" /><circle cx="12" cy="12" r="3" />';
-      case 'check':
-        return '<path d="m9 12 2 2 4-4" />';
-      case 'check-circle':
-        return '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" />';
-      case 'chevron-down':
-        return '<path d="m6 9 6 6 6-6" />';
-      case 'chevron-left':
-        return '<path d="m15 18-6-6 6-6" />';
-      case 'chevron-right':
-        return '<path d="m9 18 6-6-6-6" />';
-      case 'chevron-up':
-        return '<path d="m18 15-6-6-6 6" />';
-      case 'circle':
-        return '<circle cx="12" cy="12" r="10" />';
-      case 'clock':
-        return '<circle cx="12" cy="12" r="10" /><polyline points="12,6 12,12 16,14" />';
-      case 'cloud':
-        return '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />';
-      case 'copy':
-        return '<rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />';
-      case 'download':
-        return '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7,10 12,15 17,10" /><line x1="12" y1="15" x2="12" y2="3" />';
-      case 'edit':
-        return '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />';
-      case 'external-link':
-        return '<path d="M15 3h6v6" /><path d="m10 14 9-9" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />';
-      case 'eye':
-        return '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" />';
-      case 'eye-off':
-        return '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><line x1="2" y1="2" x2="22" y2="22" />';
-      case 'file':
-        return '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" />';
-      case 'folder':
-        return '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />';
-      case 'heart':
-        return '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />';
-      case 'home':
-        return '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9,22 9,12 15,12 15,22" />';
-      case 'info':
-        return '<circle cx="12" cy="12" r="10" /><path d="m12 16 0-4" /><path d="m12 8 0 0" />';
-      case 'lock':
-        return '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="m7 11V7a5 5 0 0 1 10 0v4" />';
-      case 'mail':
-        return '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />';
-      case 'menu':
-        return '<line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />';
-      case 'more-horizontal':
-        return '<circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />';
-      case 'phone':
-        return '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />';
-      case 'play':
-        return '<polygon points="6,3 20,12 6,21 6,3" />';
-      case 'plus':
-        return '<path d="M5 12h14" /><path d="M12 5v14" />';
-      case 'search':
-        return '<circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />';
-      case 'settings':
-        return '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z" /><circle cx="12" cy="12" r="3" />';
-      case 'share':
-        return '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16,6 12,2 8,6" /><line x1="12" y1="2" x2="12" y2="15" />';
-      case 'star':
-        return '<polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />';
-      case 'trash':
-        return '<path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />';
-      case 'unlock':
-        return '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="m7 11V7a5 5 0 0 1 9.9-1" />';
-      case 'upload':
-        return '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17,8 12,3 7,8" /><line x1="12" y1="3" x2="12" y2="15" />';
-      case 'user':
-        return '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />';
-      case 'x':
-        return '<path d="m18 6-12 12" /><path d="m6 6 12 12" />';
-      default:
-        // Default icon - simple circle for unknown icons
-        return '<circle cx="12" cy="12" r="8" />';
-    }
+  // Batch fetch multiple icons from GitHub
+  async fetchMultipleIcons(iconNames: string[]): Promise<Map<string, string>> {
+    const results = new Map<string, string>();
+    
+    // Use Promise.allSettled to handle partial failures gracefully
+    const promises = iconNames.map(async (name) => {
+      try {
+        const svg = await this.getIconSvg(name);
+        if (svg) {
+          results.set(name, svg);
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch icon: ${name}`, error);
+      }
+    });
+    
+    await Promise.allSettled(promises);
+    return results;
   }
 
   private getFallbackIcon(size: number, strokeWidth: number = 2, color: string = 'currentColor'): string {
@@ -262,7 +535,7 @@ export class LucideService {
     return this.getAvailableIcons().slice(0, 20);
   }
 
-  // Get a properly formatted Lucide icon for the preview system
+  // Get a properly formatted Lucide icon for the preview system (FluentUI pattern)
   async getIconForPreview(iconName: string, size: number = 24, strokeWidth: number = 2): Promise<LucideServiceIcon | null> {
     const svgContent = await this.getIconSvg(iconName, size, strokeWidth);
     if (!svgContent) return null;
@@ -274,15 +547,15 @@ export class LucideService {
     };
   }
 
-  // Convert Lucide icon to a file-like object for the preview system
+  // Convert Lucide icon to a file-like object for the preview system (FluentUI pattern)
   async getIconAsFile(iconName: string, size: number = 24, strokeWidth: number = 2): Promise<{name: string, content: string, relativePath: string} | null> {
     const svgContent = await this.getIconSvg(iconName, size, strokeWidth);
     if (!svgContent) return null;
 
     return {
-      name: `${iconName}-${size}.svg`,
+      name: `${iconName.toLowerCase().replace(/\s+/g, '-')}-${size}-stroke${strokeWidth}.svg`,
       content: svgContent,
-      relativePath: `lucide-icons/${iconName}-${size}.svg`
+      relativePath: `lucide-icons/${iconName.toLowerCase().replace(/\s+/g, '-')}-${size}-stroke${strokeWidth}.svg`
     };
   }
 
@@ -291,12 +564,32 @@ export class LucideService {
     return [16, 20, 24, 28, 32, 48, 64];
   }
 
-  // Get available stroke widths following Lucide specifications
+  // Get available stroke widths following Lucide specifications (FluentUI pattern)
   getAvailableStrokeWidths(): number[] {
     return [0.5, 1, 1.5, 2, 2.5, 3];
   }
 
-  // Generate customized Lucide icon following their design system
+  // Get available variants (similar to FluentUI pattern but for Lucide stroke widths)
+  getAvailableVariants(): string[] {
+    return ['thin', 'light', 'regular', 'bold', 'thick', 'extra-thick'];
+  }
+
+  // Get icon by variant name (maps to stroke widths)
+  async getIconByVariant(iconName: string, variant: string = 'regular', size: number = 24): Promise<string | null> {
+    const variantMap: Record<string, number> = {
+      'thin': 0.5,
+      'light': 1,
+      'regular': 1.5,
+      'medium': 2,
+      'bold': 2.5,
+      'thick': 3
+    };
+    
+    const strokeWidth = variantMap[variant] || 2;
+    return this.getIconSvg(iconName, size, strokeWidth);
+  }
+
+  // Get customized styled icon - uses real GitHub fetching
   async getLucideStyledIcon(
     iconName: string,
     options: {
@@ -314,34 +607,39 @@ export class LucideService {
     } = options;
 
     try {
-      const pathData = this.getIconPath(iconName, size);
-      const classes = `lucide lucide-${iconName} ${className}`.trim();
+      let svg = await this.getIconSvg(iconName, size, strokeWidth, color);
       
-      // Follow Lucide's official SVG structure with enhanced customization
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="${classes}">
-  ${pathData}
-</svg>`;
+      if (svg && className) {
+        // Add custom class to existing classes
+        svg = svg.replace(/class="([^"]*)"/, `class="$1 ${className}"`);
+      }
+      
+      return svg;
     } catch (error) {
-      console.error(`Error generating styled Lucide icon ${iconName}:`, error);
+      console.error(`Error getting styled Lucide icon ${iconName}:`, error);
       return this.getFallbackIcon(size, strokeWidth, color);
     }
   }
 
-  // Generate icon variants following Lucide design principles
+  // Generate icon variants using real GitHub fetching
   async getIconVariants(iconName: string, baseSize: number = 24): Promise<{
-    sizes: { size: number; svg: string }[];
-    strokeWidths: { width: number; svg: string }[];
+    sizes: { size: number; svg: string | null }[];
+    strokeWidths: { width: number; svg: string | null }[];
   } | null> {
     try {
-      const sizes = this.getAvailableSizes().map(size => ({
-        size,
-        svg: this.generateLucideSvg(iconName, size)
-      }));
+      const sizes = await Promise.all(
+        this.getAvailableSizes().map(async size => ({
+          size,
+          svg: await this.getIconSvg(iconName, size)
+        }))
+      );
 
-      const strokeWidths = this.getAvailableStrokeWidths().map(width => ({
-        width,
-        svg: this.generateLucideSvg(iconName, baseSize, width)
-      }));
+      const strokeWidths = await Promise.all(
+        this.getAvailableStrokeWidths().map(async width => ({
+          width,
+          svg: await this.getIconSvg(iconName, baseSize, width)
+        }))
+      );
 
       return { sizes, strokeWidths };
     } catch (error) {

@@ -194,7 +194,8 @@ export class UnifiedIconService {
           svgContent = await service.getIconSvg(iconName, size);
           break;
         case 'phosphor':
-          svgContent = await service.getIconSvg(iconName, size, variant || 'regular');
+          const phosphorResult = await service.getIcon(iconName, variant || 'regular', size);
+          svgContent = phosphorResult?.content || null;
           break;
         case 'tabler':
           svgContent = await service.getIconSvg(iconName, size, variant || 'outline');

@@ -55,7 +55,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .section-header h3 {
@@ -78,9 +78,9 @@
   gap: 1rem;
   padding: 1rem;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
-  color: #4b5563;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
@@ -89,15 +89,15 @@
 
 .preset-button:hover {
   background: transparent;
-  border-color: rgba(0, 0, 0, 0.25);
-  color: #1f2937;
+  border-color: rgba(255, 255, 255, 0.25);
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
 .preset-button.active {
   background: rgba(59, 130, 246, 0.1);
   border-color: rgba(59, 130, 246, 0.3);
-  color: #3b82f6;
+  color: var(--brand-primary);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
@@ -109,7 +109,7 @@
 }
 
 .preset-preview.neumorphism {
-  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  background: linear-gradient(145deg, #e6e6e6, var(--text-primary));
   box-shadow: 
     6px 6px 12px rgba(0, 0, 0, 0.1),
     -6px -6px 12px rgba(255, 255, 255, 0.9);
@@ -122,7 +122,7 @@
 }
 
 .preset-preview.flat-design {
-  background: #f8fafc;
+  background: var(--surface-secondary);
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
@@ -144,7 +144,7 @@
 .style-presets-vertical > label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
@@ -160,9 +160,9 @@
   gap: 0.75rem;
   padding: 0.75rem;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  color: #4b5563;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.8rem;
@@ -171,15 +171,15 @@
 }
 
 .preset-button-vertical:hover {
-  background: rgba(0, 0, 0, 0.02);
-  border-color: rgba(0, 0, 0, 0.2);
-  color: #1f2937;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
 }
 
 .preset-button-vertical.active {
   background: rgba(59, 130, 246, 0.08);
   border-color: rgba(59, 130, 246, 0.25);
-  color: #3b82f6;
+  color: var(--brand-primary);
   box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15);
 }
 
@@ -191,7 +191,7 @@
 }
 
 .preset-preview-small.neumorphism {
-  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  background: linear-gradient(145deg, #e6e6e6, var(--text-primary));
   box-shadow: 
     3px 3px 6px rgba(0, 0, 0, 0.1),
     -3px -3px 6px rgba(255, 255, 255, 0.9);
@@ -204,7 +204,7 @@
 }
 
 .preset-preview-small.flat-design {
-  background: #f8fafc;
+  background: var(--surface-secondary);
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
@@ -231,7 +231,7 @@
 .preset-row label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--text-secondary);
   min-width: 50px;
 }
 
@@ -273,7 +273,7 @@
 }
 
 .preset-preview-mini.neumorphism {
-  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  background: linear-gradient(145deg, #e6e6e6, var(--text-primary));
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1), -2px -2px 4px rgba(255, 255, 255, 0.9);
 }
 
@@ -314,7 +314,7 @@
 .control-item-mini label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--text-secondary);
 }
 
 .control-item-mini input {
@@ -339,7 +339,7 @@
 
 .size-inputs span {
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 /* Glassmorphism Controls */
@@ -364,7 +364,7 @@
   margin: 0;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #6b46c1;
+  color: var(--primary-color);
   background: linear-gradient(135deg, #9333ea, #4f46e5);
   background-clip: text;
   -webkit-background-clip: text;
@@ -402,7 +402,7 @@
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
-  background: white;
+  background: var(--surface-primary);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 0 10px rgba(147, 51, 234, 0.4);
@@ -411,7 +411,7 @@
 .glass-controls input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: white;
+  background: var(--surface-primary);
   border-radius: 50%;
   cursor: pointer;
   border: none;
@@ -420,7 +420,7 @@
 
 .glass-controls .range-input span {
   font-weight: 600;
-  color: #6b46c1;
+  color: var(--primary-color);
   min-width: 45px;
   text-align: right;
 }
@@ -464,7 +464,7 @@
 }
 
 .control-item label {
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -476,7 +476,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   padding: 0.75rem;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 0.9rem;
   transition: all 0.2s ease;
 }
@@ -485,7 +485,7 @@
 .control-item input[type="text"]:focus,
 .control-item input[type="range"]:focus {
   outline: none;
-  border-color: #9ca3af;
+  border-color: rgba(255, 255, 255, 0.3);
   background: transparent;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
 }
@@ -502,7 +502,7 @@
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
-  background: white;
+  background: var(--surface-primary);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -511,7 +511,7 @@
 .control-item input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: white;
+  background: var(--surface-primary);
   border-radius: 50%;
   cursor: pointer;
   border: none;
@@ -560,7 +560,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #4b5563;
+  color: var(--text-secondary);
   cursor: pointer;
   font-weight: 500;
 }
@@ -568,7 +568,7 @@
 .gradient-toggle input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #4b5563;
+  accent-color: var(--primary-color);
 }
 
 .gradient-controls {
@@ -584,7 +584,7 @@
 }
 
 .control-item span {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 500;
 }
@@ -614,7 +614,7 @@
 
 .range-input span {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--text-muted);
   font-weight: 500;
   min-width: 20px;
   flex-shrink: 0;
@@ -711,7 +711,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -724,7 +724,7 @@
 .palette-import-btn:hover {
   background: transparent;
   border-color: rgba(255, 255, 255, 0.3);
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 /* Palette Import Modal */
@@ -755,14 +755,14 @@
 }
 
 .modal-content h4 {
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   font-size: 1.2rem;
   font-weight: 600;
 }
 
 .modal-content p {
-  color: #6b7280;
+  color: var(--text-muted);
   margin: 0 0 1.5rem 0;
   font-size: 0.9rem;
 }
@@ -777,7 +777,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 0.875rem 1rem;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 0.9rem;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -785,7 +785,7 @@
 
 .import-input-group input:focus {
   outline: none;
-  border-color: #9ca3af;
+  border-color: rgba(255, 255, 255, 0.3);
   background: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
@@ -796,7 +796,7 @@
 }
 
 .import-input-group input::placeholder {
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .import-error {
@@ -847,13 +847,13 @@
 .cancel-btn {
   background: transparent;
   border-color: rgba(255, 255, 255, 0.2);
-  color: #4b5563;
+  color: var(--text-secondary);
 }
 
 .cancel-btn:hover {
   background: transparent;
-  border-color: #9ca3af;
-  color: #1f2937;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
 }
 
 .palette-examples {
@@ -862,7 +862,7 @@
 }
 
 .palette-examples p {
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
   font-weight: 500;
@@ -879,7 +879,7 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 0.5rem;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -889,7 +889,7 @@
 .example-btn:hover {
   background: transparent;
   border-color: rgba(255, 255, 255, 0.3);
-  color: #1f2937;
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 

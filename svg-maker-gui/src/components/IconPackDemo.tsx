@@ -130,7 +130,7 @@ const IconPackDemo: React.FC<IconPackDemoProps> = ({ config, onIconsGenerated })
       'tabler': '#10b981',
       'fluentui': '#3b82f6'
     };
-    return colors[providerId as keyof typeof colors] || '#6b7280';
+    return colors[providerId as keyof typeof colors] || 'var(--text-quaternary)';
   };
 
   return (

@@ -1,24 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  HardDrive,
-  Download,
-  Github,
   Star,
-  Clock,
   Package,
-  Zap,
   Search,
   Filter,
   Grid,
   List,
-  ChevronRight,
-  Wifi,
-  WifiOff
+  ChevronRight
 } from 'lucide-react';
 import iconRepositoryService, { RepositorySource } from '../services/iconRepositoryService';
 import '../styles/design-system.css';
 import './IconRepositoryBrowser.css';
+import './IconRepositoryBrowser-responsive-fixes.css';
 import { useDebouncedSearch } from '../hooks/useDebounce';
 
 interface IconRepositoryBrowserProps {
@@ -94,72 +88,93 @@ const IconRepositoryBrowser: React.FC<IconRepositoryBrowserProps> = ({
 
   return (
     <div className="repository-browser ds-card">
-      {/* Header */}
-      <div className="ds-section-header">
-        <div className="ds-section-icon">
-          <Package size={24} />
+      {/* Combined Icon Packs Overview Card */}
+      <motion.div 
+        className="repository-overview-card github-repo-style"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="overview-header">
+          <div className="header-icon">
+            <Package size={24} />
+          </div>
+          <div>
+            <h3>Icon Repositories</h3>
+            <p>Choose from pre-installed collections or add external repositories</p>
+          </div>
         </div>
-        <div>
-          <h2 className="ds-section-title">Icon Repositories</h2>
-          <p className="repository-subtitle">
-            Choose from pre-installed collections or add external repositories
-          </p>
-        </div>
-      </div>
 
-      {/* Controls */}
-      <div className="repository-controls">
-        <div className="search-filter-group">
-          <div className="search-box">
-            <Search size={18} />
-            <input
-              type="text"
-              placeholder="Search repositories..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="ds-input"
-            />
+        {/* Controls */}
+        <div className="repository-controls">
+          <div className="search-filter-group">
+            <div className="search-box">
+              <Search size={18} />
+              <input
+                type="text"
+                placeholder="Search repositories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="ds-input"
+              />
+            </div>
+
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="ds-input category-filter"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category === 'all' ? 'All Categories' : 
+                   category === 'local' ? '📦 Local' :
+                   category === 'external' ? '🌐 External' :
+                   category}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="ds-input category-filter"
-          >
-            {categories.map(category => (
-              <option key={category} value={category}>
-                {category === 'all' ? 'All Categories' : 
-                 category === 'local' ? '📦 Local' :
-                 category === 'external' ? '🌐 External' :
-                 category}
-              </option>
-            ))}
-          </select>
+          <div className="view-controls">
+            <button
+              className={`ds-button ${viewMode === 'grid' ? 'ds-button-primary' : 'ds-button-ghost'}`}
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid size={16} />
+            </button>
+            <button
+              className={`ds-button ${viewMode === 'list' ? 'ds-button-primary' : 'ds-button-ghost'}`}
+              onClick={() => setViewMode('list')}
+            >
+              <List size={16} />
+            </button>
+          </div>
         </div>
 
-        <div className="view-controls">
-          <button
-            className={`ds-button ${viewMode === 'grid' ? 'ds-button-primary' : 'ds-button-ghost'}`}
-            onClick={() => setViewMode('grid')}
-          >
-            <Grid size={16} />
-          </button>
-          <button
-            className={`ds-button ${viewMode === 'list' ? 'ds-button-primary' : 'ds-button-ghost'}`}
-            onClick={() => setViewMode('list')}
-          >
-            <List size={16} />
-          </button>
+        <div className="overview-stats">
+          <div className="stat-highlight">
+            <span className="stat-number">{repositories.reduce((sum, r) => sum + r.repository.iconCount, 0).toLocaleString()}</span>
+            <span className="stat-label">Total Icons</span>
+          </div>
+          <div className="stat-highlight">
+            <span className="stat-number">{repositories.filter(r => r.type === 'local').length}</span>
+            <span className="stat-label">Icon Libraries</span>
+          </div>
+          <div className="stat-highlight">
+            <span className="stat-number">9</span>
+            <span className="stat-label">Different Styles</span>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Repository Grid/List */}
-      <div className={`repository-container ${viewMode}`}>
+      {/* Individual Repository Cards Grid */}
+      <div className={`overview-repositories ${viewMode}`}>
         <AnimatePresence>
           {filteredRepositories.map((repo, index) => (
             <motion.div
               key={repo.id}
-              className={`repository-card ${repo.type}`}
+              className={`repository-card-outline ${repo.type}`}
+              data-repository-id={repo.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -168,92 +183,77 @@ const IconRepositoryBrowser: React.FC<IconRepositoryBrowserProps> = ({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Repository Type Badge */}
-              <div className="repository-badge">
-                {repo.type === 'local' ? (
-                  <div className="local-badge">
-                    <HardDrive size={14} />
-                    <span>Local</span>
-                  </div>
-                ) : (
-                  <div className="external-badge">
-                    <Github size={14} />
-                    <span>External</span>
-                  </div>
-                )}
-              </div>
 
-              {/* Connection Status */}
-              <div className="connection-status">
-                {repo.isAvailableOffline ? (
-                  <div className="offline-available" title="Available offline">
-                    <Zap size={14} />
-                  </div>
-                ) : (
-                  <div className="online-required" title="Requires internet connection">
-                    <Wifi size={14} />
-                  </div>
-                )}
-              </div>
-
-              {/* Repository Info */}
-              <div className="repository-info">
+              {/* Card Header */}
+              <div className="repository-header">
                 <h3 className="repository-name">{repo.repository.name}</h3>
-                <p className="repository-description">{repo.repository.description}</p>
-
                 <div className="repository-meta">
                   <div className="meta-item">
                     <Star size={12} />
                     <span>{repo.repository.iconCount.toLocaleString()} icons</span>
                   </div>
-                  
-                  {repo.downloadSize && (
-                    <div className="meta-item">
-                      <Download size={12} />
-                      <span>{repo.downloadSize}</span>
-                    </div>
-                  )}
-
                   <div className="meta-item">
                     <span className="license-badge">{repo.repository.license}</span>
                   </div>
                 </div>
+              </div>
 
-                <div className="repository-tags">
-                  {repo.repository.tags.slice(0, 3).map(tag => (
-                    <span key={tag} className="tag">
-                      {tag}
-                    </span>
-                  ))}
+              {/* Card Body */}
+              <div className="repository-body">
+                {/* Developer/Company */}
+                <div className="repository-info-item">
+                  <span className="info-label">Developer:</span>
+                  <span className="info-value">{repo.repository.developer}</span>
+                </div>
+                
+                {/* Pack Size */}
+                <div className="repository-info-item">
+                  <span className="info-label">Pack Size:</span>
+                  <span className="info-value">{repo.repository.packSize}</span>
+                </div>
+                
+                {/* Use Case Tags */}
+                <div className="repository-info-item">
+                  <span className="info-label">Use Cases:</span>
+                  <div className="repository-tags">
+                    {repo.repository.tags.slice(0, 4).map(tag => (
+                      <span key={tag} className="tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Art Direction */}
+                <div className="repository-info-item art-direction">
+                  <span className="info-label">Art Direction:</span>
+                  <p className="art-direction-text">{repo.repository.artDirection}</p>
                 </div>
               </div>
 
-              {/* Preview Icons */}
-              <div className="repository-preview">
-                <div className="preview-icons">
-                  {repo.repository.preview.slice(0, 4).map((iconName, i) => (
-                    <div key={iconName} className="preview-icon">
-                      {/* Simple geometric shapes as preview */}
-                      <div className="icon-placeholder" style={{ 
-                        background: `hsl(${i * 90}, 60%, 70%)`,
-                        borderRadius: i % 2 === 0 ? '50%' : '20%'
-                      }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <div className="repository-action">
+              {/* Card Footer */}
+              <div className="repository-footer">
                 {repo.type === 'local' ? (
-                  <button className="ds-button ds-button-primary action-button">
-                    <Zap size={16} />
+                  <button 
+                    className="ds-button ds-button-primary action-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRepositorySelect(repo);
+                    }}
+                  >
+                    <Package size={16} />
                     Browse Icons
                     <ChevronRight size={16} />
                   </button>
                 ) : (
-                  <button className="ds-button ds-button-secondary action-button">
-                    <Download size={16} />
+                  <button 
+                    className="ds-button ds-button-secondary action-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRepositorySelect(repo);
+                    }}
+                  >
+                    <Package size={16} />
                     Load Repository
                     <ChevronRight size={16} />
                   </button>
@@ -273,21 +273,6 @@ const IconRepositoryBrowser: React.FC<IconRepositoryBrowserProps> = ({
         </div>
       )}
 
-      {/* Quick Stats */}
-      <div className="repository-stats">
-        <div className="stat-item">
-          <HardDrive size={16} />
-          <span>{repositories.filter(r => r.type === 'local').length} Local</span>
-        </div>
-        <div className="stat-item">
-          <Github size={16} />
-          <span>{repositories.filter(r => r.type === 'external').length} External</span>
-        </div>
-        <div className="stat-item">
-          <Star size={16} />
-          <span>{repositories.reduce((sum, r) => sum + r.repository.iconCount, 0).toLocaleString()} Total Icons</span>
-        </div>
-      </div>
     </div>
   );
 };

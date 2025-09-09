@@ -303,17 +303,48 @@ export class FeatherIconService {
         return this.iconCache.get(cacheKey)!;
       }
 
-      const iconData = this.iconMap.get(iconName);
-      if (!iconData) {
-        console.warn(`Feather icon "${iconName}" not found`);
+      // Fetch real SVG from Feather Icons GitHub repository
+      const iconUrl = `https://raw.githubusercontent.com/feathericons/feather/master/icons/${iconName}.svg`;
+      console.log(`Fetching REAL Feather icon: ${iconName} from ${iconUrl}`);
+      
+      const response = await fetch(iconUrl);
+      if (!response.ok) {
+        console.warn(`Failed to fetch Feather ${iconName}: HTTP ${response.status}`);
+        // Try fallback with hardcoded paths for common icons
+        const iconData = this.iconMap.get(iconName);
+        if (iconData) {
+          const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="feather feather-${iconName}">${iconData.svgPath}</svg>`;
+          this.iconCache.set(cacheKey, fallbackSvg);
+          return fallbackSvg;
+        }
         return this.getFallbackIcon(size, strokeWidth, color);
       }
 
-      // Generate Feather-compliant SVG following official specifications
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="feather feather-${iconName}">${iconData.svgPath}</svg>`;
+      let svgContent = await response.text();
       
-      this.iconCache.set(cacheKey, svg);
-      return svg;
+      // Validate SVG content
+      if (!svgContent.includes('<svg') || !svgContent.includes('</svg>')) {
+        throw new Error(`Invalid SVG content received for Feather icon: ${iconName}`);
+      }
+
+      console.log(`✅ Successfully fetched Feather icon: ${iconName}`);
+
+      // Customize SVG with user parameters
+      if (size !== 24) {
+        svgContent = svgContent.replace(/width="[^"]*"/, `width="${size}"`);
+        svgContent = svgContent.replace(/height="[^"]*"/, `height="${size}"`);
+      }
+
+      if (strokeWidth !== 2) {
+        svgContent = svgContent.replace(/stroke-width="[^"]*"/, `stroke-width="${strokeWidth}"`);
+      }
+
+      if (color !== 'currentColor') {
+        svgContent = svgContent.replace(/stroke="[^"]*"/, `stroke="${color}"`);
+      }
+      
+      this.iconCache.set(cacheKey, svgContent);
+      return svgContent;
     } catch (error) {
       console.error(`Error getting Feather icon ${iconName}:`, error);
       return this.getFallbackIcon(size, strokeWidth, color);
@@ -398,6 +429,11 @@ export class FeatherIconService {
   // Get available sizes
   getAvailableSizes(): number[] {
     return [16, 20, 24, 28, 32, 48];
+  }
+
+  // Get available variants (Feather Icons only have one variant) (FluentUI pattern)
+  getAvailableVariants(): string[] {
+    return ['outline'];
   }
 
   // Get Feather styled icon with proper processing

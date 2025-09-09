@@ -5,7 +5,7 @@ import IconRenderer from './IconRenderer';
 import './IconGrid.css';
 
 interface IconGridProps {
-  iconPack: 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent';
+  iconPack: 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent' | 'bootstrap' | 'material' | 'ionicons';
   onIconSelect?: (iconName: string, svgContent: string) => void;
   showVariants?: boolean;
   defaultSize?: number;
@@ -69,6 +69,18 @@ export const IconGrid: React.FC<IconGridProps> = ({
           const { fluentUIService } = await import('../services/fluentUIService');
           iconService = fluentUIService;
           break;
+        case 'bootstrap':
+          const { bootstrapService } = await import('../services/bootstrapService');
+          iconService = bootstrapService;
+          break;
+        case 'material':
+          const { materialService } = await import('../services/materialService');
+          iconService = materialService;
+          break;
+        case 'ionicons':
+          const { ioniconsService } = await import('../services/ioniconsService');
+          iconService = ioniconsService;
+          break;
         default:
           throw new Error(`Unknown icon pack: ${iconPack}`);
       }
@@ -86,6 +98,7 @@ export const IconGrid: React.FC<IconGridProps> = ({
         sizes: icon.sizes || [24]
       }));
       
+      console.log(`Loaded ${convertedIcons.length} icons for ${iconPack}:`, convertedIcons.slice(0, 3));
       setIcons(convertedIcons);
 
       // Set default variant for different icon packs
@@ -102,6 +115,15 @@ export const IconGrid: React.FC<IconGridProps> = ({
             break;
           case 'fluent':
             setSelectedVariant('regular');
+            break;
+          case 'bootstrap':
+            setSelectedVariant('');
+            break;
+          case 'material':
+            setSelectedVariant('outlined');
+            break;
+          case 'ionicons':
+            setSelectedVariant('outline');
             break;
           default:
             setSelectedVariant('');
@@ -159,6 +181,10 @@ export const IconGrid: React.FC<IconGridProps> = ({
         return ['outline', 'filled'];
       case 'fluent':
         return ['regular', 'filled'];
+      case 'bootstrap':
+        return []; // Bootstrap icons don't have variants
+      case 'material':
+        return ['outlined', 'rounded', 'sharp'];
       default:
         return [];
     }

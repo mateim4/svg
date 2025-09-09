@@ -1,0 +1,561 @@
+/* Comprehensive Responsive Fixes for Icon Repository Browser */
+
+/* Large White Container Card */
+.large-container-card {
+  background: rgba(229, 231, 235, 0.8);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Dark mode: Large container card needs dark text */
+:root[data-theme="dark"] .large-container-card,
+:root[data-theme="dark"] .large-container-card * {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Main overview card - fully responsive and themed like landing page */
+.repository-overview-card.github-repo-style {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+  margin: 2rem 1.5rem 0 1.5rem !important;
+}
+
+/* Light mode: Overview card should use standard glassmorphic styling from landing page */
+:root[data-theme="light"] .repository-overview-card.github-repo-style,
+:root .repository-overview-card.github-repo-style {
+  background: rgba(229, 231, 235, 0.8) !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark mode: Overview card should be glassmorphic */
+:root[data-theme="dark"] .repository-overview-card.github-repo-style {
+  background: rgba(229, 231, 235, 0.8) !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Light mode text color fixes - should be dark text on warm gray background */
+:root[data-theme="light"] .repository-overview-card.github-repo-style,
+:root[data-theme="light"] .repository-overview-card.github-repo-style *,
+:root .repository-overview-card.github-repo-style,
+:root .repository-overview-card.github-repo-style * {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Light mode: Search inputs in overview card should use standard white glassmorphic styling */
+:root[data-theme="light"] .repository-overview-card .ds-input,
+:root .repository-overview-card .ds-input {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: var(--text-on-light-surface) !important;
+  backdrop-filter: blur(20px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+:root[data-theme="light"] .repository-overview-card .ds-input:focus,
+:root .repository-overview-card .ds-input:focus {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: var(--salmon-light) !important;
+  box-shadow: 0 0 0 3px rgba(255, 179, 189, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Light mode: Search and filter icons in overview card should be salmon */
+:root[data-theme="light"] .repository-overview-card .search-box svg,
+:root[data-theme="light"] .repository-overview-card .view-controls svg,
+:root .repository-overview-card .search-box svg,
+:root .repository-overview-card .view-controls svg {
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+}
+
+/* Icon titles should be dark text on light cards */
+:root[data-theme="light"] .overview-header h3,
+:root .overview-header h3 {
+  color: var(--text-on-light-surface) !important;
+}
+
+:root[data-theme="light"] .overview-header .header-icon svg,
+:root .overview-header .header-icon svg {
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+  fill: var(--salmon-light) !important;
+}
+
+/* Specific text elements should be dark on light cards */
+:root[data-theme="light"] .overview-header p,
+:root[data-theme="light"] .overview-stats,
+:root[data-theme="light"] .stat-number,
+:root[data-theme="light"] .stat-label,
+:root .overview-header p,
+:root .overview-stats,
+:root .stat-number,
+:root .stat-label {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Light mode: Individual repo cards should have dark text on light backgrounds */
+:root[data-theme="light"] .repository-name,
+:root[data-theme="light"] .repository-info-item,
+:root[data-theme="light"] .info-label,
+:root[data-theme="light"] .info-value,
+:root[data-theme="light"] .art-direction-text,
+:root .repository-name,
+:root .repository-info-item,
+:root .info-label,
+:root .info-value,
+:root .art-direction-text {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Dark mode: Individual repo cards have WHITE backgrounds so need DARK text */
+:root[data-theme="dark"] .repository-card-outline .repository-name,
+:root[data-theme="dark"] .repository-card-outline .repository-info-item,
+:root[data-theme="dark"] .repository-card-outline .info-label,
+:root[data-theme="dark"] .repository-card-outline .info-value,
+:root[data-theme="dark"] .repository-card-outline .art-direction-text {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Light mode: Meta items should have dark text */
+:root[data-theme="light"] .meta-item,
+:root[data-theme="light"] .meta-item span,
+:root .meta-item,
+:root .meta-item span {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Dark mode: Meta items should have DARK text on WHITE cards */
+:root[data-theme="dark"] .repository-card-outline .meta-item,
+:root[data-theme="dark"] .repository-card-outline .meta-item span {
+  color: var(--text-on-light-surface) !important;
+}
+
+:root[data-theme="light"] .meta-item svg,
+:root .meta-item svg {
+  color: var(--color-accent) !important;
+  stroke: var(--color-accent) !important;
+  fill: var(--color-accent) !important;
+}
+
+/* All base icons should use salmon light color */
+:root[data-theme="light"] .repository-overview-card svg,
+:root[data-theme="light"] .repository-card-outline svg,
+:root[data-theme="light"] .overview-header .header-icon svg,
+:root .repository-overview-card svg,
+:root .repository-card-outline svg,
+:root .overview-header .header-icon svg {
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+  fill: var(--salmon-light) !important;
+}
+
+/* Action button icons should remain white */
+:root[data-theme="light"] .action-button svg,
+:root .action-button svg {
+  color: white !important;
+  stroke: white !important;
+  fill: white !important;
+}
+
+/* Light mode: License badges should be teal colored (#007991) - same as tags */
+:root[data-theme="light"] .repository-card-outline .license-badge,
+:root[data-theme="light"] .license-badge,
+:root .repository-card-outline .license-badge,
+:root .license-badge {
+  color: #007991 !important;
+  background: rgba(0, 121, 145, 0.08) !important;
+  border: 1px solid rgba(0, 121, 145, 0.15) !important;
+}
+
+/* Dark mode: License badges should be mint green (#CBFF8C) - same as tags */
+:root[data-theme="dark"] .repository-card-outline .license-badge,
+:root[data-theme="dark"] .license-badge {
+  color: #CBFF8C !important;
+  background: rgba(203, 255, 140, 0.15) !important;
+  border: 1px solid rgba(203, 255, 140, 0.25) !important;
+}
+
+/* Light mode: Tags should be teal colored (#007991) */
+:root[data-theme="light"] .tag,
+:root .tag {
+  color: #007991 !important;
+  background: rgba(0, 121, 145, 0.08) !important;
+  border: 1px solid rgba(0, 121, 145, 0.15) !important;
+}
+
+/* Dark mode: Tags should have BLACK text with mint green fill and outline */
+:root[data-theme="dark"] .tag {
+  color: black !important;
+  background: rgba(203, 255, 140, 0.15) !important;
+  border: 1px solid rgba(203, 255, 140, 0.25) !important;
+}
+
+/* Icon grid items - make text dark in light mode for proper contrast */
+:root[data-theme="light"] .icon-grid-item,
+:root[data-theme="light"] .icon-grid-item *,
+:root .icon-grid-item,
+:root .icon-grid-item * {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Specific icon grid text elements - dark text on light cards */
+:root[data-theme="light"] .icon-name,
+:root[data-theme="light"] .icon-categories,
+:root[data-theme="light"] .icon-info,
+:root[data-theme="light"] .icon-info span,
+:root .icon-name,
+:root .icon-categories,
+:root .icon-info,
+:root .icon-info span {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Icon grid icons should use light salmon color in light mode */
+:root[data-theme="light"] .icon-grid-item svg,
+:root[data-theme="light"] .grid-icon svg,
+:root[data-theme="light"] .icon-renderer svg,
+:root .icon-grid-item svg,
+:root .grid-icon svg,
+:root .icon-renderer svg {
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+  fill: var(--salmon-light) !important;
+}
+
+/* Repository grid - responsive columns: 5 per row desktop, 3 per row mobile */
+.overview-repositories.grid {
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 1.5rem !important;
+  margin: 0 !important;
+  padding: 0 3rem !important;
+  box-sizing: border-box !important;
+}
+
+/* Repository list view - proper padding on both sides */
+.overview-repositories.list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.5rem !important;
+  margin: 0 !important;
+  padding: 0 3rem !important;
+  box-sizing: border-box !important;
+}
+
+/* Repository cards - should match landing page style in light mode */
+.repository-card-outline {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Light mode: cards should match landing page - rgba(229, 231, 235, 0.8) */
+:root[data-theme="light"] .repository-card-outline,
+:root .repository-card-outline {
+  background: rgba(229, 231, 235, 0.8) !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+:root[data-theme="light"] .repository-card-outline:hover,
+:root .repository-card-outline:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Dark mode: cards should match landing page - rgba(229, 231, 235, 0.8) */
+:root[data-theme="dark"] .repository-card-outline {
+  background: rgba(229, 231, 235, 0.8) !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+:root[data-theme="dark"] .repository-card-outline:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Responsive text sizes */
+.repository-name {
+  font-size: clamp(1rem, 2.5vw, 1.25rem) !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.repository-info-item {
+  flex-wrap: wrap !important;
+}
+
+.repository-tags {
+  flex-wrap: wrap !important;
+  width: 100% !important;
+}
+
+.art-direction-text {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Responsive controls */
+.repository-controls {
+  flex-wrap: wrap !important;
+  gap: 1rem !important;
+}
+
+.search-filter-group {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.search-box {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+.search-box input {
+  width: 100% !important;
+}
+
+.category-filter {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Button responsiveness */
+.action-button {
+  width: 100% !important;
+  text-align: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Large desktop */
+@media (min-width: 1200px) {
+  .overview-repositories.grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+/* Desktop */
+@media (max-width: 1199px) and (min-width: 769px) {
+  .overview-repositories.grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    padding: 0 2.5rem !important;
+  }
+  
+  .overview-repositories.list {
+    padding: 0 2.5rem !important;
+  }
+}
+
+/* Tablet breakpoint: 3 per row */
+@media (max-width: 768px) {
+  .repository-overview-card.github-repo-style {
+    padding: 1.5rem !important;
+  }
+  
+  .overview-repositories.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+    padding: 0 2rem !important;
+  }
+  
+  .overview-repositories.list {
+    padding: 0 2rem !important;
+    gap: 1rem !important;
+  }
+  
+  .large-container-card {
+    padding: 1.5rem !important;
+  }
+  
+  .repository-card-outline {
+    padding: 1.25rem !important;
+  }
+  
+  .repository-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  .search-filter-group {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.75rem !important;
+  }
+  
+  .view-controls {
+    justify-content: center !important;
+    margin-top: 0.5rem !important;
+  }
+}
+
+/* Mobile breakpoint: Still 3 per row but smaller */
+@media (max-width: 480px) {
+  .repository-overview-card.github-repo-style {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .repository-card-outline {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+    gap: 0.75rem !important;
+  }
+  
+  .overview-repositories.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.75rem !important;
+    padding: 0 1.5rem !important;
+  }
+  
+  .overview-repositories.list {
+    padding: 0 1.5rem !important;
+    gap: 0.75rem !important;
+  }
+  
+  .large-container-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .repository-name {
+    font-size: 1.1rem !important;
+  }
+  
+  .repository-meta {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  
+  .meta-item {
+    font-size: 0.85rem !important;
+  }
+  
+  .repository-info-item {
+    font-size: 0.9rem !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .tag {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+  
+  .action-button {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .overview-stats {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  
+  .stat-highlight {
+    text-align: center !important;
+    padding: 0.75rem !important;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .repository-overview-card.github-repo-style {
+    padding: 0.75rem !important;
+  }
+  
+  .repository-card-outline {
+    padding: 0.75rem !important;
+  }
+  
+  .repository-name {
+    font-size: 1rem !important;
+  }
+}
+
+/* Fix search icon spacing */
+.search-box svg {
+  left: 1rem !important;
+}
+
+.search-box input {
+  padding-left: 2.75rem !important;
+}
+
+/* Prevent horizontal overflow */
+.repository-browser,
+.repository-overview-card,
+.overview-repositories,
+.repository-card-outline {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Fix for flexbox children */
+.repository-card-outline > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Ensure all text elements wrap properly */
+.repository-card-outline p,
+.repository-card-outline span,
+.repository-info-item,
+.art-direction-text {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+/* Fix stats section */
+.overview-stats {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-around !important;
+  gap: 1rem !important;
+  margin-top: 1.5rem !important;
+}
+
+.stat-highlight {
+  flex: 1 1 auto !important;
+  min-width: 100px !important;
+  text-align: center !important;
+}

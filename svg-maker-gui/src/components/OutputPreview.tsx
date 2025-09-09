@@ -25,7 +25,7 @@ const OutputPreview: React.FC<OutputPreviewProps> = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "#f8fafc",
+      background: "var(--surface-secondary)",
       borderRadius: 16,
       boxShadow: "0 2px 16px rgba(99,102,241,0.08)",
       margin: 16,
@@ -53,7 +53,7 @@ const OutputPreview: React.FC<OutputPreviewProps> = ({
           height={height}
           rx={style === "neumorphism" ? 24 : 12}
           fill={gradient ? "url(#preview-gradient)" : "#fff"}
-          stroke="#e0e7ff"
+          stroke="var(--border-secondary)"
           strokeWidth={2}
         />
         {/* Render icon SVG if available */}

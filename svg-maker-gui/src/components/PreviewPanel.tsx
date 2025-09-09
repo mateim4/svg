@@ -84,7 +84,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
         : `<filter id="frost"><feGaussianBlur stdDeviation="8"/></filter>`;
       
       const rectStyle = style === 'neumorphism'
-        ? `fill="#e0e0e0" filter="url(#shadow)"`
+        ? `fill="var(--text-quaternary)" filter="url(#shadow)"`
         : style === 'glassmorphism'
         ? `fill="white" fill-opacity="0.2" stroke="rgba(255,255,255,0.3)"`
         : `fill="white" fill-opacity="0.1" filter="url(#frost)"`;
@@ -123,7 +123,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
           : `<filter id="frost-${globalIndex}"><feGaussianBlur stdDeviation="8"/></filter>`;
         
         const rectStyle = style === 'neumorphism'
-          ? `fill="#e0e0e0" filter="url(#shadow-${globalIndex})"`
+          ? `fill="var(--text-quaternary)" filter="url(#shadow-${globalIndex})"`
           : style === 'glassmorphism'
           ? `fill="white" fill-opacity="0.2" stroke="rgba(255,255,255,0.3)"`
           : `fill="white" fill-opacity="0.1" filter="url(#frost-${globalIndex})"`;

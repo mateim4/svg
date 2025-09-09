@@ -18,6 +18,9 @@ export interface IconRepository {
   };
   tags: string[];
   preview: string[];
+  developer: string;
+  packSize: string;
+  artDirection: string;
 }
 
 export const ICON_REPOSITORIES: IconRepository[] = [
@@ -38,7 +41,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['outline']
     },
     tags: ['outline', 'minimal', 'consistent', 'open-source'],
-    preview: ['home', 'user', 'search', 'heart', 'star']
+    preview: ['house', 'user', 'search', 'heart', 'star'],
+    developer: 'Lucide Community',
+    packSize: '~2.1 MB',
+    artDirection: 'Outline stroke icons with consistent 24px grid, minimal and clean design'
   },
   
   {
@@ -58,7 +64,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['outline', 'solid', 'mini']
     },
     tags: ['tailwind', 'outline', 'solid', 'web'],
-    preview: ['academic-cap', 'archive-box', 'arrow-right', 'bell', 'camera']
+    preview: ['academic-cap', 'archive-box', 'arrow-right', 'bell', 'camera'],
+    developer: 'Tailwind Labs',
+    packSize: '~580 KB',
+    artDirection: 'Dual-style icons (outline & solid) designed for Tailwind CSS ecosystem'
   },
 
   {
@@ -78,7 +87,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['outline']
     },
     tags: ['minimal', 'outline', 'clean', 'consistent'],
-    preview: ['activity', 'airplay', 'alert-circle', 'archive', 'arrow-right']
+    preview: ['activity', 'airplay', 'alert-circle', 'archive', 'arrow-right'],
+    developer: 'Cole Bemis',
+    packSize: '~430 KB',
+    artDirection: 'Simply beautiful stroke-based icons with 2px stroke width and rounded caps'
   },
 
   {
@@ -98,7 +110,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['thin', 'light', 'regular', 'bold', 'fill', 'duotone']
     },
     tags: ['versatile', 'multiple-weights', 'comprehensive'],
-    preview: ['address-book', 'airplane', 'alarm', 'anchor', 'archive']
+    preview: ['address-book', 'airplane', 'alarm', 'anchor', 'archive'],
+    developer: 'Helena Zhang & Tobias Fried',
+    packSize: '~28.5 MB',
+    artDirection: 'Flexible icon system with 6 weights (thin to duotone) on 256px grid'
   },
 
   {
@@ -118,7 +133,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['outline', 'filled']
     },
     tags: ['comprehensive', 'outline', 'filled', 'ui'],
-    preview: ['home', 'user', 'settings', 'mail', 'phone']
+    preview: ['home', 'user', 'settings', 'mail', 'phone'],
+    developer: 'Paweł Kuna',
+    packSize: '~12.8 MB',
+    artDirection: 'Outline icons with customizable stroke width, clean and modern aesthetics'
   },
 
   {
@@ -138,7 +156,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['regular', 'filled', 'light']
     },
     tags: ['microsoft', 'fluent', 'system', 'enterprise'],
-    preview: ['add', 'arrow_right', 'calendar', 'document', 'home']
+    preview: ['add', 'arrow_right', 'calendar', 'document', 'home'],
+    developer: 'Microsoft',
+    packSize: '~3.2 MB',
+    artDirection: 'Microsoft Fluent Design System icons with multiple sizes and variants'
   },
 
   {
@@ -158,7 +179,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['regular']
     },
     tags: ['minimal', 'ui', 'radix', 'small'],
-    preview: ['arrow-right', 'check', 'cross-1', 'gear', 'home']
+    preview: ['arrow-right', 'check', 'cross-1', 'gear', 'home'],
+    developer: 'Radix UI Team',
+    packSize: '~95 KB',
+    artDirection: 'Crisp 15×15 pixel-perfect icons designed for UI components'
   },
 
   {
@@ -178,7 +202,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['outline', 'filled', 'sharp']
     },
     tags: ['ionic', 'mobile', 'web', 'multi-platform'],
-    preview: ['add', 'arrow-forward', 'calendar', 'home', 'person']
+    preview: ['add', 'arrow-forward', 'calendar', 'home', 'person'],
+    developer: 'Ionic Team',
+    packSize: '~4.8 MB',
+    artDirection: 'Three distinct styles (outline, filled, sharp) optimized for mobile and web'
   },
 
   {
@@ -198,7 +225,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['regular', 'filled']
     },
     tags: ['bootstrap', 'web', 'comprehensive', 'ui'],
-    preview: ['house', 'person', 'gear', 'envelope', 'phone']
+    preview: ['house', 'person', 'gear', 'envelope', 'phone'],
+    developer: 'Bootstrap Team',
+    packSize: '~1.8 MB',
+    artDirection: 'Clean, consistent icons designed on 16px grid for Bootstrap framework'
   },
 
   {
@@ -218,7 +248,10 @@ export const ICON_REPOSITORIES: IconRepository[] = [
       variants: ['outlined', 'rounded', 'sharp']
     },
     tags: ['material', 'google', 'comprehensive', 'design-system'],
-    preview: ['home', 'person', 'settings', 'search', 'favorite']
+    preview: ['home', 'person', 'settings', 'search', 'favorite'],
+    developer: 'Google',
+    packSize: '~45.2 MB',
+    artDirection: 'Variable font-based icon system with fill, weight, grade, and optical size axes'
   }
 ];
 

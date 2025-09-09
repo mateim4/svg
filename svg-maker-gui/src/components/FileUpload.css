@@ -17,7 +17,7 @@
 
 .dropzone:hover,
 .dropzone.active {
-  border-color: #3b82f6;
+  border-color: var(--brand-primary);
   background: transparent;
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
@@ -31,7 +31,7 @@
 }
 
 .upload-icon {
-  color: #6b7280;
+  color: var(--text-disabled);
   animation: float 3s ease-in-out infinite;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .dropzone p {
-  color: #6b7280;
+  color: var(--text-disabled);
   font-size: 1rem;
   margin: 0;
 }
@@ -62,10 +62,10 @@
 
 .browse-button {
   background: transparent;
-  border: 1px solid #3b82f6;
+  border: 1px solid var(--brand-primary);
   border-radius: 12px;
   padding: 0.875rem 1.5rem;
-  color: #3b82f6;
+  color: var(--brand-primary);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -87,8 +87,8 @@
 }
 
 .browse-button.folder-button {
-  border-color: #10b981;
-  color: #10b981;
+  border-color: var(--success-color);
+  color: var(--success-color);
 }
 
 .browse-button.folder-button:hover {
@@ -138,10 +138,10 @@
 
 .expand-button {
   background: transparent;
-  border: 1px solid #6b7280;
+  border: 1px solid var(--text-disabled);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
-  color: #6b7280;
+  color: var(--text-disabled);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -204,7 +204,7 @@
 }
 
 .file-size {
-  color: #9ca3af;
+  color: var(--text-quaternary);
   font-size: 0.8rem;
   font-weight: 500;
   margin-right: 0.75rem;
@@ -213,7 +213,7 @@
 
 .collapsed-info {
   text-align: center;
-  color: #6b7280;
+  color: var(--text-disabled);
   font-size: 0.85rem;
   padding: 0.75rem;
   font-style: italic;
@@ -230,10 +230,10 @@
 
 .page-button {
   background: transparent;
-  border: 1px solid #3b82f6;
+  border: 1px solid var(--brand-primary);
   border-radius: 8px;
   padding: 0.5rem 1rem;
-  color: #3b82f6;
+  color: var(--brand-primary);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -252,7 +252,7 @@
 }
 
 .page-info {
-  color: #6b7280;
+  color: var(--text-disabled);
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -263,7 +263,7 @@
   border-radius: 8px;
   padding: 0.5rem;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--text-disabled);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -273,7 +273,7 @@
 .remove-button:hover {
   background: rgba(220, 38, 38, 0.1);
   border-color: rgba(220, 38, 38, 0.3);
-  color: #dc2626;
+  color: var(--danger-active);
   transform: scale(1.1);
 }
 

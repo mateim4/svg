@@ -38,11 +38,19 @@ class GitHubService {
   private octokit: Octokit;
 
   constructor() {
-    // Initialize without auth for public repos
-    // For private repos, you would need to add authentication
+    // Initialize with optional auth for better rate limits
+    // Check for GitHub token in environment variables
+    const githubToken = process.env.REACT_APP_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    
     this.octokit = new Octokit({
-      // auth: 'personal-access-token', // Add if needed for private repos
+      auth: githubToken, // Use token if available for higher rate limits (5000/hour vs 60/hour)
     });
+    
+    if (!githubToken) {
+      console.warn('🚨 GitHub Service: No auth token found. Rate limited to 60 requests/hour. Add REACT_APP_GITHUB_TOKEN to .env.local for 5000 requests/hour.');
+    } else {
+      console.log('✅ GitHub Service: Authenticated with token for higher rate limits.');
+    }
   }
 
   /**

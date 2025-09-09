@@ -178,25 +178,61 @@ export class TablerIconService {
         return this.iconCache.get(cacheKey)!;
       }
 
-      const iconData = this.iconMap.get(iconName);
-      if (!iconData) {
-        console.warn(`Tabler icon "${iconName}" not found`);
-        return this.getFallbackIcon(size, variant, strokeWidth, color);
-      }
+      // Fetch real SVG from Tabler Icons GitHub repository
+      const baseUrl = 'https://raw.githubusercontent.com/tabler/tabler-icons/master/icons';
+      const iconUrl = variant === 'filled' 
+        ? `${baseUrl}/filled/${iconName}.svg`
+        : `${baseUrl}/outline/${iconName}.svg`;
 
-      const pathData = iconData.svgPaths[variant];
-      if (!pathData) {
-        console.warn(`Variant "${variant}" not found for Tabler icon "${iconName}"`);
-        return this.getFallbackIcon(size, variant, strokeWidth, color);
-      }
-
-      // Generate Tabler-compliant SVG following official specifications
-      const svg = variant === 'filled'
-        ? `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" class="icon icon-tabler icons-tabler-filled icon-tabler-${iconName}">${pathData}</svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-${iconName}">${pathData}</svg>`;
+      console.log(`Fetching REAL Tabler icon: ${iconName} (${variant}) from ${iconUrl}`);
       
-      this.iconCache.set(cacheKey, svg);
-      return svg;
+      const response = await fetch(iconUrl);
+      if (!response.ok) {
+        console.warn(`Failed to fetch Tabler ${iconName} (${variant}): HTTP ${response.status}`);
+        // Try fallback with hardcoded paths for common icons
+        const iconData = this.iconMap.get(iconName);
+        if (iconData) {
+          const pathData = iconData.svgPaths[variant];
+          if (pathData) {
+            const fallbackSvg = variant === 'filled'
+              ? `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" class="icon icon-tabler icons-tabler-filled icon-tabler-${iconName}">${pathData}</svg>`
+              : `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-${iconName}">${pathData}</svg>`;
+            this.iconCache.set(cacheKey, fallbackSvg);
+            return fallbackSvg;
+          }
+        }
+        return this.getFallbackIcon(size, variant, strokeWidth, color);
+      }
+
+      let svgContent = await response.text();
+      
+      // Validate SVG content
+      if (!svgContent.includes('<svg') || !svgContent.includes('</svg>')) {
+        throw new Error(`Invalid SVG content received for Tabler icon: ${iconName}`);
+      }
+
+      console.log(`✅ Successfully fetched Tabler icon: ${iconName} (${variant})`);
+
+      // Customize SVG with user parameters
+      if (size !== 24) {
+        svgContent = svgContent.replace(/width="[^"]*"/, `width="${size}"`);
+        svgContent = svgContent.replace(/height="[^"]*"/, `height="${size}"`);
+      }
+
+      if (strokeWidth !== 2 && variant === 'outline') {
+        svgContent = svgContent.replace(/stroke-width="[^"]*"/, `stroke-width="${strokeWidth}"`);
+      }
+
+      if (color !== 'currentColor') {
+        if (variant === 'filled') {
+          svgContent = svgContent.replace(/fill="[^"]*"/, `fill="${color}"`);
+        } else {
+          svgContent = svgContent.replace(/stroke="[^"]*"/, `stroke="${color}"`);
+        }
+      }
+      
+      this.iconCache.set(cacheKey, svgContent);
+      return svgContent;
     } catch (error) {
       console.error(`Error getting Tabler icon ${iconName}:`, error);
       return this.getFallbackIcon(size, variant, strokeWidth, color);

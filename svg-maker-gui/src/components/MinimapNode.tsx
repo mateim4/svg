@@ -63,7 +63,7 @@ const MinimapNode: React.FC<MinimapNodeProps> = ({ node, x, y, width, height, se
             justifyContent: "center",
             fontSize: "10px",
             fontWeight: 600,
-            color: "#6366f1",
+            color: "var(--brand-primary)",
             background: "transparent",
             pointerEvents: "none",
             userSelect: "none",

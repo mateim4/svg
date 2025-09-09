@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Settings, Download, Palette } from 'lucide-react';
+import { ArrowLeft, Download, Palette } from 'lucide-react';
 import IconGrid from './IconGrid';
 import IconRenderer from './IconRenderer';
 import './IconPackBrowser.css';
 
 interface IconPackBrowserProps {
-  iconPack: 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent';
+  iconPack: 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent' | 'bootstrap' | 'material' | 'ionicons';
   onBack: () => void;
   onIconSelect?: (iconName: string, svgContent: string) => void;
 }
@@ -19,8 +19,7 @@ export const IconPackBrowser: React.FC<IconPackBrowserProps> = ({
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [selectedSvg, setSelectedSvg] = useState<string>('');
   const [currentVariant, setCurrentVariant] = useState<string>('');
-  const [currentSize, setCurrentSize] = useState(24);
-  const [showSettings, setShowSettings] = useState(false);
+  const [currentSize] = useState(24);
 
   // Get icon pack metadata
   const getIconPackInfo = () => {
@@ -85,6 +84,36 @@ export const IconPackBrowser: React.FC<IconPackBrowserProps> = ({
           supportsStrokeWidth: false,
           defaultStrokeWidth: 2
         };
+      case 'bootstrap':
+        return {
+          name: 'Bootstrap Icons',
+          description: 'Official open source SVG icon library for Bootstrap',
+          website: 'https://icons.getbootstrap.com',
+          defaultVariant: '',
+          variants: [],
+          supportsStrokeWidth: false,
+          defaultStrokeWidth: 2
+        };
+      case 'material':
+        return {
+          name: 'Material Design Icons',
+          description: 'Google\'s Material Design icon collection',
+          website: 'https://fonts.google.com/icons',
+          defaultVariant: 'outlined',
+          variants: ['outlined', 'filled', 'rounded', 'sharp', 'two-tone'],
+          supportsStrokeWidth: false,
+          defaultStrokeWidth: 2
+        };
+      case 'ionicons':
+        return {
+          name: 'Ionicons',
+          description: 'Premium designed icons for use in web, iOS, Android',
+          website: 'https://ionic.io/ionicons',
+          defaultVariant: 'outline',
+          variants: ['outline', 'filled', 'sharp'],
+          supportsStrokeWidth: false,
+          defaultStrokeWidth: 2
+        };
       default:
         return {
           name: 'Unknown',
@@ -143,68 +172,8 @@ export const IconPackBrowser: React.FC<IconPackBrowserProps> = ({
           </div>
         </div>
         
-        <div className="header-right">
-          <button
-            className={`settings-button ${showSettings ? 'active' : ''}`}
-            onClick={() => setShowSettings(!showSettings)}
-          >
-            <Settings size={20} />
-          </button>
-        </div>
       </div>
 
-      {/* Settings Panel */}
-      {showSettings && (
-        <motion.div
-          className="settings-panel"
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-        >
-          <div className="settings-content">
-            <div className="setting-group">
-              <label>Icon Size</label>
-              <input
-                type="range"
-                min="16"
-                max="64"
-                step="4"
-                value={currentSize}
-                onChange={(e) => setCurrentSize(parseInt(e.target.value))}
-              />
-              <span>{currentSize}px</span>
-            </div>
-
-            {iconPackInfo.variants.length > 0 && (
-              <div className="setting-group">
-                <label>Variant</label>
-                <select
-                  value={currentVariant}
-                  onChange={(e) => setCurrentVariant(e.target.value)}
-                >
-                  {iconPackInfo.variants.map(variant => (
-                    <option key={variant} value={variant}>
-                      {variant.charAt(0).toUpperCase() + variant.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            <div className="setting-group">
-              <label>Website</label>
-              <a
-                href={iconPackInfo.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="website-link"
-              >
-                {iconPackInfo.website}
-              </a>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Selected Icon Preview */}
       {selectedIcon && (

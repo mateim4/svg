@@ -1,8 +1,8 @@
 .repository-analysis {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-primary);
   backdrop-filter: blur(30px) saturate(125%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl, 16px);
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
@@ -10,19 +10,14 @@
   height: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-xl);
 }
 
 .repository-analysis:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--surface-hover);
   transform: translateY(-2px) scale(1.005);
-  box-shadow: 
-    0 16px 48px rgba(0, 0, 0, 0.15),
-    0 4px 8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: var(--shadow-2xl);
+  border-color: var(--border-hover);
 }
 
 .analysis-header {
@@ -51,26 +46,26 @@
 
 .format-icon.success {
   background: transparent;
-  color: #4b5563;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
 }
 
 .format-icon.warning {
   background: transparent;
-  color: #4b5563;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
 }
 
 .format-icon.info {
   background: transparent;
-  color: #4b5563;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
 }
 
 .format-icon.error {
   background: transparent;
-  color: #4b5563;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
 }
 
 .format-text {
@@ -78,7 +73,7 @@
 }
 
 .format-text h4 {
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   font-size: 1.125rem;
   font-weight: 600;
@@ -87,10 +82,11 @@
 }
 
 .format-text p {
-  color: #6b7280;
+  color: var(--text-secondary);
   margin: 0;
   font-size: 0.875rem;
   line-height: 1.4;
+  font-family: 'Poppins', sans-serif;
 }
 
 .svg-count {
@@ -104,15 +100,19 @@
 .count-number {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: var(--brand-primary);
   line-height: 1;
   font-family: 'Poppins', sans-serif;
 }
 
 .count-label {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--text-tertiary);
   margin-top: 0.25rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 .analysis-details {
@@ -139,14 +139,14 @@
 
 .detection-item.detected {
   background: transparent;
-  color: #4b5563;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
 }
 
 .detection-item.not-detected {
   background: transparent;
-  color: #9ca3af;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-quaternary);
+  border: 1px solid var(--border-tertiary);
 }
 
 .recommendation {
@@ -155,9 +155,9 @@
   gap: 0.75rem;
   padding: 0.75rem;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-secondary);
   border-radius: 8px;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   line-height: 1.4;
 }
@@ -171,9 +171,9 @@
   margin-top: 0.75rem;
   padding: 0.75rem;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-secondary);
   border-radius: 8px;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 

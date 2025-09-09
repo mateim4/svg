@@ -173,7 +173,10 @@ class IconRepositoryService {
         pattern: '*.svg'
       },
       tags: ['external'],
-      preview: []
+      preview: [],
+      developer: repoInfo.owner,
+      packSize: 'Unknown',
+      artDirection: 'Unknown'
     };
 
     const source: RepositorySource = {
@@ -285,12 +288,12 @@ class IconRepositoryService {
         const weight = parts.pop() as 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone'; // Last part is weight
         const iconName = parts.join('-'); // Rejoin remaining parts as icon name
         
-        const svgContent = await phosphorService.getIconSvg(iconName, 32, weight);
+        const iconResult = await phosphorService.getIcon(iconName, weight, 32);
         
-        if (svgContent) {
+        if (iconResult?.content) {
           // Cache the content
-          icon.svgContent = svgContent;
-          return svgContent;
+          icon.svgContent = iconResult.content;
+          return iconResult.content;
         }
       } catch (error) {
         console.error(`Failed to load Phosphor icon ${iconId}:`, error);

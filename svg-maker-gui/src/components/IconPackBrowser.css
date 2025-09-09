@@ -1,8 +1,8 @@
 .icon-pack-browser {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
+  background: var(--app-bg);
+  color: var(--text-primary);
   overflow-x: hidden;
 }
 
@@ -12,9 +12,20 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(229, 231, 235, 0.8);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  margin: 2rem 1.5rem 1.5rem 1.5rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure header text is dark on light background */
+.browser-header,
+.browser-header * {
+  color: var(--text-on-light-surface) !important;
 }
 
 .header-left {
@@ -28,39 +39,40 @@
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--salmon-light);
+  border: 1px solid var(--salmon-light);
   border-radius: 12px;
-  color: rgba(255, 255, 255, 0.9);
+  color: white !important;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
+}
+
+.back-button,
+.back-button * {
+  color: white !important;
 }
 
 .back-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: var(--accent-gradient-start, #00e5ff);
+  background: var(--salmon-pink);
+  border-color: var(--salmon-pink);
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 229, 255, 0.2);
 }
 
 .pack-info h1 {
   margin: 0;
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-gradient-start, #00e5ff) 0%, var(--accent-gradient-end, #84fab0) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-on-light-surface);
 }
 
 .pack-info p {
   margin: 4px 0 0 0;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-on-light-surface);
   font-weight: 400;
+  opacity: 0.8;
 }
 
 .header-right {
@@ -74,7 +86,7 @@
   height: 44px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--surface-primary);
   color: rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
@@ -87,14 +99,13 @@
 .settings-button:hover,
 .settings-button.active {
   background: rgba(0, 229, 255, 0.2);
-  border-color: var(--accent-gradient-start, #00e5ff);
-  color: var(--accent-gradient-start, #00e5ff);
+  color: var(--accent-gradient-start, #ff8994);
   transform: scale(1.05);
 }
 
 /* Settings Panel */
 .settings-panel {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-secondary);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
@@ -137,14 +148,13 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-gradient-start, #00e5ff) 0%, var(--accent-gradient-end, #84fab0) 100%);
+  background: linear-gradient(135deg, var(--accent-gradient-start, #ff8994) 0%, var(--accent-gradient-end, #ff9bb0) 100%);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3);
 }
 
 .setting-group select {
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--surface-primary);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   color: white;
@@ -155,12 +165,11 @@
 
 .setting-group select:focus {
   outline: none;
-  border-color: var(--accent-gradient-start, #00e5ff);
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--surface-hover);
 }
 
 .setting-group select option {
-  background: #1a1a1a;
+  background: var(--app-bg);
   color: white;
 }
 
@@ -171,7 +180,7 @@
 }
 
 .website-link {
-  color: var(--accent-gradient-start, #00e5ff);
+  color: var(--accent-gradient-start, #ff8994);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -179,14 +188,14 @@
 }
 
 .website-link:hover {
-  color: var(--accent-gradient-end, #84fab0);
+  color: var(--accent-gradient-end, #ff9bb0);
   text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
 }
 
 /* Selected Icon Preview */
 .selected-icon-preview {
   margin: 24px 32px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: var(--surface-primary);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   backdrop-filter: blur(20px);
@@ -206,7 +215,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-secondary);
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -247,24 +256,23 @@
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--surface-primary);
   color: rgba(255, 255, 255, 0.9);
 }
 
 .action-button:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--surface-hover);
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .action-button.primary {
-  background: linear-gradient(135deg, var(--accent-gradient-start, #00e5ff) 0%, var(--accent-gradient-end, #84fab0) 100%);
-  color: #1a1a1a;
+  background: linear-gradient(135deg, var(--accent-gradient-start, #ff8994) 0%, var(--accent-gradient-end, #ff9bb0) 100%);
+  color: var(--app-bg);
   border-color: transparent;
 }
 
 .action-button.primary:hover {
-  box-shadow: 0 8px 24px rgba(0, 229, 255, 0.4);
   transform: translateY(-2px) scale(1.02);
 }
 
@@ -362,4 +370,50 @@
     font-size: 12px;
     padding: 10px 14px;
   }
+}
+
+/* Theme-specific overrides for consistency with landing page and icon repos */
+
+/* Light mode: Header and cards should be light with dark text */
+:root[data-theme="light"] .browser-header,
+:root .browser-header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+:root[data-theme="light"] .pack-info h1,
+:root[data-theme="light"] .pack-info p,
+:root .pack-info h1,
+:root .pack-info p {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Dark mode: Header should be white cards with dark text like repos page */
+:root[data-theme="dark"] .browser-header {
+  background: rgba(229, 231, 235, 0.8) !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+:root[data-theme="dark"] .pack-info h1,
+:root[data-theme="dark"] .pack-info p {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Icon Grid container should also match theme */
+:root[data-theme="light"] .icon-pack-browser,
+:root .icon-pack-browser {
+  background: var(--app-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="dark"] .icon-pack-browser {
+  background: var(--app-bg) !important;
+  color: var(--text-primary) !important;
 }

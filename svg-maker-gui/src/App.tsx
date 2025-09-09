@@ -10,6 +10,7 @@ import DashboardOverview from './components/DashboardOverview';
 import WorkflowWizard, { WizardStep } from './components/WorkflowWizard';
 import IconPackBrowser from './components/IconPackBrowser';
 import PreviewComparison from './components/PreviewComparison';
+import ThemeToggle from './components/ThemeToggle';
 import { scaleOriginalSvg } from './utils/scaleOriginalSvg';
 import FileUpload from './components/FileUpload';
 import FileUploadNew from './components/FileUploadNew';
@@ -35,7 +36,7 @@ import { processSvgWithStyle } from './utils/processSvgStyle';
 import './App.css';
 
 type AppMode = 'local' | 'github' | 'dashboard' | 'iconpacks';
-type IconPack = 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent';
+type IconPack = 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent' | 'bootstrap' | 'material' | 'ionicons';
 
 interface FluentUIIcon {
   name: string;
@@ -524,62 +525,9 @@ const App: React.FC = () => {
 
   // Handle repository selection from browser
   const handleRepositorySelect = async (repository: RepositorySource) => {
-    setIsLoadingRepo(true);
-    setRepoError('');
-    
-    try {
-      if (repository.type === 'local') {
-        // Load from local repository instantly
-        const result = await iconRepositoryService.loadRepositoryIcons(repository.id);
-        
-        // Convert to existing format for compatibility - create files from real GitHub icons
-        const mockFiles: GitHubFile[] = [];
-        result.icons.forEach(icon => {
-          mockFiles.push({
-            name: icon.fileName,
-            path: icon.path,
-            type: 'file' as const,
-            download_url: icon.downloadUrl,
-            size: icon.size,
-            sha: icon.id
-          });
-        });
-        
-        setSvgFiles(mockFiles);
-        
-        // Create mock tree structure
-        const mockTree: FolderTree[] = [{
-          name: repository.repository.name,
-          path: repository.repository.name,
-          type: 'dir',
-          children: mockFiles,
-          sha: `repo-${repository.id}`
-        }];
-        
-        setRepoTree(mockTree);
-        
-        // Create mock analysis
-        setRepoAnalysis({
-          hasDirectSvgs: true,
-          hasPackageJsons: false,
-          hasAssetsFolders: false,
-          hasIconManifests: true,
-          suggestedFormat: 'svg',
-          iconFiles: mockFiles
-        });
-        
-        // Auto-advance to next step
-        setCurrentWizardStep(1);
-      } else {
-        // Handle external repositories (existing logic)
-        // For now, show error since external repos need URL input
-        setRepoError('External repositories require manual URL input for now');
-      }
-    } catch (error) {
-      setRepoError(error instanceof Error ? error.message : 'Failed to load repository');
-    } finally {
-      setIsLoadingRepo(false);
-    }
+    // Simple navigation - set the selected icon pack to navigate to IconPackBrowser
+    const iconPack = repository.id as IconPack;
+    setSelectedIconPack(iconPack);
   };
 
   // GitHub Workflow Wizard Steps
@@ -591,18 +539,18 @@ const App: React.FC = () => {
       icon: <Github size={20} />,
       component: (
         <div>
-          <IconRepositoryBrowser onRepositorySelect={handleRepositorySelect} />
-          
-          {/* Alternative: Manual Input */}
-          <div style={{ margin: '2rem 0', padding: '1.5rem', background: '#f8fafc', borderRadius: '12px' }}>
-            <h4 style={{ margin: '0 0 1rem', color: '#374151' }}>External Repository</h4>
+          {/* GitHub Repository Input */}
+          <div style={{ marginBottom: '2rem' }}>
             <GitHubRepoInput
               onRepoLoad={handleRepoLoad}
               isLoading={isLoadingRepo}
             />
-            <div style={{ margin: '1rem 0', textAlign: 'center', color: '#64748b' }}>
-              — or —
-            </div>
+          </div>
+          
+          <IconRepositoryBrowser onRepositorySelect={handleRepositorySelect} />
+          
+          {/* Alternative: Folder Upload */}
+          <div style={{ margin: '2rem 0' }}>
             <FolderUpload
               onFolderProcessed={handleFolderUpload}
               isLoading={isLoadingRepo}
@@ -772,9 +720,9 @@ const App: React.FC = () => {
   };
 
   const handleGetStarted = () => {
-    // Hide landing page and show dashboard with mode selection
+    // Hide landing page and show icon repository browser
     setShowLandingPage(false);
-    setMode('dashboard');
+    setMode('iconpacks');
   };
 
   const handleWizardStepChange = (stepIndex: number) => {
@@ -806,6 +754,9 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
+      
+      {/* Theme Toggle */}
+      <ThemeToggle />
 
       {/* Error Notifications */}
       {globalError && (
@@ -1125,11 +1076,19 @@ const App: React.FC = () => {
           </div>
         )}
 
+        {/* Icon Repository Browser */}
+        {!showLandingPage && mode === 'iconpacks' && !selectedIconPack && (
+          <IconRepositoryBrowser onRepositorySelect={handleRepositorySelect} />
+        )}
+        
         {/* Icon Pack Browser */}
         {!showLandingPage && mode === 'iconpacks' && selectedIconPack && (
           <IconPackBrowser
             iconPack={selectedIconPack}
-            onBack={() => setMode('dashboard')}
+            onBack={() => {
+              setSelectedIconPack(null);
+              setMode('iconpacks');
+            }}
             onIconSelect={handleIconSelectFromPack}
           />
         )}

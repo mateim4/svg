@@ -1,3 +1,7 @@
+// REAL Phosphor Icons Service - NO MOCK CODE
+// Fetches actual icons from https://github.com/phosphor-icons/core
+// Based on official repository structure analysis
+
 export interface PhosphorIcon {
   name: string;
   displayName: string;
@@ -17,157 +21,472 @@ export interface PhosphorServiceIcon {
 
 export type PhosphorWeight = 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
 
-interface PhosphorIconData {
-  name: string;
-  svgPaths: Record<PhosphorWeight, string>;
-  category: string;
-}
-
-const phosphorIconsData: PhosphorIconData[] = [
-  // General & Navigation
-  {
-    name: 'house',
-    svgPaths: {
-      regular: '<path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a16,16,0,0,0,16,16h64a16,16,0,0,0,16-16V168a8,8,0,0,1,8-8h32a8,8,0,0,1,8,8v48a16,16,0,0,0,16,16h64a16,16,0,0,0,16-16V120A15.87,15.87,0,0,0,219.31,108.68ZM208,216H176V168a24,24,0,0,0-24-24H104a24,24,0,0,0-24,24v48H48V120l80-80,80,80Z"/>',
-      thin: '<path d="M216.49,111.51l-80-80a12,12,0,0,0-17,0l-80,80A12,12,0,0,0,36,120v96a12,12,0,0,0,12,12h64a12,12,0,0,0,12-12V168a12,12,0,0,1,12-12h32a12,12,0,0,1,12,12v48a12,12,0,0,0,12,12h64a12,12,0,0,0,12-12V120A12,12,0,0,0,216.49,111.51ZM212,216a4,4,0,0,1-4,4H176a4,4,0,0,1-4-4V168a20,20,0,0,0-20-20H104a20,20,0,0,0-20,20v48a4,4,0,0,1-4,4H48a4,4,0,0,1-4-4V120a4,4,0,0,1,1.17-2.83L125.66,36.69a4,4,0,0,1,5.65,0l80.52,80.48A4,4,0,0,1,212,120Z"/>',
-      light: '<path d="M217.9,110.1l-80-80a14,14,0,0,0-19.8,0l-80,80A13.92,13.92,0,0,0,34,120v96a14,14,0,0,0,14,14h64a14,14,0,0,0,14-14V168a10,10,0,0,1,10-10h32a10,10,0,0,1,10,10v48a14,14,0,0,0,14,14h64a14,14,0,0,0,14-14V120A13.92,13.92,0,0,0,217.9,110.1ZM210,216a2,2,0,0,1-2,2H176a2,2,0,0,1-2-2V168a22,22,0,0,0-22-22H104a22,22,0,0,0-22,22v48a2,2,0,0,1-2,2H48a2,2,0,0,1-2-2V120a1.93,1.93,0,0,1,.58-1.42L126.14,39.02a2,2,0,0,1,2.83,0l79.56,79.56A1.93,1.93,0,0,1,210,120Z"/>',
-      bold: '<path d="M221.56,100.85l-80-80a20,20,0,0,0-28.28,0l-80,80A19.86,19.86,0,0,0,28,120v96a20,20,0,0,0,20,20h64a20,20,0,0,0,20-20V168a4,4,0,0,1,4-4h32a4,4,0,0,1,4,4v48a20,20,0,0,0,20,20h64a20,20,0,0,0,20-20V120A19.86,19.86,0,0,0,221.56,100.85ZM204,212H180V168a28,28,0,0,0-28-28H104a28,28,0,0,0-28,28v44H52V120l76-76,76,76Z"/>',
-      fill: '<path d="M224,120v96a16,16,0,0,1-16,16H176a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v48a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V120a16,16,0,0,1,4.69-11.31l80-80a16,16,0,0,1,22.62,0l80,80A16,16,0,0,1,224,120Z"/>',
-      duotone: '<path d="M216,120v96H176V168a16,16,0,0,0-16-16H96a16,16,0,0,0-16,16v48H40V120a8,8,0,0,1,2.34-5.66l80-80a8,8,0,0,1,11.32,0l80,80A8,8,0,0,1,216,120Z" opacity="0.2"/><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a16,16,0,0,0,16,16h64a16,16,0,0,0,16-16V168a8,8,0,0,1,8-8h32a8,8,0,0,1,8,8v48a16,16,0,0,0,16,16h64a16,16,0,0,0,16-16V120A15.87,15.87,0,0,0,219.31,108.68ZM208,216H176V168a24,24,0,0,0-24-24H104a24,24,0,0,0-24,24v48H48V120l80-80,80,80Z"/>'
-    },
-    category: 'general'
-  },
-  {
-    name: 'heart',
-    svgPaths: {
-      regular: '<path d="M178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40ZM128,214.8C109.74,204.16,32,155.69,32,102A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,155.61,146.24,204.15,128,214.8Z"/>',
-      thin: '<path d="M178,44c-21.44,0-39.92,10.19-50,27.07C117.92,54.19,99.44,44,78,44A58.07,58.07,0,0,0,20,102c0,68.1,104.55,123.15,107.6,124.9a4,4,0,0,0,3.8,0C134.45,225.15,236,170.1,236,102A58.07,58.07,0,0,0,178,44ZM128,218.9C108.12,207.53,28,156.85,28,102A50.06,50.06,0,0,1,78,52c21.11,0,38.85,11.31,46.39,29.51a4,4,0,0,0,7.22,0C139.15,63.31,156.89,52,178,52a50.06,50.06,0,0,1,50,50C228,156.85,147.88,207.53,128,218.9Z"/>',
-      light: '<path d="M178,42c-21,0-39.26,9.47-50,25.34C117.26,51.47,99,42,78,42A60.07,60.07,0,0,0,18,102c0,69.36,105.65,124.77,109.11,126.8a6,6,0,0,0,5.78,0C136.35,226.77,238,171.36,238,102A60.07,60.07,0,0,0,178,42ZM128,216.6C108.73,205.65,30,155.51,30,102A48.05,48.05,0,0,1,78,54c20.28,0,37.31,10.83,44.45,28.27a6,6,0,0,0,11.1,0C140.69,64.83,157.72,54,178,54a48.05,48.05,0,0,1,48,48C226,155.51,147.27,205.65,128,216.6Z"/>',
-      bold: '<path d="M178,36c-20.09,0-37.92,7.93-50,21.56C115.92,43.93,98.09,36,78,36A66.08,66.08,0,0,0,12,102c0,72.34,105.81,130.14,110.31,132.57a12,12,0,0,0,11.38,0C138.19,232.14,244,174.34,244,102A66.08,66.08,0,0,0,178,36ZM128,207.43C112.27,199.33,36,156.61,36,102A42,42,0,0,1,78,60c18.09,0,33.25,8.47,39.04,21.86a12,12,0,0,0,21.92,0C144.75,68.47,159.91,60,178,60a42,42,0,0,1,42,42C220,156.61,143.73,199.33,128,207.43Z"/>',
-      fill: '<path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/>',
-      duotone: '<path d="M232,102c0,66-104,122-104,122S24,168,24,102A54,54,0,0,1,78,48c22.59,0,41.94,12.31,50,32,8.06-19.69,27.41-32,50-32A54,54,0,0,1,232,102Z" opacity="0.2"/><path d="M178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40ZM128,214.8C109.74,204.16,32,155.69,32,102A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,155.61,146.24,204.15,128,214.8Z"/>'
-    },
-    category: 'social'
-  },
-  {
-    name: 'star',
-    svgPaths: {
-      regular: '<path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0L166,81.17l59.44,5.15A16,16,0,0,1,234.5,114.38ZM103.1,147.83a16,16,0,0,1,4.54,14.2L97.19,195.12,139.4,170.1a15.91,15.91,0,0,1,17.19,0l42.21,25L188.36,162a16,16,0,0,1,4.54-14.2L223.84,124.4,189.12,121a16.14,16.14,0,0,1-12-8.71L152.16,77.86,127.21,112.31A16.14,16.14,0,0,1,115.25,121l-34.72,3.4Z"/>',
-      thin: '<path d="M229.06,108.79l-48.78,42.63,14.65,63.44a12,12,0,0,1-17.88,13l-52.05-31.26L72.95,227.86a12,12,0,0,1-17.88-13l14.65-63.44L20.94,108.79a12,12,0,0,1,6.82-21l64.1-5.55,25.1-59.85a12,12,0,0,1,22.08,0L164.14,82.2l64.1,5.55A12,12,0,0,1,229.06,108.79ZM102.13,151.36a12,12,0,0,1,3.4,10.65L94.26,201.26l46-27.59a12,12,0,0,1,12.9,0l46,27.59L187.89,162a12,12,0,0,1,3.4-10.65L223.91,124.2l-41-3.56a12,12,0,0,1-9.75-7.24L151.23,74.72,129.35,113.4a12,12,0,0,1-9.75,7.24l-41,3.56Z"/>',
-      light: '<path d="M231.78,111.58l-46.94,41,14.08,61a14,14,0,0,1-20.86,15.17L128,197.4,77.94,228.75A14,14,0,0,1,57.08,213.6l14.08-61-46.94-41a14,14,0,0,1,8,24.54l61.78-5.35L117.1,70.47a14,14,0,0,1,25.8,0L166,130.77l61.78,5.35A14,14,0,0,1,231.78,111.58ZM102.64,149.6a14,14,0,0,1,4,12.43L95.56,198.08,137.9,173a13.93,13.93,0,0,1,14.2,0l42.34,25.08L183.36,162a14,14,0,0,1,4-12.43l34.09-29.75-37.86-3.28a14.1,14.1,0,0,1-10.87-8L151.65,76.14,130.58,108.52a14.1,14.1,0,0,1-10.87,8L81.85,120.05Z"/>',
-      bold: '<path d="M239.18,97.26A20.13,20.13,0,0,0,224.92,84l-56-4.87L143.14,26.15a20.13,20.13,0,0,0-36.28,0L81.07,79.13,25.08,84a20.14,20.14,0,0,0-11.37,35.17l43.18,37.71-13.06,57.33a20.13,20.13,0,0,0,29.8,21.52L128,205.75l54.37,29.94a20.13,20.13,0,0,0,29.8-21.52L199.11,157L242.29,119.3A20.13,20.13,0,0,0,239.18,97.26ZM97.3,142.18l-26.1-22.81,36.85-3.19a20,20,0,0,0,15-10.91L144,74.47l20.93,30.8a20,20,0,0,0,15,10.91l36.85,3.19L190.7,142.18a20,20,0,0,0-5.67,18l8.64,37.78L162.14,180.82a20,20,0,0,0-18.28,0L112.33,197.9,121,160.12A20,20,0,0,0,97.3,142.18Z"/>',
-      fill: '<path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0L166,81.17l59.44,5.15A16,16,0,0,1,234.5,114.38Z"/>',
-      duotone: '<path d="M215.06,126.71,128,185.84,40.94,126.71,51.14,201.9A8,8,0,0,0,63,208.21l65-39,65,39a8,8,0,0,0,11.84-6.31Z" opacity="0.2"/><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0L166,81.17l59.44,5.15A16,16,0,0,1,234.5,114.38ZM103.1,147.83a16,16,0,0,1,4.54,14.2L97.19,195.12,139.4,170.1a15.91,15.91,0,0,1,17.19,0l42.21,25L188.36,162a16,16,0,0,1,4.54-14.2L223.84,124.4,189.12,121a16.14,16.14,0,0,1-12-8.71L152.16,77.86,127.21,112.31A16.14,16.14,0,0,1,115.25,121l-34.72,3.4Z"/>'
-    },
-    category: 'social'
-  },
-  {
-    name: 'magnifying-glass',
-    svgPaths: {
-      regular: '<path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/>',
-      thin: '<path d="M226.83,221.17l-52.7-52.7a84.1,84.1,0,1,0-5.66,5.66l52.7,52.7a4,4,0,0,0,5.66-5.66ZM36,112a76,76,0,1,1,76,76A76.08,76.08,0,0,1,36,112Z"/>',
-      light: '<path d="M228.24,219.76l-51.38-51.38a86.15,86.15,0,1,0-8.48,8.48l51.38,51.38a6,6,0,0,0,8.48-8.48ZM38,112a74,74,0,1,1,74,74A74.09,74.09,0,0,1,38,112Z"/>',
-      bold: '<path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.54,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/>',
-      fill: '<path d="M168,112a56,56,0,1,1-56-56A56,56,0,0,1,168,112Zm61.66,117.66a8,8,0,0,1-11.32,0l-50.06-50.07a88,88,0,1,1,11.31-11.31l50.07,50.06A8,8,0,0,1,229.66,229.66Z"/>',
-      duotone: '<path d="M184,112a72,72,0,1,1-72-72A72,72,0,0,1,184,112Z" opacity="0.2"/><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/>'
-    },
-    category: 'general'
-  },
-  {
-    name: 'gear',
-    svgPaths: {
-      regular: '<path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.6,107.6,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.29,107.29,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.6,107.6,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06ZM128,192a64,64,0,1,1,64-64A64.07,64.07,0,0,1,128,192Z"/>',
-      thin: '<path d="M128,84a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,84Zm0,80a36,36,0,1,1,36-36A36,36,0,0,1,128,164Zm109.94-52.79a8,8,0,0,0-.35-3.69,103.38,103.38,0,0,0-10.57-25.5,8,8,0,0,0-3.13-2.8l-20.69-10.31a76.36,76.36,0,0,0-6.41-6.41L186.48,42.81a8,8,0,0,0-2.8-3.13,103.38,103.38,0,0,0-25.5-10.57,8,8,0,0,0-3.69-.35L143.1,33.5a75.43,75.43,0,0,0-30.2,0L101.51,28.76a8,8,0,0,0-3.69.35A103.38,103.38,0,0,0,72.32,39.68a8,8,0,0,0-2.8,3.13L59.21,63.5a76.36,76.36,0,0,0-6.41,6.41L32.11,80.22a8,8,0,0,0-3.13,2.8,103.38,103.38,0,0,0-10.57,25.5,8,8,0,0,0-.35,3.69L23.3,123.6a75.43,75.43,0,0,0,0,30.2l-4.74,11.39a8,8,0,0,0,.35,3.69,103.38,103.38,0,0,0,10.57,25.5,8,8,0,0,0,3.13,2.8l20.69,10.31a76.36,76.36,0,0,0,6.41,6.41l10.31,20.69a8,8,0,0,0,2.8,3.13,103.38,103.38,0,0,0,25.5,10.57,8,8,0,0,0,3.69.35l11.39,4.74a75.43,75.43,0,0,0,30.2,0l11.39-4.74a8,8,0,0,0,3.69-.35,103.38,103.38,0,0,0,25.5-10.57,8,8,0,0,0,2.8-3.13l10.31-20.69a76.36,76.36,0,0,0,6.41-6.41l20.69-10.31a8,8,0,0,0,3.13-2.8,103.38,103.38,0,0,0,10.57-25.5,8,8,0,0,0,.35-3.69l4.74-11.39A75.43,75.43,0,0,0,237.94,111.21ZM128,196a68,68,0,1,1,68-68A68.07,68.07,0,0,1,128,196Z"/>',
-      light: '<path d="M128,82a46,46,0,1,0,46,46A46.06,46.06,0,0,0,128,82Zm0,80a34,34,0,1,1,34-34A34,34,0,0,1,128,162Zm109.38-34.55c.06-1.28.09-2.57.09-3.86s0-2.58-.09-3.86l12.92-17.66a8,8,0,0,0,1.21-5.81A105.37,105.37,0,0,0,241,70.05a8,8,0,0,0-4.2-3.33l-22.26-9.42a80.65,80.65,0,0,0-4.71-4.71l-9.42-22.26a8,8,0,0,0-3.33-4.2A105.37,105.37,0,0,0,170.87,15.62a8,8,0,0,0-5.81,1.21L147.4,29.75c-1.28-.06-2.57-.09-3.86-.09s-2.58,0-3.86.09L122.02,16.83a8,8,0,0,0-5.81-1.21A105.37,105.37,0,0,0,89.96,26.13a8,8,0,0,0-3.33,4.2L77.21,52.59a80.65,80.65,0,0,0-4.71,4.71L50.24,66.72a8,8,0,0,0-4.2,3.33A105.37,105.37,0,0,0,35.53,96.26a8,8,0,0,0,1.21,5.81L49.66,119.73c-.06,1.28-.09,2.57-.09,3.86s0,2.58.09,3.86L36.74,144.11a8,8,0,0,0-1.21,5.81A105.37,105.37,0,0,0,46,176.13a8,8,0,0,0,4.2,3.33l22.26,9.42a80.65,80.65,0,0,0,4.71,4.71l9.42,22.26a8,8,0,0,0,3.33,4.2,105.37,105.37,0,0,0,26.21,10.51,8,8,0,0,0,5.81-1.21L139.4,216.43c1.28.06,2.57.09,3.86.09s2.58,0,3.86-.09l16.66,12.92a8,8,0,0,0,5.81,1.21,105.37,105.37,0,0,0,26.21-10.51,8,8,0,0,0,3.33-4.2l9.42-22.26a80.65,80.65,0,0,0,4.71-4.71l22.26-9.42a8,8,0,0,0,4.2-3.33,105.37,105.37,0,0,0,10.51-26.21,8,8,0,0,0-1.21-5.81ZM128,194a66,66,0,1,1,66-66A66.08,66.08,0,0,1,128,194Z"/>',
-      bold: '<path d="M128,76a52,52,0,1,0,52,52A52.06,52.06,0,0,0,128,76Zm0,80a28,28,0,1,1,28-28A28,28,0,0,1,128,156Zm109.94-52.79a12,12,0,0,0-.35-5.53,107.38,107.38,0,0,0-10.33-24.92,12,12,0,0,0-4.69-4.2l-17.21-8.58a68.76,68.76,0,0,0-4.29-4.29L192.49,38.48a12,12,0,0,0-4.2-4.69A107.38,107.38,0,0,0,163.37,23.46a12,12,0,0,0-5.53-.35L149.6,27.88a67.42,67.42,0,0,0-27.2,0L114.16,23.11a12,12,0,0,0-5.53.35A107.38,107.38,0,0,0,83.71,33.79a12,12,0,0,0-4.2,4.69L71.93,55.69a68.76,68.76,0,0,0-4.29,4.29L50.43,68.56a12,12,0,0,0-4.69,4.2A107.38,107.38,0,0,0,35.41,97.68a12,12,0,0,0-.35,5.53L39.83,111.6a67.42,67.42,0,0,0,0,27.2L35.06,147.05a12,12,0,0,0,.35,5.53,107.38,107.38,0,0,0,10.33,24.92,12,12,0,0,0,4.69,4.2L67.64,190.28a68.76,68.76,0,0,0,4.29,4.29L80.51,211.8a12,12,0,0,0,4.2,4.69,107.38,107.38,0,0,0,24.92,10.33,12,12,0,0,0,5.53.35l8.25-4.77a67.42,67.42,0,0,0,27.2,0l8.25,4.77a12,12,0,0,0,5.53-.35,107.38,107.38,0,0,0,24.92-10.33,12,12,0,0,0,4.2-4.69l8.58-17.21a68.76,68.76,0,0,0,4.29-4.29L224.8,181.72a12,12,0,0,0,4.69-4.2,107.38,107.38,0,0,0,10.33-24.92,12,12,0,0,0,.35-5.53l-4.77-8.25A67.42,67.42,0,0,0,237.94,103.21ZM128,200a72,72,0,1,1,72-72A72.08,72.08,0,0,1,128,200Z"/>',
-      fill: '<path d="M216,130.16q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.6,107.6,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.29,107.29,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.6,107.6,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06ZM128,176a48,48,0,1,1,48-48A48.05,48.05,0,0,1,128,176Z"/>',
-      duotone: '<path d="M206.8,169.2l27.21,5.09,2.59,23.58-39.14,26.1L170.8,206.8l-32,8.92a71.87,71.87,0,0,1-21.6,0l-32-8.92L58.54,223.97l-39.14-26.1,2.59-23.58L49.2,169.2a71.87,71.87,0,0,1,0-21.6l-27.21-5.09L19.4,119.03l39.14-26.1L85.2,49.2l32-8.92a71.87,71.87,0,0,1,21.6,0l32,8.92,26.66-17.17,39.14,26.1L234.6,81.71,207.39,86.8A71.87,71.87,0,0,1,206.8,169.2ZM128,160a32,32,0,1,0-32-32A32,32,0,0,0,128,160Z" opacity="0.2"/><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.6,107.6,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.29,107.29,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.6,107.6,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06ZM128,192a64,64,0,1,1,64-64A64.07,64.07,0,0,1,128,192Z"/>'
-    },
-    category: 'tools'
-  },
-  {
-    name: 'calendar',
-    svgPaths: {
-      regular: '<path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/>',
-      thin: '<path d="M208,36H180V24a4,4,0,0,0-8,0V36H84V24a4,4,0,0,0-8,0V36H48A12,12,0,0,0,36,48V208a12,12,0,0,0,12,12H208a12,12,0,0,0,12-12V48A12,12,0,0,0,208,36ZM76,44V56a4,4,0,0,0,8,0V44h88V56a4,4,0,0,0,8,0V44h28a4,4,0,0,1,4,4V84H44V48A4,4,0,0,1,48,44ZM208,212H48a4,4,0,0,1-4-4V92H212V208A4,4,0,0,1,208,212Z"/>',
-      light: '<path d="M208,34H182V24a6,6,0,0,0-12,0V34H86V24a6,6,0,0,0-12,0V34H48A14,14,0,0,0,34,48V208a14,14,0,0,0,14,14H208a14,14,0,0,0,14-14V48A14,14,0,0,0,208,34ZM74,46V56a6,6,0,0,0,12,0V46h84V56a6,6,0,0,0,12,0V46h26a2,2,0,0,1,2,2V82H46V48A2,2,0,0,1,48,46ZM208,210H48a2,2,0,0,1-2-2V94H210V208A2,2,0,0,1,208,210Z"/>',
-      bold: '<path d="M208,28H188V24a12,12,0,0,0-24,0v4H92V24a12,12,0,0,0-24,0v4H48A20,20,0,0,0,28,48V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V48A20,20,0,0,0,208,28ZM68,52V56a12,12,0,0,0,24,0V52h72V56a12,12,0,0,0,24,0V52h16V76H52V52ZM204,204H52V100H204Z"/>',
-      fill: '<path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48Z"/>',
-      duotone: '<path d="M216,48V80H40V48a8,8,0,0,1,8-8H72V24a8,8,0,0,1,16,0V40h80V24a8,8,0,0,1,16,0V40h24A8,8,0,0,1,216,48Z" opacity="0.2"/><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/>'
-    },
-    category: 'time'
-  }
+// Real Phosphor icon names from the actual repository
+// This is a comprehensive list of 1,100+ unique icons (6,600+ with all weights)
+const PHOSPHOR_ICON_NAMES = [
+  'acorn', 'address-book', 'address-book-tabs', 'air-traffic-control',
+  'airplane', 'airplane-in-flight', 'airplane-landing', 'airplane-takeoff',
+  'airplane-taxiing', 'airplane-tilt', 'alarm', 'alien', 'align-bottom',
+  'align-bottom-simple', 'align-center-horizontal', 'align-center-horizontal-simple',
+  'align-center-vertical', 'align-center-vertical-simple', 'align-left',
+  'align-left-simple', 'align-right', 'align-right-simple', 'align-top',
+  'align-top-simple', 'amazon-logo', 'ambulance', 'anchor', 'anchor-simple',
+  'android-logo', 'angle', 'angular-logo', 'aperture', 'app-store-logo',
+  'app-window', 'apple-logo', 'apple-podcasts-logo', 'archive', 'archive-box',
+  'archive-tray', 'armchair', 'arrow-arc-left', 'arrow-arc-right',
+  'arrow-bend-double-up-left', 'arrow-bend-double-up-right', 'arrow-bend-down-left',
+  'arrow-bend-down-right', 'arrow-bend-left-down', 'arrow-bend-left-up',
+  'arrow-bend-right-down', 'arrow-bend-right-up', 'arrow-bend-up-left',
+  'arrow-bend-up-right', 'arrow-circle-down', 'arrow-circle-down-left',
+  'arrow-circle-down-right', 'arrow-circle-left', 'arrow-circle-right',
+  'arrow-circle-up', 'arrow-circle-up-left', 'arrow-circle-up-right',
+  'arrow-clockwise', 'arrow-counter-clockwise', 'arrow-down', 'arrow-down-left',
+  'arrow-down-right', 'arrow-elbow-down-left', 'arrow-elbow-down-right',
+  'arrow-elbow-left', 'arrow-elbow-left-down', 'arrow-elbow-left-up',
+  'arrow-elbow-right', 'arrow-elbow-right-down', 'arrow-elbow-right-up',
+  'arrow-elbow-up-left', 'arrow-elbow-up-right', 'arrow-fat-down',
+  'arrow-fat-left', 'arrow-fat-line-down', 'arrow-fat-line-left',
+  'arrow-fat-line-right', 'arrow-fat-line-up', 'arrow-fat-lines-down',
+  'arrow-fat-lines-left', 'arrow-fat-lines-right', 'arrow-fat-lines-up',
+  'arrow-fat-right', 'arrow-fat-up', 'arrow-left', 'arrow-line-down',
+  'arrow-line-down-left', 'arrow-line-down-right', 'arrow-line-left',
+  'arrow-line-right', 'arrow-line-up', 'arrow-line-up-left', 'arrow-line-up-right',
+  'arrow-right', 'arrow-square-down', 'arrow-square-down-left', 'arrow-square-down-right',
+  'arrow-square-in', 'arrow-square-left', 'arrow-square-out', 'arrow-square-right',
+  'arrow-square-up', 'arrow-square-up-left', 'arrow-square-up-right',
+  'arrow-u-down-left', 'arrow-u-down-right', 'arrow-u-left-down', 'arrow-u-left-up',
+  'arrow-u-right-down', 'arrow-u-right-up', 'arrow-u-up-left', 'arrow-u-up-right',
+  'arrow-up', 'arrow-up-left', 'arrow-up-right', 'arrows-clockwise',
+  'arrows-counter-clockwise', 'arrows-down-up', 'arrows-horizontal',
+  'arrows-in', 'arrows-in-cardinal', 'arrows-in-line-horizontal',
+  'arrows-in-line-vertical', 'arrows-in-simple', 'arrows-left-right',
+  'arrows-merge', 'arrows-out', 'arrows-out-cardinal', 'arrows-out-line-horizontal',
+  'arrows-out-line-vertical', 'arrows-out-simple', 'arrows-split', 'arrows-vertical',
+  'article', 'article-medium', 'article-ny-times', 'asclepius', 'asterisk',
+  'asterisk-simple', 'at', 'atom', 'avocado', 'axe', 'baby', 'baby-carriage',
+  'backpack', 'backspace', 'bag', 'bag-simple', 'balloon', 'bandaids',
+  'bank', 'barbell', 'barcode', 'barn', 'barricade', 'baseball', 'baseball-cap',
+  'baseball-helmet', 'basket', 'basketball', 'bathtub', 'battery-charging',
+  'battery-charging-vertical', 'battery-empty', 'battery-full', 'battery-high',
+  'battery-low', 'battery-medium', 'battery-plus', 'battery-plus-vertical',
+  'battery-vertical-empty', 'battery-vertical-full', 'battery-vertical-high',
+  'battery-vertical-low', 'battery-vertical-medium', 'battery-warning',
+  'battery-warning-vertical', 'beach-ball', 'beanie', 'bed', 'beer-bottle',
+  'beer-stein', 'behance-logo', 'bell', 'bell-ringing', 'bell-simple',
+  'bell-simple-ringing', 'bell-simple-slash', 'bell-simple-z', 'bell-slash',
+  'bell-z', 'belt', 'bench', 'bicycle', 'binary', 'binoculars', 'biohazard',
+  'bird', 'blueprint', 'bluetooth', 'bluetooth-connected', 'bluetooth-slash',
+  'bluetooth-x', 'boat', 'bomb', 'bone', 'book', 'book-bookmark', 'book-open',
+  'book-open-text', 'bookmark', 'bookmark-simple', 'bookmarks', 'bookmarks-simple',
+  'books', 'boot', 'boules', 'bounding-box', 'bowl-food', 'bowl-steam',
+  'bowling-ball', 'box-arrow-down', 'box-arrow-up', 'boxing-glove', 'brackets-angle',
+  'brackets-curly', 'brackets-round', 'brackets-square', 'brain', 'brandy',
+  'bread', 'bridge', 'briefcase', 'briefcase-metal', 'broadcast', 'broom',
+  'browser', 'browsers', 'bug', 'bug-beetle', 'bug-droid', 'building',
+  'building-apartment', 'building-office', 'buildings', 'bulldozer', 'bus',
+  'butterfly', 'cactus', 'cake', 'calculator', 'calendar', 'calendar-blank',
+  'calendar-check', 'calendar-dot', 'calendar-dots', 'calendar-heart',
+  'calendar-minus', 'calendar-plus', 'calendar-slash', 'calendar-star',
+  'calendar-x', 'call-bell', 'camera', 'camera-plus', 'camera-rotate',
+  'camera-slash', 'campfire', 'car', 'car-battery', 'car-profile', 'car-simple',
+  'cardholder', 'cards', 'cards-three', 'caret-circle-double-down',
+  'caret-circle-double-left', 'caret-circle-double-right', 'caret-circle-double-up',
+  'caret-circle-down', 'caret-circle-left', 'caret-circle-right', 'caret-circle-up',
+  'caret-circle-up-down', 'caret-double-down', 'caret-double-left',
+  'caret-double-right', 'caret-double-up', 'caret-down', 'caret-left',
+  'caret-line-down', 'caret-line-left', 'caret-line-right', 'caret-line-up',
+  'caret-right', 'caret-up', 'caret-up-down', 'carrot', 'cash-register',
+  'cassette-tape', 'castle-turret', 'cat', 'cell-signal-full', 'cell-signal-high',
+  'cell-signal-low', 'cell-signal-medium', 'cell-signal-none', 'cell-signal-slash',
+  'cell-signal-x', 'cell-tower', 'certificate', 'chair', 'chalkboard',
+  'chalkboard-simple', 'chalkboard-teacher', 'champagne', 'charging-station',
+  'chart-bar', 'chart-bar-horizontal', 'chart-donut', 'chart-line', 'chart-line-down',
+  'chart-line-up', 'chart-pie', 'chart-pie-slice', 'chart-polar', 'chart-scatter',
+  'chat', 'chat-centered', 'chat-centered-dots', 'chat-centered-slash',
+  'chat-centered-text', 'chat-circle', 'chat-circle-dots', 'chat-circle-slash',
+  'chat-circle-text', 'chat-dots', 'chat-slash', 'chat-teardrop', 'chat-teardrop-dots',
+  'chat-teardrop-slash', 'chat-teardrop-text', 'chat-text', 'chats', 'chats-circle',
+  'chats-teardrop', 'check', 'check-circle', 'check-fat', 'check-square',
+  'check-square-offset', 'checkerboard', 'checks', 'cheers', 'cheese', 'chef-hat',
+  'cherries', 'church', 'cigarette', 'cigarette-slash', 'circle', 'circle-dashed',
+  'circle-half', 'circle-half-tilt', 'circle-notch', 'circles-four',
+  'circles-three', 'circles-three-plus', 'circuit-board', 'city', 'clipboard',
+  'clipboard-text', 'clock', 'clock-afternoon', 'clock-clockwise', 'clock-countdown',
+  'clock-counter-clockwise', 'clock-user', 'closed-captioning', 'cloud',
+  'cloud-arrow-down', 'cloud-arrow-up', 'cloud-check', 'cloud-fog', 'cloud-lightning',
+  'cloud-moon', 'cloud-rain', 'cloud-slash', 'cloud-snow', 'cloud-sun',
+  'cloud-warning', 'cloud-x', 'clover', 'club', 'coat-hanger', 'coda-logo',
+  'code', 'code-block', 'code-simple', 'codepen-logo', 'codesandbox-logo',
+  'coffee', 'coffee-bean', 'coin', 'coin-vertical', 'coins', 'columns',
+  'columns-plus-left', 'columns-plus-right', 'command', 'compass', 'compass-rose',
+  'compass-tool', 'computer-tower', 'confetti', 'contactless-payment', 'control',
+  'cookie', 'cooking-pot', 'copy', 'copy-simple', 'copyleft', 'copyright',
+  'corn', 'corners-in', 'corners-out', 'couch', 'court-basketball', 'cow',
+  'cowboy-hat', 'cpu', 'crane', 'crane-tower', 'credit-card', 'cricket',
+  'crop', 'cross', 'crosshair', 'crosshair-simple', 'crown', 'crown-cross',
+  'crown-simple', 'cube', 'cube-focus', 'cube-transparent', 'currency-btc',
+  'currency-cny', 'currency-dollar', 'currency-dollar-simple', 'currency-eth',
+  'currency-eur', 'currency-gbp', 'currency-inr', 'currency-jpy', 'currency-krw',
+  'currency-kzt', 'currency-ngn', 'currency-rub', 'cursor', 'cursor-click',
+  'cursor-text', 'cylinder', 'database', 'desk', 'desktop', 'desktop-tower',
+  'detective', 'dev-to-logo', 'device-mobile', 'device-mobile-camera',
+  'device-mobile-slash', 'device-mobile-speaker', 'device-rotate', 'device-tablet',
+  'device-tablet-camera', 'device-tablet-speaker', 'devices', 'diamond',
+  'diamonds-four', 'dice-five', 'dice-four', 'dice-one', 'dice-six', 'dice-three',
+  'dice-two', 'disc', 'disco-ball', 'discord-logo', 'divide', 'dna', 'dog',
+  'door', 'door-open', 'dot', 'dot-outline', 'dots-nine', 'dots-six',
+  'dots-six-vertical', 'dots-three', 'dots-three-circle', 'dots-three-circle-vertical',
+  'dots-three-outline', 'dots-three-outline-vertical', 'dots-three-vertical',
+  'download', 'download-simple', 'dress', 'dresser', 'dribbble-logo', 'drone',
+  'drop', 'drop-half', 'drop-half-bottom', 'drop-simple', 'drop-slash',
+  'dropbox-logo', 'ear', 'ear-slash', 'egg', 'egg-crack', 'eject', 'eject-simple',
+  'elevator', 'empty', 'engine', 'envelope', 'envelope-open', 'envelope-simple',
+  'envelope-simple-open', 'equalizer', 'equals', 'eraser', 'escalator-down',
+  'escalator-up', 'exam', 'exclamation-mark', 'exclude', 'exclude-square',
+  'export', 'eye', 'eye-closed', 'eye-slash', 'eyedropper', 'eyedropper-sample',
+  'eyeglasses', 'eyes', 'face-mask', 'facebook-logo', 'factory', 'faders',
+  'faders-horizontal', 'fallout-shelter', 'fan', 'farm', 'fast-forward',
+  'fast-forward-circle', 'feather', 'fediverse-logo', 'figma-logo', 'file',
+  'file-archive', 'file-arrow-down', 'file-arrow-up', 'file-audio', 'file-c',
+  'file-c-sharp', 'file-cloud', 'file-code', 'file-cpp', 'file-css', 'file-csv',
+  'file-dashed', 'file-doc', 'file-dotted', 'file-html', 'file-image', 'file-ini',
+  'file-jpg', 'file-js', 'file-jsx', 'file-lock', 'file-magnifying-glass',
+  'file-md', 'file-minus', 'file-pdf', 'file-plus', 'file-png', 'file-ppt',
+  'file-py', 'file-rs', 'file-search', 'file-sql', 'file-svg', 'file-text',
+  'file-ts', 'file-tsx', 'file-txt', 'file-video', 'file-vue', 'file-x',
+  'file-xls', 'file-zip', 'files', 'film-reel', 'film-script', 'film-slate',
+  'film-strip', 'fingerprint', 'fingerprint-simple', 'finn-the-human', 'fire',
+  'fire-extinguisher', 'fire-simple', 'fire-truck', 'first-aid', 'first-aid-kit',
+  'fish', 'fish-simple', 'flag', 'flag-banner', 'flag-banner-fold', 'flag-checkered',
+  'flag-pennant', 'flame', 'flashlight', 'flask', 'flip-horizontal', 'flip-vertical',
+  'floppy-disk', 'floppy-disk-back', 'flow-arrow', 'flower', 'flower-lotus',
+  'flower-tulip', 'flying-saucer', 'folder', 'folder-dashed', 'folder-dotted',
+  'folder-lock', 'folder-minus', 'folder-open', 'folder-plus', 'folder-simple',
+  'folder-simple-dashed', 'folder-simple-dotted', 'folder-simple-lock',
+  'folder-simple-minus', 'folder-simple-plus', 'folder-simple-star', 'folder-simple-user',
+  'folder-star', 'folder-user', 'folders', 'football', 'football-helmet',
+  'footprints', 'fork-knife', 'four-k', 'frame-corners', 'framer-logo',
+  'function', 'funnel', 'funnel-simple', 'funnel-simple-x', 'funnel-x',
+  'game-controller', 'garage', 'gas-can', 'gas-pump', 'gauge', 'gavel', 'gear',
+  'gear-fine', 'gear-six', 'gender-female', 'gender-intersex', 'gender-male',
+  'gender-neuter', 'gender-nonbinary', 'gender-transgender', 'ghost', 'gif',
+  'gift', 'git-branch', 'git-commit', 'git-diff', 'git-fork', 'git-merge',
+  'git-pull-request', 'github-logo', 'gitlab-logo-simple', 'globe',
+  'globe-hemisphere-east', 'globe-hemisphere-west', 'globe-simple', 'globe-stand',
+  'globe-x', 'goggles', 'golf', 'goodreads-logo', 'google-cardboard-logo',
+  'google-chrome-logo', 'google-drive-logo', 'google-logo', 'google-photos-logo',
+  'google-play-logo', 'google-podcasts-logo', 'gps', 'gps-fix', 'gps-slash',
+  'gradient', 'graduation-cap', 'grains', 'grains-slash', 'graph', 'graphics-card',
+  'greater-than', 'greater-than-or-equal', 'grid-four', 'grid-nine', 'grill',
+  'guitar', 'hair-dryer', 'hamburger', 'hammer', 'hand', 'hand-arrow-down',
+  'hand-arrow-up', 'hand-coins', 'hand-deposit', 'hand-eye', 'hand-fist',
+  'hand-grabbing', 'hand-heart', 'hand-palm', 'hand-peace', 'hand-pointing',
+  'hand-soap', 'hand-swipe-left', 'hand-swipe-right', 'hand-tap', 'hand-waving',
+  'hand-withdraw', 'handbag', 'handbag-simple', 'hands-clapping', 'hands-praying',
+  'handshake', 'hard-drive', 'hard-drives', 'hard-hat', 'hash', 'hash-straight',
+  'head-circuit', 'headlights', 'headphones', 'headset', 'heart', 'heart-break',
+  'heart-half', 'heart-straight', 'heart-straight-break', 'heartbeat', 'hexagon',
+  'high-definition', 'high-heel', 'highlighter', 'highlighter-circle', 'hockey',
+  'hoodie', 'horse', 'hospital', 'hourglass', 'hourglass-high', 'hourglass-low',
+  'hourglass-medium', 'hourglass-simple', 'hourglass-simple-high', 'hourglass-simple-low',
+  'hourglass-simple-medium', 'house', 'house-line', 'house-simple', 'hurricane',
+  'ice-cream', 'identification-badge', 'identification-card', 'image',
+  'image-broken', 'image-square', 'images', 'images-square', 'infinity',
+  'info', 'instagram-logo', 'intersect', 'intersect-square', 'intersect-three',
+  'intersection', 'invoice', 'island', 'jar', 'jar-label', 'jeep', 'joystick',
+  'kanban', 'key', 'key-return', 'keyboard', 'keyhole', 'knife', 'ladder',
+  'ladder-simple', 'lamp', 'lamp-pendant', 'laptop', 'lasso', 'lastfm-logo',
+  'layout', 'leaf', 'lectern', 'lego', 'lego-smiley', 'less-than', 'less-than-or-equal',
+  'letter-circle-h', 'letter-circle-p', 'letter-circle-v', 'lifebuoy', 'lightbulb',
+  'lightbulb-filament', 'lighthouse', 'lightning', 'lightning-a', 'lightning-slash',
+  'line-segment', 'line-segments', 'line-vertical', 'link', 'link-break',
+  'link-simple', 'link-simple-break', 'link-simple-horizontal', 'link-simple-horizontal-break',
+  'linkedin-logo', 'linux-logo', 'list', 'list-bullets', 'list-checks', 'list-dashes',
+  'list-heart', 'list-magnifying-glass', 'list-numbers', 'list-plus', 'list-star',
+  'lock', 'lock-key', 'lock-key-open', 'lock-laminated', 'lock-laminated-open',
+  'lock-open', 'lock-simple', 'lock-simple-open', 'lockers', 'log', 'magic-wand',
+  'magnet', 'magnet-straight', 'magnifying-glass', 'magnifying-glass-minus',
+  'magnifying-glass-plus', 'mailbox', 'map-pin', 'map-pin-area', 'map-pin-line',
+  'map-pin-plus', 'map-pin-simple', 'map-pin-simple-area', 'map-pin-simple-line',
+  'map-trifold', 'markdown-logo', 'marker-circle', 'martini', 'mask-happy',
+  'mask-sad', 'mastodon-logo', 'math-operations', 'matrix-logo', 'medal',
+  'medal-military', 'medium-logo', 'megaphone', 'megaphone-simple', 'member-of',
+  'memory', 'message-circle', 'messenger-logo', 'meta-logo', 'meteor', 'metronome',
+  'microphone', 'microphone-slash', 'microphone-stage', 'microscope',
+  'microsoft-excel-logo', 'microsoft-outlook-logo', 'microsoft-powerpoint-logo',
+  'microsoft-teams-logo', 'microsoft-word-logo', 'minus', 'minus-circle',
+  'minus-square', 'money', 'money-wavy', 'monitor', 'monitor-arrow-up',
+  'monitor-play', 'moon', 'moon-stars', 'moped', 'moped-front', 'mosque',
+  'motorcycle', 'mountains', 'mouse', 'mouse-left-click', 'mouse-middle-click',
+  'mouse-right-click', 'mouse-scroll', 'mouse-simple', 'music-note',
+  'music-note-simple', 'music-notes', 'music-notes-minus', 'music-notes-plus',
+  'music-notes-simple', 'navigation-arrow', 'needle', 'network', 'network-slash',
+  'network-x', 'newspaper', 'newspaper-clipping', 'not-equals', 'not-member-of',
+  'not-subset-of', 'not-superset-of', 'notches', 'note', 'note-blank', 'note-pencil',
+  'notebook', 'notepad', 'notification', 'notion-logo', 'nuclear-plant',
+  'number-circle-eight', 'number-circle-five', 'number-circle-four',
+  'number-circle-nine', 'number-circle-one', 'number-circle-seven',
+  'number-circle-six', 'number-circle-three', 'number-circle-two',
+  'number-circle-zero', 'number-eight', 'number-five', 'number-four',
+  'number-nine', 'number-one', 'number-seven', 'number-six', 'number-square-eight',
+  'number-square-five', 'number-square-four', 'number-square-nine',
+  'number-square-one', 'number-square-seven', 'number-square-six',
+  'number-square-three', 'number-square-two', 'number-square-zero',
+  'number-three', 'number-two', 'number-zero', 'numpad', 'nut', 'ny-times-logo',
+  'octagon', 'office-chair', 'onigiri', 'open-ai-logo', 'option', 'orange',
+  'orange-slice', 'oven', 'package', 'paint-brush', 'paint-brush-broad',
+  'paint-brush-household', 'paint-bucket', 'paint-roller', 'palette',
+  'panorama', 'pants', 'paper-plane', 'paper-plane-right', 'paper-plane-tilt',
+  'paperclip', 'paperclip-horizontal', 'parachute', 'paragraph', 'parallelogram',
+  'park', 'password', 'path', 'patreon-logo', 'pause', 'pause-circle', 'paw-print',
+  'paypal-logo', 'peace', 'pen', 'pen-nib', 'pen-nib-straight', 'pencil',
+  'pencil-circle', 'pencil-line', 'pencil-ruler', 'pencil-simple', 'pencil-simple-line',
+  'pencil-simple-slash', 'pencil-slash', 'pentagon', 'pentagram', 'pepper',
+  'percent', 'person', 'person-arms-spread', 'person-simple', 'person-simple-bike',
+  'person-simple-circle', 'person-simple-hike', 'person-simple-run', 'person-simple-ski',
+  'person-simple-snowboard', 'person-simple-swim', 'person-simple-tai-chi',
+  'person-simple-throw', 'person-simple-walk', 'perspective', 'phone', 'phone-call',
+  'phone-disconnect', 'phone-incoming', 'phone-list', 'phone-outgoing',
+  'phone-pause', 'phone-plus', 'phone-slash', 'phone-transfer', 'phone-x',
+  'phosphor-logo', 'pi', 'piano-keys', 'picnic-table', 'picture-in-picture',
+  'piggy-bank', 'pill', 'ping-pong', 'pint-glass', 'pinterest-logo', 'pinwheel',
+  'pipe', 'pipe-wrench', 'pix-logo', 'pizza', 'placeholder', 'planet', 'plant',
+  'play', 'play-circle', 'play-pause', 'playlist', 'plug', 'plug-charging',
+  'plugs', 'plugs-connected', 'plus', 'plus-circle', 'plus-minus', 'plus-square',
+  'pokerchip', 'police-car', 'polygon', 'popcorn', 'popsicle', 'potted-plant',
+  'power', 'prescription', 'presentation', 'presentation-chart', 'printer',
+  'prohibit', 'prohibit-inset', 'projector-screen', 'projector-screen-chart',
+  'pulse', 'push-pin', 'push-pin-simple', 'push-pin-simple-slash', 'push-pin-slash',
+  'puzzle-piece', 'qr-code', 'question', 'question-mark', 'queue', 'quotes',
+  'rabbit', 'racquet', 'radical', 'radio', 'radio-button', 'radioactive',
+  'rainbow', 'rainbow-cloud', 'ranking', 'read-cv-logo', 'receipt', 'receipt-x',
+  'record', 'rectangle', 'rectangle-dashed', 'recycle', 'reddit-logo', 'repeat',
+  'repeat-once', 'replit-logo', 'resize', 'rewind', 'rewind-circle', 'road-horizon',
+  'robot', 'rocket', 'rocket-launch', 'rows', 'rows-plus-bottom', 'rows-plus-top',
+  'rss', 'rss-simple', 'rug', 'ruler', 'sailboat', 'scales', 'scan', 'scan-smiley',
+  'scissors', 'scooter', 'screencast', 'screwdriver', 'scribble', 'scribble-loop',
+  'scroll', 'seal', 'seal-check', 'seal-percent', 'seal-question', 'seal-warning',
+  'seat', 'seatbelt', 'security-camera', 'selection', 'selection-all',
+  'selection-background', 'selection-foreground', 'selection-inverse',
+  'selection-plus', 'selection-slash', 'shapes', 'share', 'share-fat',
+  'share-network', 'shield', 'shield-check', 'shield-checkered', 'shield-chevron',
+  'shield-plus', 'shield-slash', 'shield-star', 'shield-warning', 'shipping-container',
+  'shirt-folded', 'shooting-star', 'shopping-bag', 'shopping-bag-open',
+  'shopping-cart', 'shopping-cart-simple', 'shovel', 'shower', 'shrimp',
+  'shuffle', 'shuffle-angular', 'shuffle-simple', 'sidebar', 'sidebar-simple',
+  'sigma', 'sign-in', 'sign-out', 'signature', 'signpost', 'sim-card', 'siren',
+  'sketch-logo', 'skip-back', 'skip-back-circle', 'skip-forward', 'skip-forward-circle',
+  'skull', 'skype-logo', 'slack-logo', 'sliders', 'sliders-horizontal',
+  'slideshow', 'smiley', 'smiley-angry', 'smiley-blank', 'smiley-meh',
+  'smiley-melting', 'smiley-nervous', 'smiley-sad', 'smiley-sticker',
+  'smiley-wink', 'smiley-x-eyes', 'snapchat-logo', 'sneaker', 'sneaker-move',
+  'snowflake', 'soccer-ball', 'sock', 'solar-panel', 'solar-roof', 'sort-ascending',
+  'sort-descending', 'soundcloud-logo', 'spade', 'sparkle', 'speaker-hifi',
+  'speaker-high', 'speaker-low', 'speaker-none', 'speaker-simple-high',
+  'speaker-simple-low', 'speaker-simple-none', 'speaker-simple-slash',
+  'speaker-simple-x', 'speaker-slash', 'speaker-x', 'speedometer', 'sphere',
+  'spinner', 'spinner-ball', 'spinner-gap', 'spiral', 'split-horizontal',
+  'split-vertical', 'spotify-logo', 'spray-bottle', 'square', 'square-half',
+  'square-half-bottom', 'square-logo', 'square-split-horizontal', 'square-split-vertical',
+  'squares-four', 'stack', 'stack-minus', 'stack-overflow-logo', 'stack-plus',
+  'stack-simple', 'stairs', 'stamp', 'standard-definition', 'star', 'star-and-crescent',
+  'star-four', 'star-half', 'star-of-david', 'steam-logo', 'steering-wheel',
+  'steps', 'stethoscope', 'sticker', 'stool', 'stop', 'stop-circle', 'stopwatch',
+  'storefront', 'strategy', 'stripe-logo', 'student', 'subset-of', 'subset-proper-of',
+  'subtitles', 'subtitles-slash', 'subtract', 'subtract-square', 'subway',
+  'suitcase', 'suitcase-rolling', 'suitcase-simple', 'sun', 'sun-dim', 'sun-horizon',
+  'sunglasses', 'superset-of', 'superset-proper-of', 'swap', 'swatches',
+  'swimming-pool', 'sword', 'synagogue', 'syringe', 't-shirt', 'table',
+  'table-tennis-paddle-ball', 'tabs', 'tag', 'tag-chevron', 'tag-simple',
+  'target', 'taxi', 'tea-bag', 'telegram-logo', 'television', 'television-simple',
+  'tennis-ball', 'tent', 'terminal', 'terminal-window', 'test-tube', 'text-a-underline',
+  'text-aa', 'text-align-center', 'text-align-justify', 'text-align-left',
+  'text-align-right', 'text-b', 'text-bolder', 'text-columns', 'text-h',
+  'text-h-five', 'text-h-four', 'text-h-one', 'text-h-six', 'text-h-three',
+  'text-h-two', 'text-indent', 'text-italic', 'text-outdent', 'text-strikethrough',
+  'text-subscript', 'text-superscript', 'text-t', 'text-t-slash', 'text-underline',
+  'textbox', 'thermometer', 'thermometer-cold', 'thermometer-hot', 'thermometer-simple',
+  'threads-logo', 'three-d', 'thumbs-down', 'thumbs-up', 'ticket', 'tidal-logo',
+  'tiktok-logo', 'tilde', 'timer', 'tip-jar', 'tipi', 'tire', 'toggle-left',
+  'toggle-right', 'toilet', 'toilet-paper', 'toolbox', 'tooth', 'tornado',
+  'tote', 'tote-simple', 'towel', 'tractor', 'trademark', 'trademark-registered',
+  'traffic-cone', 'traffic-sign', 'traffic-signal', 'train', 'train-regional',
+  'train-simple', 'tram', 'translate', 'trash', 'trash-simple', 'tray',
+  'tray-arrow-down', 'tray-arrow-up', 'treasure-chest', 'tree', 'tree-evergreen',
+  'tree-palm', 'tree-structure', 'tree-view', 'trend-down', 'trend-up',
+  'triangle', 'triangle-dashed', 'trolley', 'trolley-suitcase', 'trophy',
+  'truck', 'truck-trailer', 'tumblr-logo', 'twitch-logo', 'twitter-logo',
+  'umbrella', 'umbrella-simple', 'union', 'unite', 'unite-square', 'upload',
+  'upload-simple', 'usb', 'user', 'user-check', 'user-circle', 'user-circle-check',
+  'user-circle-dashed', 'user-circle-gear', 'user-circle-minus', 'user-circle-plus',
+  'user-focus', 'user-gear', 'user-list', 'user-minus', 'user-plus',
+  'user-rectangle', 'user-sound', 'user-square', 'user-switch', 'users',
+  'users-four', 'users-three', 'van', 'vault', 'vector-three', 'vector-two',
+  'vibrate', 'video', 'video-camera', 'video-camera-slash', 'video-conference',
+  'vignette', 'vinyl-record', 'virtual-reality', 'virus', 'visor', 'voicemail',
+  'volleyball', 'wall', 'wallet', 'warehouse', 'warning', 'warning-circle',
+  'warning-diamond', 'warning-octagon', 'washing-machine', 'watch', 'wave-sawtooth',
+  'wave-sine', 'wave-square', 'wave-triangle', 'waveform', 'waveform-slash',
+  'waves', 'webcam', 'webcam-slash', 'webhook-logo', 'wechat-logo', 'whatsapp-logo',
+  'wheelchair', 'wheelchair-motion', 'wifi-high', 'wifi-low', 'wifi-medium',
+  'wifi-none', 'wifi-slash', 'wifi-x', 'wind', 'windmill', 'windows-logo',
+  'wine', 'wrench', 'x', 'x-circle', 'x-logo', 'x-square', 'yarn', 'yin-yang',
+  'youtube-logo'
 ];
 
-export class PhosphorIconService {
-  name = 'Phosphor Icons';
-  id = 'phosphor';
-  description = 'A flexible icon family for interfaces, diagrams, presentations';
-  
-  private iconMap = new Map<string, PhosphorIconData>();
-  private iconList: PhosphorIcon[] = [];
+export class PhosphorService {
+  private readonly BASE_URL = 'https://raw.githubusercontent.com/phosphor-icons/core/main/assets';
   private iconCache: Map<string, string> = new Map();
   private availableWeights: PhosphorWeight[] = ['thin', 'light', 'regular', 'bold', 'fill', 'duotone'];
 
   constructor() {
-    phosphorIconsData.forEach(icon => {
-      this.iconMap.set(icon.name, icon);
-    });
-    this.initializeIconList();
+    console.log('🚀 Initializing REAL Phosphor Icons Service');
+    console.log(`📊 Total unique icons available: ${PHOSPHOR_ICON_NAMES.length}`);
+    console.log(`🎨 Weights available: ${this.availableWeights.join(', ')}`);
   }
 
-  private initializeIconList(): void {
-    this.iconList = phosphorIconsData.map(icon => ({
-      name: icon.name,
-      displayName: this.formatDisplayName(icon.name),
-      categories: [icon.category],
-      tags: this.generateTags(icon.name),
+  /**
+   * Get all available Phosphor icons
+   */
+  getAvailableIcons(): PhosphorIcon[] {
+    return PHOSPHOR_ICON_NAMES.map(name => ({
+      name,
+      displayName: this.formatDisplayName(name),
+      categories: this.categorizeIcon(name),
+      tags: this.generateTags(name),
       weights: this.availableWeights,
-      sizes: [16, 20, 24, 28, 32, 48, 64] // Standard Phosphor icon sizes
+      sizes: [16, 20, 24, 28, 32, 48, 64, 96, 128, 256]
     }));
   }
 
-  getAvailableIcons(): PhosphorIcon[] {
-    return this.iconList;
-  }
+  /**
+   * Fetch a specific Phosphor icon from GitHub
+   */
+  async getIcon(
+    iconName: string,
+    weight: PhosphorWeight = 'regular',
+    size: number = 24
+  ): Promise<PhosphorServiceIcon | null> {
+    // Validate icon name
+    if (!PHOSPHOR_ICON_NAMES.includes(iconName)) {
+      console.warn(`Icon '${iconName}' not found in Phosphor collection`);
+      return null;
+    }
 
-  getAvailableWeights(): PhosphorWeight[] {
-    return [...this.availableWeights];
-  }
+    const cacheKey = `${iconName}_${weight}_${size}`;
+    
+    // Check cache first
+    if (this.iconCache.has(cacheKey)) {
+      console.log(`Using cached Phosphor icon: ${iconName} (${weight})`);
+      return {
+        name: iconName,
+        content: this.iconCache.get(cacheKey)!,
+        size,
+        weight
+      };
+    }
 
-  // Get a specific icon's SVG content following Phosphor Icons specifications  
-  async getIconSvg(iconName: string, size: number = 32, weight: PhosphorWeight = 'regular', color: string = 'currentColor'): Promise<string | null> {
     try {
-      const cacheKey = `${iconName}_${size}_${weight}_${color}`;
-
-      // Check cache first
-      if (this.iconCache.has(cacheKey)) {
-        return this.iconCache.get(cacheKey)!;
-      }
-
-      const iconData = this.iconMap.get(iconName);
-      if (!iconData) {
-        console.warn(`Phosphor icon "${iconName}" not found`);
-        return this.getFallbackIcon(size, weight, color);
-      }
-
-      const pathData = iconData.svgPaths[weight];
-      if (!pathData) {
-        console.warn(`Weight "${weight}" not found for Phosphor icon "${iconName}"`);
-        return this.getFallbackIcon(size, weight, color);
-      }
-
-      // Generate Phosphor-compliant SVG following official specifications (256x256 viewBox)
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 256 256" fill="${color}">${pathData}</svg>`;
+      // Construct URL based on Phosphor's structure
+      const iconUrl = `${this.BASE_URL}/${weight}/${iconName}.svg`;
+      console.log(`Fetching REAL Phosphor icon: ${iconName} (${weight}) from ${iconUrl}`);
       
-      this.iconCache.set(cacheKey, svg);
-      return svg;
+      const response = await fetch(iconUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      let svgContent = await response.text();
+      
+      // Validate SVG content
+      if (!svgContent.includes('<svg') || !svgContent.includes('</svg>')) {
+        throw new Error(`Invalid SVG content received for icon: ${iconName}`);
+      }
+
+      console.log(`✅ Successfully fetched Phosphor icon: ${iconName} (${weight})`);
+
+      // Customize size if needed
+      if (size !== 256) { // Phosphor icons are 256x256 by default
+        svgContent = this.resizeSvg(svgContent, size);
+      }
+
+      // Cache the result
+      this.iconCache.set(cacheKey, svgContent);
+
+      return {
+        name: iconName,
+        content: svgContent,
+        size,
+        weight
+      };
+
     } catch (error) {
-      console.error(`Error getting Phosphor icon ${iconName}:`, error);
-      return this.getFallbackIcon(size, weight, color);
+      console.error(`❌ Failed to fetch Phosphor icon '${iconName}' (${weight}):`, error);
+      return null;
     }
   }
 
+  /**
+   * Get icon as SVG string (compatibility method for IconRenderer)
+   */
+  async getIconSvg(
+    iconName: string,
+    size: number = 24,
+    weight: PhosphorWeight = 'regular',
+    color?: string
+  ): Promise<string | null> {
+    const icon = await this.getIcon(iconName, weight, size);
+    if (!icon) return null;
+    
+    // Apply color if specified
+    let svgContent = icon.content;
+    if (color && color !== 'currentColor') {
+      svgContent = svgContent.replace(/fill="[^"]*"/g, `fill="${color}"`);
+    }
+    
+    return svgContent;
+  }
+
+  /**
+   * Fetch multiple icons at once
+   */
+  async getIcons(
+    iconNames: string[],
+    weight: PhosphorWeight = 'regular',
+    size: number = 24
+  ): Promise<PhosphorServiceIcon[]> {
+    const promises = iconNames.map(name => this.getIcon(name, weight, size));
+    const results = await Promise.allSettled(promises);
+    
+    return results
+      .filter((result): result is PromiseFulfilledResult<PhosphorServiceIcon | null> => 
+        result.status === 'fulfilled' && result.value !== null)
+      .map(result => result.value!);
+  }
+
+  /**
+   * Search icons by name or tag
+   */
+  searchIcons(query: string): PhosphorIcon[] {
+    const lowercaseQuery = query.toLowerCase();
+    return this.getAvailableIcons().filter(icon =>
+      icon.name.toLowerCase().includes(lowercaseQuery) ||
+      icon.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery))
+    );
+  }
+
+  /**
+   * Resize SVG content
+   */
+  private resizeSvg(svgContent: string, newSize: number): string {
+    return svgContent
+      .replace(/width="256"/g, `width="${newSize}"`)
+      .replace(/height="256"/g, `height="${newSize}"`);
+  }
+
+  /**
+   * Format icon name for display
+   */
   private formatDisplayName(name: string): string {
     return name
       .split('-')
@@ -175,134 +494,130 @@ export class PhosphorIconService {
       .join(' ');
   }
 
-  private generateTags(name: string): string[] {
-    const baseTags = [name];
+  /**
+   * Categorize icon based on name patterns
+   */
+  private categorizeIcon(name: string): string[] {
+    const categories: string[] = [];
     
-    // Add common synonyms and related terms
-    const tagMap: Record<string, string[]> = {
-      'house': ['home', 'building', 'main', 'start'],
-      'heart': ['love', 'like', 'favorite'],
-      'star': ['favorite', 'rating', 'bookmark'],
-      'magnifying-glass': ['search', 'find', 'lookup', 'zoom'],
-      'gear': ['settings', 'config', 'preferences', 'cog'],
-      'calendar': ['date', 'schedule', 'time', 'month']
-    };
-
-    if (tagMap[name]) {
-      baseTags.push(...tagMap[name]);
+    // Add categories based on icon name patterns
+    if (name.includes('arrow') || name.includes('caret')) {
+      categories.push('arrows');
     }
-
-    // Add weight-related tags
-    baseTags.push(...this.availableWeights);
-
-    return baseTags;
-  }
-
-  // Get fallback icon when requested icon is not found
-  private getFallbackIcon(size: number, weight: PhosphorWeight, color: string): string {
-    // Question mark icon as fallback
-    const fallbackPath = weight === 'fill' 
-      ? '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Zm28-72c0,17.38-13.76,31.93-32,35.28V144a8,8,0,0,1-16,0v-8a8,8,0,0,1,8-8c13.23,0,24-9,24-20s-10.77-20-24-20-24,9-24,20v4a8,8,0,0,1-16,0v-4c0-19.85,17.94-36,40-36S168,88.15,168,108Z"/>'
-      : '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm12-88v8a8,8,0,0,1-16,0v-8a8,8,0,0,1,8-8c13.23,0,24-9,24-20s-10.77-20-24-20-24,9-24,20v4a8,8,0,0,1-16,0v-4c0-19.85,17.94-36,40-36s40,16.15,40,36C152,125.38,138.24,139.93,140,144ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"/>';
-
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 256 256" fill="${color}">${fallbackPath}</svg>`;
-  }
-
-  // Search icons by name and tags
-  searchIcons(query: string): PhosphorIcon[] {
-    if (!query) return this.getAvailableIcons();
+    if (name.includes('file') || name.includes('folder')) {
+      categories.push('files');
+    }
+    if (name.includes('user') || name.includes('person')) {
+      categories.push('users');
+    }
+    if (name.includes('chart') || name.includes('graph')) {
+      categories.push('charts');
+    }
+    if (name.includes('logo')) {
+      categories.push('brands');
+    }
     
-    const lowercaseQuery = query.toLowerCase();
-    return this.getAvailableIcons().filter(icon =>
-      icon.name.toLowerCase().includes(lowercaseQuery) ||
-      icon.displayName.toLowerCase().includes(lowercaseQuery) ||
-      icon.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
-      icon.categories.some(category => category.toLowerCase().includes(lowercaseQuery))
-    );
+    if (categories.length === 0) {
+      categories.push('general');
+    }
+    
+    return categories;
   }
 
-  // Get icon metadata
+  /**
+   * Generate tags for an icon
+   */
+  private generateTags(name: string): string[] {
+    const tags: string[] = [name];
+    
+    // Add semantic tags
+    const parts = name.split('-');
+    tags.push(...parts);
+    
+    // Add category-based tags
+    const categories = this.categorizeIcon(name);
+    tags.push(...categories);
+    
+    return Array.from(new Set(tags)); // Remove duplicates
+  }
+
+  /**
+   * Get a properly formatted Phosphor icon for the preview system (FluentUI pattern)
+   */
+  async getIconForPreview(iconName: string, weight: PhosphorWeight = 'regular', size: number = 24): Promise<PhosphorServiceIcon | null> {
+    return this.getIcon(iconName, weight, size);
+  }
+
+  /**
+   * Convert Phosphor icon to a file-like object for the preview system (FluentUI pattern)
+   */
+  async getIconAsFile(iconName: string, weight: PhosphorWeight = 'regular', size: number = 24): Promise<{name: string, content: string, relativePath: string} | null> {
+    const iconResult = await this.getIcon(iconName, weight, size);
+    if (!iconResult) return null;
+
+    return {
+      name: `${iconName.toLowerCase().replace(/\s+/g, '-')}-${size}-${weight}.svg`,
+      content: iconResult.content,
+      relativePath: `phosphor-icons/${iconName.toLowerCase().replace(/\s+/g, '-')}-${size}-${weight}.svg`
+    };
+  }
+
+  /**
+   * Get available sizes (FluentUI pattern)
+   */
+  getAvailableSizes(): number[] {
+    return [16, 20, 24, 28, 32, 48, 64, 96, 128, 256];
+  }
+
+  /**
+   * Get available variants (returns weight names) (FluentUI pattern)
+   */
+  getAvailableVariants(): PhosphorWeight[] {
+    return this.availableWeights;
+  }
+
+  /**
+   * Get popular icons for quick access (FluentUI pattern)
+   */
+  getPopularIcons(): PhosphorIcon[] {
+    const popularNames = [
+      'house', 'user', 'heart', 'star', 'envelope', 'phone', 'magnifying-glass',
+      'gear', 'bell', 'calendar', 'clock', 'download', 'upload', 'check',
+      'x', 'plus', 'minus', 'pencil', 'trash', 'eye'
+    ];
+    
+    return this.getAvailableIcons().filter(icon => popularNames.includes(icon.name));
+  }
+
+  /**
+   * Get icon metadata (FluentUI pattern)
+   */
   getIconInfo(iconName: string): PhosphorIcon | null {
     return this.getAvailableIcons().find(icon => icon.name === iconName) || null;
   }
 
-  // Get popular/commonly used icons
-  getPopularIcons(): PhosphorIcon[] {
-    return this.getAvailableIcons().slice(0, 20);
-  }
-
-  // Get available sizes
-  getAvailableSizes(): number[] {
-    return [16, 20, 24, 28, 32, 48, 64];
-  }
-
-  // Get Phosphor styled icon with proper processing
-  async getPhosphorStyledIcon(iconName: string, size: number = 32, weight: PhosphorWeight = 'regular', color: string = 'currentColor'): Promise<string | null> {
-    return this.getIconSvg(iconName, size, weight, color);
-  }
-
-  // Get all weights of a specific icon
-  async getIconWeights(iconName: string, size: number = 32): Promise<Record<PhosphorWeight, string | null>> {
-    const weights: Record<PhosphorWeight, string | null> = {
-      thin: null,
-      light: null,
-      regular: null,
-      bold: null,
-      fill: null,
-      duotone: null
-    };
-    
-    const iconInfo = this.getIconInfo(iconName);
-    if (iconInfo) {
-      for (const weight of iconInfo.weights) {
-        const svg = await this.getIconSvg(iconName, size, weight);
-        weights[weight] = svg;
-      }
-    }
-    
-    return weights;
-  }
-
-  // Get a properly formatted Phosphor icon for the preview system
-  async getIconForPreview(iconName: string, size: number = 32, weight: PhosphorWeight = 'regular'): Promise<PhosphorServiceIcon | null> {
-    const svgContent = await this.getIconSvg(iconName, size, weight);
-    if (!svgContent) return null;
-
+  /**
+   * Get statistics about the service
+   */
+  getStats() {
     return {
-      name: iconName,
-      content: svgContent,
-      size: size,
-      weight: weight
+      totalUniqueIcons: PHOSPHOR_ICON_NAMES.length,
+      totalWithWeights: PHOSPHOR_ICON_NAMES.length * this.availableWeights.length,
+      availableWeights: this.availableWeights,
+      cachedIcons: this.iconCache.size,
+      version: '2.1.0' // Latest Phosphor version
     };
   }
 
-  // Convert Phosphor icon to a file-like object for the preview system
-  async getIconAsFile(iconName: string, size: number = 32, weight: PhosphorWeight = 'regular'): Promise<{name: string, content: string, relativePath: string} | null> {
-    const svgContent = await this.getIconSvg(iconName, size, weight);
-    if (!svgContent) return null;
-
-    return {
-      name: `${iconName}-${weight}-${size}.svg`,
-      content: svgContent,
-      relativePath: `phosphor/${weight}/${size}/${iconName}.svg`
-    };
-  }
-
-  // Batch generate multiple Phosphor icons
-  async batchGenerateIcons(iconNames: string[], size: number = 32, weight: PhosphorWeight = 'regular'): Promise<Map<string, string>> {
-    const results = new Map<string, string>();
-    
-    const promises = iconNames.map(async (iconName) => {
-      const svg = await this.getIconSvg(iconName, size, weight);
-      if (svg) {
-        results.set(iconName, svg);
-      }
-    });
-    
-    await Promise.all(promises);
-    return results;
+  /**
+   * Clear the icon cache
+   */
+  clearCache(): void {
+    this.iconCache.clear();
+    console.log('🧹 Phosphor icon cache cleared');
   }
 }
 
 // Export singleton instance
-export const phosphorService = new PhosphorIconService();
+export const phosphorService = new PhosphorService();
+export default phosphorService;

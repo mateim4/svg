@@ -151,30 +151,6 @@ const GitHubRepoInput: React.FC<GitHubRepoInputProps> = ({ onRepoLoad, isLoading
           )}
         </div>
 
-        <div className="repo-examples">
-          <h4>Examples:</h4>
-          <div className="example-links">
-            {[
-              { name: 'Fluent System Icons', url: 'microsoft/fluentui-system-icons' },
-              { name: 'Heroicons', url: 'heroicons/heroicons' },
-              { name: 'Lucide Icons', url: 'lucide-icons/lucide' },
-              { name: 'Tabler Icons', url: 'tabler/tabler-icons' },
-            ].map((example) => (
-              <motion.button
-                key={example.name}
-                type="button"
-                className="example-link"
-                onClick={() => setRepoUrl(example.url)}
-                disabled={isLoading}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Folder size={16} />
-                {example.name}
-              </motion.button>
-            ))}
-          </div>
-        </div>
       </motion.form>
 
       <motion.div

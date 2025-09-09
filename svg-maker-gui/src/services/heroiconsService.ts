@@ -97,10 +97,52 @@ export class HeroiconsService {
         return this.iconCache.get(cacheKey)!;
       }
 
-      // Generate Heroicons-compliant SVG based on official specifications
-      const svg = this.generateHeroiconsSvg(iconName, size, variant, strokeWidth);
-      this.iconCache.set(cacheKey, svg);
-      return svg;
+      // Fetch real SVG from GitHub Heroicons repository
+      const baseUrl = 'https://raw.githubusercontent.com/tailwindlabs/heroicons/master/src';
+      let iconUrl: string;
+      
+      // Map variant to correct folder structure
+      if (variant === 'mini') {
+        iconUrl = `${baseUrl}/20/solid/${iconName}.svg`;
+      } else if (variant === 'solid') {
+        iconUrl = `${baseUrl}/24/solid/${iconName}.svg`;
+      } else {
+        iconUrl = `${baseUrl}/24/outline/${iconName}.svg`;
+      }
+
+      console.log(`Fetching REAL Heroicons icon: ${iconName} (${variant}) from ${iconUrl}`);
+      
+      const response = await fetch(iconUrl);
+      if (!response.ok) {
+        console.warn(`Failed to fetch Heroicons ${iconName} (${variant}): HTTP ${response.status}`);
+        // Try fallback with hardcoded paths for common icons
+        const fallbackSvg = this.generateHeroiconsSvg(iconName, size, variant, strokeWidth);
+        this.iconCache.set(cacheKey, fallbackSvg);
+        return fallbackSvg;
+      }
+
+      let svgContent = await response.text();
+      
+      // Validate SVG content
+      if (!svgContent.includes('<svg') || !svgContent.includes('</svg>')) {
+        throw new Error(`Invalid SVG content received for Heroicons icon: ${iconName}`);
+      }
+
+      console.log(`✅ Successfully fetched Heroicons icon: ${iconName} (${variant})`);
+
+      // Customize SVG with user parameters
+      if (size !== 24) {
+        svgContent = svgContent.replace(/width="[^"]*"/, `width="${size}"`);
+        svgContent = svgContent.replace(/height="[^"]*"/, `height="${size}"`);
+      }
+
+      // Apply custom stroke-width for outline variants
+      if (variant === 'outline' && strokeWidth !== 1.5) {
+        svgContent = svgContent.replace(/stroke-width="[^"]*"/, `stroke-width="${strokeWidth}"`);
+      }
+
+      this.iconCache.set(cacheKey, svgContent);
+      return svgContent;
     } catch (error) {
       console.error(`Error getting Heroicons icon ${iconName}:`, error);
       return this.getFallbackIcon(size, variant, strokeWidth);

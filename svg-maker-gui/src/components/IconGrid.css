@@ -21,35 +21,83 @@
   max-width: 500px;
 }
 
-.search-container svg {
+/* Light mode: Search icon should be salmon colored */
+:root[data-theme="light"] .search-container svg,
+:root .search-container svg {
   position: absolute;
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+  opacity: 0.8;
 }
 
-.search-input {
+/* Dark mode: Search icon should be salmon colored */
+:root[data-theme="dark"] .search-container svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+  opacity: 0.8;
+}
+
+/* Light mode: Search input should be glassmorphic white */
+:root[data-theme="light"] .search-input,
+:root .search-input {
   width: 100%;
   padding: 12px 12px 12px 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
   border-radius: 12px;
-  color: white;
+  color: var(--text-on-light-surface) !important;
   font-size: 14px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px) !important;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
-.search-input:focus {
+:root[data-theme="light"] .search-input:focus,
+:root .search-input:focus {
   outline: none;
-  border-color: var(--accent-gradient-start, #00e5ff);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2);
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: var(--salmon-light) !important;
+  box-shadow: 0 0 0 3px rgba(255, 179, 189, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+:root[data-theme="light"] .search-input::placeholder,
+:root .search-input::placeholder {
+  color: var(--warm-gray) !important;
+}
+
+/* Dark mode: Search input should be glassmorphic */
+:root[data-theme="dark"] .search-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  background: rgba(229, 231, 235, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px;
+  color: var(--text-on-light-surface) !important;
+  font-size: 14px;
+  backdrop-filter: blur(30px) !important;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+:root[data-theme="dark"] .search-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: var(--salmon-light) !important;
+  box-shadow: 0 0 0 3px rgba(255, 179, 189, 0.2), 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+:root[data-theme="dark"] .search-input::placeholder {
+  color: var(--text-on-light-surface) !important;
+  opacity: 0.6;
 }
 
 .filter-controls {
@@ -59,43 +107,112 @@
   flex-wrap: wrap;
 }
 
-.category-filter,
-.variant-filter {
+/* Light mode: Category and variant filter containers with salmon icons */
+:root[data-theme="light"] .category-filter,
+:root[data-theme="light"] .variant-filter,
+:root .category-filter,
+:root .variant-filter {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-on-light-surface) !important;
+  opacity: 0.8;
 }
 
-.category-select,
-.variant-select {
+:root[data-theme="light"] .category-filter svg,
+:root[data-theme="light"] .variant-filter svg,
+:root .category-filter svg,
+:root .variant-filter svg {
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+}
+
+/* Dark mode: Category and variant filter containers with salmon icons */
+:root[data-theme="dark"] .category-filter,
+:root[data-theme="dark"] .variant-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-on-light-surface) !important;
+  opacity: 0.8;
+}
+
+:root[data-theme="dark"] .category-filter svg,
+:root[data-theme="dark"] .variant-filter svg {
+  color: var(--salmon-light) !important;
+  stroke: var(--salmon-light) !important;
+}
+
+/* Light mode: Category and variant selects should be glassmorphic white */
+:root[data-theme="light"] .category-select,
+:root[data-theme="light"] .variant-select,
+:root .category-select,
+:root .variant-select {
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
   border-radius: 8px;
-  color: white;
+  color: var(--text-on-light-surface) !important;
   font-size: 14px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px) !important;
   transition: all 0.2s ease;
   min-width: 120px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
-.category-select:focus,
-.variant-select:focus {
+:root[data-theme="light"] .category-select:focus,
+:root[data-theme="light"] .variant-select:focus,
+:root .category-select:focus,
+:root .variant-select:focus {
   outline: none;
-  border-color: var(--accent-gradient-start, #00e5ff);
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: var(--salmon-light) !important;
+  box-shadow: 0 0 0 3px rgba(255, 179, 189, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-.category-select option,
-.variant-select option {
-  background: #1a1a1a;
-  color: white;
+:root[data-theme="light"] .category-select option,
+:root[data-theme="light"] .variant-select option,
+:root .category-select option,
+:root .variant-select option {
+  background: white !important;
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Dark mode: Category and variant selects should be glassmorphic */
+:root[data-theme="dark"] .category-select,
+:root[data-theme="dark"] .variant-select {
+  padding: 8px 12px;
+  background: rgba(229, 231, 235, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px;
+  color: var(--text-on-light-surface) !important;
+  font-size: 14px;
+  backdrop-filter: blur(30px) !important;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+:root[data-theme="dark"] .category-select:focus,
+:root[data-theme="dark"] .variant-select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: var(--salmon-light) !important;
+  box-shadow: 0 0 0 3px rgba(255, 179, 189, 0.2), 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+:root[data-theme="dark"] .category-select option,
+:root[data-theme="dark"] .variant-select option {
+  background: var(--charcoal) !important;
+  color: var(--text-on-light-surface) !important;
 }
 
 /* Results Count */
 .results-count {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-on-light-surface);
+  opacity: 0.7;
   font-size: 14px;
   margin-bottom: 16px;
   font-weight: 500;
@@ -111,7 +228,7 @@
 
 .icon-grid-item {
   position: relative;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: var(--surface-primary);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   padding: 20px 16px;
@@ -127,14 +244,11 @@
 
 .icon-grid-item:hover {
   transform: translateY(-2px);
-  border-color: var(--accent-gradient-start, #00e5ff);
   background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(132, 250, 176, 0.1) 100%);
-  box-shadow: 0 8px 32px rgba(0, 229, 255, 0.2);
 }
 
 .icon-grid-item.hovered {
   transform: translateY(-2px);
-  border-color: var(--accent-gradient-start, #00e5ff);
 }
 
 .icon-container {
@@ -144,13 +258,13 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-secondary);
   transition: all 0.2s ease;
+  overflow: visible;
 }
 
 .icon-grid-item:hover .icon-container {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 229, 255, 0.1);
+  background: var(--surface-hover);
 }
 
 .grid-icon {
@@ -158,9 +272,22 @@
   transition: all 0.2s ease;
 }
 
+/* Ensure IconRenderer SVGs fit properly in containers */
+.icon-container .icon-renderer {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.icon-container .icon-renderer svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 32px;
+  max-height: 32px;
+}
+
 .icon-grid-item:hover .grid-icon {
-  color: var(--accent-gradient-start, #00e5ff);
-  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));
+  color: var(--salmon-pink);
+  filter: drop-shadow(0 0 8px var(--salmon-light));
 }
 
 .icon-info {
@@ -175,16 +302,17 @@
 .icon-name {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-on-light-surface) !important;
   line-height: 1.2;
   word-break: break-word;
 }
 
 .icon-categories {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-on-light-surface) !important;
   line-height: 1.2;
   font-weight: 400;
+  opacity: 0.8;
 }
 
 /* Icon Actions */
@@ -202,7 +330,7 @@
   border-radius: 8px;
   border: none;
   background: rgba(0, 229, 255, 0.2);
-  color: var(--accent-gradient-start, #00e5ff);
+  color: var(--accent-gradient-start, #ff8994);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,4 +435,155 @@
   .icon-categories {
     font-size: 10px;
   }
+}
+
+/* THEME CONSISTENCY FIXES - Match landing page and repos page styling */
+
+/* Light mode: Icon grid items should have warm gray background #ADA8B3 */
+:root[data-theme="light"] .icon-grid-item,
+:root .icon-grid-item {
+  background: #ADA8B3 !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark mode: Icon grid items should be glassmorphic */
+:root[data-theme="dark"] .icon-grid-item {
+  background: rgba(229, 231, 235, 0.8) !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Hover states should match landing page hover */
+.icon-grid-item:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Light mode: Text should be dark on glassmorphic cards */
+:root[data-theme="light"] .icon-grid-item,
+:root[data-theme="light"] .icon-grid-item *,
+:root .icon-grid-item,
+:root .icon-grid-item * {
+  color: var(--text-on-light-surface) !important;
+}
+
+:root[data-theme="light"] .icon-name,
+:root[data-theme="light"] .icon-categories,
+:root[data-theme="light"] .icon-info,
+:root[data-theme="light"] .icon-info span,
+:root .icon-name,
+:root .icon-categories,
+:root .icon-info,
+:root .icon-info span {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Dark mode: Text should be dark on glassmorphic cards */
+:root[data-theme="dark"] .icon-grid-item,
+:root[data-theme="dark"] .icon-grid-item * {
+  color: var(--text-on-light-surface) !important;
+}
+
+:root[data-theme="dark"] .icon-name,
+:root[data-theme="dark"] .icon-categories,
+:root[data-theme="dark"] .icon-info,
+:root[data-theme="dark"] .icon-info span {
+  color: var(--text-on-light-surface) !important;
+}
+
+/* Light mode: Icon containers - light salmon background */
+:root[data-theme="light"] .icon-container,
+:root .icon-container {
+  background: var(--salmon-light) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+:root[data-theme="light"] .icon-grid-item:hover .icon-container,
+:root .icon-grid-item:hover .icon-container {
+  background: var(--salmon-light) !important;
+}
+
+/* Dark mode: Icon containers - FFFCF9 80% opaque background */
+:root[data-theme="dark"] .icon-container {
+  background: rgba(255, 252, 249, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+:root[data-theme="dark"] .icon-grid-item:hover .icon-container {
+  background: rgba(255, 252, 249, 0.9) !important;
+}
+
+/* Light mode: Icons should be white on light salmon backgrounds - High specificity */
+:root[data-theme="light"] .icon-grid-item .grid-icon,
+:root[data-theme="light"] .icon-grid-item .grid-icon svg,
+:root[data-theme="light"] .icon-grid-item .icon-container svg,
+:root[data-theme="light"] .icon-grid-item .icon-renderer svg,
+:root[data-theme="light"] .icon-grid-item svg,
+:root .icon-grid-item .grid-icon,
+:root .icon-grid-item .grid-icon svg,
+:root .icon-grid-item .icon-container svg,
+:root .icon-grid-item .icon-renderer svg,
+:root .icon-grid-item svg {
+  color: white !important;
+  stroke: white !important;
+  fill: white !important;
+}
+
+/* Ensure IconRenderer specifically gets white icons */
+:root[data-theme="light"] .icon-grid-item .icon-renderer,
+:root .icon-grid-item .icon-renderer {
+  color: white !important;
+}
+
+:root[data-theme="light"] .icon-grid-item .icon-renderer *,
+:root .icon-grid-item .icon-renderer * {
+  color: white !important;
+  stroke: white !important;
+  fill: white !important;
+}
+
+/* Dark mode: Icons should be cream #FFFCF9 for contrast on dark backgrounds */
+:root[data-theme="dark"] .grid-icon,
+:root[data-theme="dark"] .grid-icon svg,
+:root[data-theme="dark"] .icon-container svg,
+:root[data-theme="dark"] .icon-grid-item svg {
+  color: var(--cream) !important;
+  stroke: var(--cream) !important;
+  fill: var(--cream) !important;
+}
+
+/* Light mode: Hover state for icons - keep white with subtle glow */
+:root[data-theme="light"] .icon-grid-item:hover .grid-icon,
+:root[data-theme="light"] .icon-grid-item:hover .grid-icon svg,
+:root[data-theme="light"] .icon-grid-item:hover .icon-container svg,
+:root[data-theme="light"] .icon-grid-item:hover .icon-renderer svg,
+:root[data-theme="light"] .icon-grid-item:hover svg,
+:root .icon-grid-item:hover .grid-icon,
+:root .icon-grid-item:hover .grid-icon svg,
+:root .icon-grid-item:hover .icon-container svg,
+:root .icon-grid-item:hover .icon-renderer svg,
+:root .icon-grid-item:hover svg {
+  color: white !important;
+  stroke: white !important;
+  fill: white !important;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)) !important;
+}
+
+/* Dark mode: Hover state for icons - keep cream color with subtle glow */
+:root[data-theme="dark"] .icon-grid-item:hover .grid-icon,
+:root[data-theme="dark"] .icon-grid-item:hover .grid-icon svg,
+:root[data-theme="dark"] .icon-grid-item:hover .icon-container svg {
+  color: var(--cream) !important;
+  stroke: var(--cream) !important;
+  fill: var(--cream) !important;
+  filter: drop-shadow(0 0 8px rgba(255, 252, 249, 0.3)) !important;
 }

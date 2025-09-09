@@ -7,9 +7,9 @@
 
 /* Accessibility improvements */
 *:focus {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--brand-primary);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-default);
 }
 
 /* Reduced motion for accessibility */
@@ -28,25 +28,74 @@ html, body {
   padding: 0;
   height: 100vh;
   max-height: 100vh;
-  overflow: hidden !important;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #root {
-  height: 100vh;
-  max-height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
+  background: var(--app-bg);
 }
 
+/* Body styles now use design system variables */
 body {
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-weight: 500;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  color: #1f2937;
-  line-height: 1.5;
+  font-family: var(--font-sans);
+  font-weight: var(--font-medium);
+  background: var(--app-bg);
+  color: var(--text-primary);
+  line-height: var(--leading-normal);
   letter-spacing: -0.025em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animated white fog layers - same as landing page */
+@keyframes fogDrift {
+  0% {
+    transform: translateX(-100%) translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(100%) translateY(-20px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes fogDriftReverse {
+  0% {
+    transform: translateX(100%) translateY(-50px) scale(1.1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(-100%) translateY(0) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes fogPulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.05);
+  }
 }
 
 /* New App Layout - No Sidebar */
@@ -55,11 +104,95 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  background: var(--app-bg);
+}
+
+/* Theme Toggle Styling */
+.theme-toggle {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: var(--surface-primary);
+  color: var(--text-on-surface-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-primary);
+}
+
+.theme-toggle:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle:active {
+  transform: translateY(0);
+}
+
+/* Add fog effects to app container */
+.app-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  right: -100%;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  filter: blur(80px);
+  animation: fogDrift 20s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.app-container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -100%;
+  right: -100%;
+  bottom: -50%;
+  background: 
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
+  filter: blur(100px);
+  animation: fogDriftReverse 25s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Additional fog layer for more atmosphere */
+.app-content::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: 
+    radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 40%);
+  filter: blur(60px);
+  animation: fogPulse 15s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .app-content {
   flex: 1;
   overflow: hidden;
+  position: relative;
+  z-index: 2;
 }
 
 /* Local Mode Layout */
@@ -89,7 +222,7 @@ body {
   position: absolute;
   width: 60px;
   height: 60px;
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--surface-secondary);
   border-radius: 50%;
   filter: blur(20px);
   opacity: 0.6;
@@ -133,7 +266,7 @@ body {
 
 /* Card Styling with White Fill */
 .workspace-card {
-  background: white;
+  background: var(--surface-primary);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   padding: 1rem;
@@ -161,7 +294,7 @@ body {
 }
 
 .workspace-card:hover {
-  background: white;
+  background: var(--surface-primary);
   border-color: rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
   box-shadow: 
@@ -293,11 +426,12 @@ body {
   gap: 1.5rem;
   max-width: 1600px;
   margin: 0 auto;
+  background: var(--app-bg);
 }
 
 .workflow-step {
   /* Full-width workflow steps should have main panel styling */
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-tertiary);
   backdrop-filter: blur(30px) saturate(125%);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 
@@ -327,7 +461,7 @@ body {
 
 /* Fluent Design 2 Acrylic Panels */
 .panel {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-tertiary);
   backdrop-filter: blur(30px) saturate(125%);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 16px;
@@ -344,7 +478,7 @@ body {
 }
 
 .panel:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--surface-tertiary);
   transform: translateY(-2px) scale(1.005);
   box-shadow: 
     0 16px 48px rgba(0, 0, 0, 0.15),
@@ -369,7 +503,7 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  color: #dc2626;
+  color: var(--danger-active);
   margin-top: 1rem;
   font-size: 0.875rem;
   backdrop-filter: blur(10px);
@@ -383,7 +517,7 @@ body {
 .processor-section,
 .repo-input-section,
 .analysis-section {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-tertiary);
   backdrop-filter: blur(30px) saturate(125%);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 12px;
@@ -404,7 +538,7 @@ body {
 .processor-section:hover,
 .repo-input-section:hover,
 .analysis-section:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--surface-tertiary);
   transform: translateY(-1px);
   box-shadow: 
     0 12px 40px rgba(0, 0, 0, 0.12),
@@ -501,7 +635,7 @@ body {
 .wizard-header-embedded .progress-track {
   width: 100%;
   height: 4px;
-  background: #e5e7eb;
+  background: var(--text-secondary);
   border-radius: 2px;
   position: relative;
   overflow: hidden;
@@ -512,7 +646,7 @@ body {
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: var(--brand-primary);
   border-radius: 2px;
   transition: all 0.5s ease;
 }
@@ -536,16 +670,16 @@ body {
 }
 
 .wizard-header-embedded .step-indicator:hover {
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--surface-secondary);
 }
 
 .wizard-header-embedded .step-indicator.active {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
+  background: var(--surface-tertiary);
+  color: var(--brand-primary);
 }
 
 .wizard-header-embedded .step-indicator.completed .step-icon {
-  background: #10b981;
+  background: var(--success-color);
   color: white;
 }
 
@@ -553,17 +687,17 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #6b7280;
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
 .wizard-header-embedded .step-indicator.active .step-icon {
-  background: #667eea;
+  background: var(--brand-primary);
   color: white;
 }
 
@@ -575,18 +709,18 @@ body {
 .wizard-header-embedded .step-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 
 .wizard-header-embedded .step-description {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   line-height: 1.3;
 }
 
 .wizard-header-embedded .step-indicator.active .step-title {
-  color: #667eea;
+  color: var(--brand-primary);
 }
 
 /* Progress Tracker Styles - All Inside Card */
@@ -605,20 +739,20 @@ body {
 
 .progress-text {
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .progress-percentage {
   font-size: 0.875rem;
-  color: #059669;
+  color: var(--success-active);
   font-weight: 600;
 }
 
 .card-progress-section .progress-bar {
   width: 100%;
   height: 4px;
-  background: #e5e7eb;
+  background: var(--text-secondary);
   border-radius: 2px;
   position: relative;
   overflow: hidden;
@@ -633,42 +767,43 @@ body {
 }
 
 .card-progress-section .progress-fill.completed {
-  background: linear-gradient(90deg, #059669, #10b981);
+  background: linear-gradient(90deg, var(--success-active), var(--success-color));
   left: 0;
 }
 
 .card-progress-section .progress-fill.failed {
-  background: linear-gradient(90deg, #dc2626, #ef4444);
+  background: linear-gradient(90deg, var(--danger-active), var(--danger-color));
 }
 
 /* GitHub Workflow Sidebar Layout */
 .github-workflow-container {
   display: flex;
   height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: var(--app-bg);
 }
 
 .workflow-sidebar {
   width: 320px;
-  background: white;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--surface-primary);
+  border-right: 1px solid var(--border-primary);
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 10;
 }
 
 .sidebar-header {
   padding: 2rem 1.5rem 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--border-secondary);
+  background: var(--surface-secondary);
 }
 
 .sidebar-header h2 {
   margin: 0 0 1rem;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   font-family: 'Poppins', sans-serif;
 }
 
@@ -681,7 +816,7 @@ body {
 .overall-progress .progress-track {
   width: 100%;
   height: 6px;
-  background: #e5e7eb;
+  background: var(--text-secondary);
   border-radius: 3px;
   position: relative;
   overflow: hidden;
@@ -692,14 +827,14 @@ body {
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: var(--brand-primary);
   border-radius: 3px;
   transition: all 0.5s ease;
 }
 
 .overall-progress .progress-text {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -719,19 +854,21 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  background: transparent;
+  border: 1px solid var(--border-secondary);
 }
 
 .sidebar-step:hover:not(.disabled) {
-  background: rgba(102, 126, 234, 0.04);
+  background: var(--surface-secondary);
 }
 
 .sidebar-step.active {
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  background: var(--surface-selected);
+  border: 1px solid var(--brand-primary);
 }
 
 .sidebar-step.completed:not(.active) {
-  background: rgba(16, 185, 129, 0.05);
+  background: var(--surface-secondary);
 }
 
 .sidebar-step.disabled {
@@ -747,23 +884,23 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
 .sidebar-step.active .step-number {
-  background: #667eea;
+  background: var(--brand-primary);
   color: white;
 }
 
 .sidebar-step.completed .step-number {
-  background: #10b981;
+  background: var(--success-color);
   color: white;
 }
 
@@ -775,18 +912,18 @@ body {
 .step-title {
   font-size: 0.975rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
   line-height: 1.4;
 }
 
 .sidebar-step.active .step-title {
-  color: #667eea;
+  color: var(--brand-primary);
 }
 
 .step-description {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   line-height: 1.4;
   margin-bottom: 0.5rem;
 }
@@ -800,13 +937,13 @@ body {
 }
 
 .step-status:not(.completed) {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
+  background: var(--surface-tertiary);
+  color: var(--brand-primary);
 }
 
 .step-status.completed {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: var(--surface-tertiary);
+  color: var(--success-color);
 }
 
 .sidebar-controls {
@@ -833,23 +970,23 @@ body {
 }
 
 .nav-btn.primary {
-  background: #667eea;
+  background: var(--brand-primary);
   color: white;
 }
 
 .nav-btn.primary:hover:not(:disabled) {
-  background: #5a67d8;
+  background: var(--brand-primary);
   transform: translateY(-1px);
 }
 
 .nav-btn.secondary {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--text-secondary);
 }
 
 .nav-btn.secondary:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: var(--text-secondary);
 }
 
 .nav-btn:disabled {
@@ -862,12 +999,13 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background: var(--app-bg);
 }
 
 .workflow-error {
-  background: #fef2f2;
+  background: var(--surface-error);
   border: 1px solid #fecaca;
-  color: #dc2626;
+  color: var(--danger-active);
   padding: 1rem 1.5rem;
   margin: 1rem;
   border-radius: 8px;
@@ -881,6 +1019,7 @@ body {
   flex: 1;
   overflow: visible;
   padding: 1.5rem;
+  background: var(--app-bg);
 }
 
 /* Responsive Sidebar */
@@ -908,7 +1047,7 @@ body {
     height: auto;
     max-height: 40vh;
     border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid var(--border-primary);
   }
   
   .sidebar-steps {
@@ -927,7 +1066,7 @@ body {
 
 /* Error Notifications */
 .error-notification {
-  background: #fef2f2;
+  background: var(--surface-error);
   border: 1px solid #fecaca;
   border-radius: 8px;
   margin: 1rem 2rem;
@@ -937,20 +1076,20 @@ body {
 }
 
 .error-notification.global-error {
-  background: #fef2f2;
-  border-color: #ef4444;
+  background: var(--surface-error);
+  border-color: var(--danger-color);
 }
 
 .error-notification.file-error {
-  background: #fefbeb;
-  border-color: #f59e0b;
+  background: var(--surface-warning);
+  border-color: var(--warning-color);
 }
 
 .error-content {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #dc2626;
+  color: var(--danger-active);
 }
 
 .error-notification.file-error .error-content {
@@ -975,5 +1114,5 @@ body {
 }
 
 .error-dismiss:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--surface-secondary);
 }

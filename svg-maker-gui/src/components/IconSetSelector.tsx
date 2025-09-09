@@ -52,9 +52,9 @@ const IconSetSelector: React.FC<IconSetSelectorProps> = ({
       </div>
       <div className="icon-list" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {isLoading ? (
-          <div style={{ color: "#6366f1", fontWeight: 500 }}>Searching for icons...</div>
+          <div style={{ color: "var(--brand-primary)", fontWeight: 500 }}>Searching for icons...</div>
         ) : icons.length === 0 ? (
-          <div style={{ color: "#888" }}>No icons found in folder.</div>
+          <div style={{ color: "var(--text-tertiary)" }}>No icons found in folder.</div>
         ) : (
           icons.map(icon => (
             <div

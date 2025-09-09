@@ -239,7 +239,7 @@ const StyleControls = React.memo<StyleControlsProps>(({ config, onConfigChange }
             {config.style === 'glassmorphism' ? (
               <div className="glass-background-section">
                 <div className="gradient-toggle">
-                  <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, color: '#6b46c1' }}>Background</h5>
+                  <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, color: 'var(--brand-primary)' }}>Background</h5>
                 </div>
                 <div className="control-item-mini">
                   <label>Transparency</label>
@@ -271,7 +271,7 @@ const StyleControls = React.memo<StyleControlsProps>(({ config, onConfigChange }
             {config.style === 'glassmorphism' ? (
               <div className="glass-icon-section">
                 <div className="gradient-toggle">
-                  <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, color: '#6b46c1' }}>Icon</h5>
+                  <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, color: 'var(--brand-primary)' }}>Icon</h5>
                 </div>
                 <div className="control-item-mini">
                   <label>Transparency</label>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 interface IconRendererProps {
-  iconPack: 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent';
+  iconPack: 'lucide' | 'heroicons' | 'feather' | 'phosphor' | 'tabler' | 'fluent' | 'bootstrap' | 'material' | 'ionicons';
   iconName: string;
   size?: number;
-  variant?: string;  // For Heroicons (outline/solid/mini), Phosphor (thin/light/regular/bold/fill/duotone), etc.
+  variant?: string;  // For Heroicons (outline/solid/mini), Phosphor (thin/light/regular/bold/fill/duotone), Material (outlined/rounded/sharp), Ionicons (outline/filled/sharp), etc.
   strokeWidth?: number;  // For stroke-based icons
   color?: string;
   className?: string;
@@ -66,7 +66,7 @@ export const IconRenderer: React.FC<IconRendererProps> = ({
           iconService = phosphorService;
           svg = await iconService.getIconSvg(
             iconName, 
-            size, 
+            size,
             variant as 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone' || 'regular',
             color
           );
@@ -91,6 +91,33 @@ export const IconRenderer: React.FC<IconRendererProps> = ({
             iconName, 
             size, 
             variant as 'regular' | 'filled' | 'light' || 'regular'
+          );
+          break;
+          
+        case 'bootstrap':
+          const { bootstrapService } = await import('../services/bootstrapService');
+          iconService = bootstrapService;
+          svg = await iconService.getIconSvg(iconName, size);
+          break;
+          
+        case 'material':
+          const { materialService } = await import('../services/materialService');
+          iconService = materialService;
+          svg = await iconService.getIconSvg(
+            iconName, 
+            size,
+            variant as 'outlined' | 'rounded' | 'sharp' || 'outlined',
+            color
+          );
+          break;
+          
+        case 'ionicons':
+          const { ioniconsService } = await import('../services/ioniconsService');
+          iconService = ioniconsService;
+          svg = await iconService.getIconSvg(
+            iconName, 
+            size,
+            variant as 'outline' | 'filled' | 'sharp' || 'outline'
           );
           break;
           

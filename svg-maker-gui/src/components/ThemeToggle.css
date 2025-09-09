@@ -1,0 +1,187 @@
+/* Theme Controls - Clean, Modern Design */
+.theme-controls-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.theme-controls {
+  display: flex;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 4px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  pointer-events: auto;
+  gap: 0;
+}
+
+.control-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.control-button:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.control-button:active {
+  transform: translateY(0);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.control-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Settings button specific styling */
+.settings-btn {
+  margin-right: 2px;
+}
+
+.settings-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.settings-btn:active {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+/* Theme button specific styling */
+.theme-btn:hover {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.theme-btn:active {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+/* Dark theme adjustments */
+:root[data-theme="dark"] .theme-controls {
+  background: rgba(31, 41, 55, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.24),
+    0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+:root[data-theme="dark"] .control-button {
+  color: #e5e7eb;
+}
+
+:root[data-theme="dark"] .control-button:hover {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+:root[data-theme="dark"] .settings-btn:hover {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+:root[data-theme="dark"] .theme-btn:hover {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .theme-controls-container {
+    top: 16px;
+    right: 16px;
+  }
+  
+  .theme-controls {
+    border-radius: 14px;
+    padding: 3px;
+  }
+  
+  .control-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-controls-container {
+    top: 12px;
+    right: 12px;
+  }
+  
+  .control-button {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Animation for theme switching */
+.control-button svg {
+  transition: transform 0.2s ease;
+}
+
+.control-button:hover svg {
+  transform: scale(1.1);
+}
+
+.control-button:active svg {
+  transform: scale(0.95);
+}
+
+/* Subtle pulse animation for settings */
+.settings-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.settings-btn:hover::before {
+  opacity: 1;
+}
+
+/* Subtle pulse animation for theme toggle */
+.theme-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.theme-btn:hover::before {
+  opacity: 1;
+}

@@ -8,7 +8,6 @@ import {
   ChevronDown, 
   CheckCircle2, 
   Circle,
-  Eye,
   Download,
   Search,
   X
@@ -29,6 +28,9 @@ interface FolderTreeBrowserProps {
   onPreviewFile: (file: GitHubFile) => void;
   onExportSelected?: () => void;
   isLoading?: boolean;
+  repositoryName?: string;
+  repositoryType?: string;
+  repositoryDescription?: string;
 }
 
 interface TreeItemProps {
@@ -40,12 +42,13 @@ interface TreeItemProps {
   onPreviewFile: (file: GitHubFile) => void;
 }
 
-// Priority loading queue for managing load order
+// Enhanced Priority loading queue with batch processing
 class PriorityLoadQueue {
   private static instance: PriorityLoadQueue;
   private queue: Array<{ load: () => Promise<void>, priority: number, id: string }> = [];
   private loading = new Set<string>();
-  private maxConcurrent = 3; // Load max 3 icons simultaneously
+  private maxConcurrent = 5; // Increased for better performance
+  private batchTimer: NodeJS.Timeout | null = null;
 
   static getInstance() {
     if (!PriorityLoadQueue.instance) {
@@ -64,30 +67,62 @@ class PriorityLoadQueue {
     this.queue.push({ load: loadFn, priority, id });
     this.queue.sort((a, b) => b.priority - a.priority); // Higher priority first
     
-    this.processQueue();
+    // Batch process with requestIdleCallback for better performance
+    if (!this.batchTimer) {
+      this.batchTimer = setTimeout(() => {
+        this.batchTimer = null;
+        this.processBatch();
+      }, 16); // Process at ~60fps
+    }
   }
 
-  private async processQueue() {
-    if (this.loading.size >= this.maxConcurrent || this.queue.length === 0) return;
+  private async processBatch() {
+    const batchSize = Math.min(this.maxConcurrent - this.loading.size, this.queue.length);
+    if (batchSize <= 0) return;
 
-    const next = this.queue.shift();
-    if (!next) return;
-
-    this.loading.add(next.id);
+    const batch = this.queue.splice(0, batchSize);
     
-    try {
-      await next.load();
-    } catch (error) {
-      console.warn(`Failed to load icon ${next.id}:`, error);
-    } finally {
-      this.loading.delete(next.id);
-      // Process next item
-      setTimeout(() => this.processQueue(), 10);
+    await Promise.all(batch.map(async (item) => {
+      this.loading.add(item.id);
+      try {
+        await item.load();
+      } catch (error) {
+        console.warn(`Failed to load icon ${item.id}:`, error);
+      } finally {
+        this.loading.delete(item.id);
+      }
+    }));
+    
+    // Continue processing if more items
+    if (this.queue.length > 0) {
+      requestAnimationFrame(() => this.processBatch());
     }
   }
 }
 
-// SVG Icon Preview Component - Uses priority loading based on viewport visibility
+// Shared IntersectionObserver instance for better performance
+let sharedObserver: IntersectionObserver | null = null;
+const observerCallbacks = new WeakMap<Element, (entry: IntersectionObserverEntry) => void>();
+
+const getSharedObserver = () => {
+  if (!sharedObserver) {
+    sharedObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const callback = observerCallbacks.get(entry.target);
+          if (callback) callback(entry);
+        });
+      },
+      { 
+        threshold: [0, 0.25, 0.5, 0.75, 1.0],
+        rootMargin: '100px'
+      }
+    );
+  }
+  return sharedObserver;
+};
+
+// SVG Icon Preview Component - Optimized with shared observer
 const IconPreview = React.memo<{ file: GitHubFile }>(({ file }) => {
   const [svgContent, setSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
@@ -95,52 +130,55 @@ const IconPreview = React.memo<{ file: GitHubFile }>(({ file }) => {
   const [shouldLoad, setShouldLoad] = useState(false);
   const [priority, setPriority] = useState(0);
   const elementRef = React.useRef<HTMLDivElement>(null);
-  const loadQueue = PriorityLoadQueue.getInstance();
+  const loadQueue = React.useMemo(() => PriorityLoadQueue.getInstance(), []);
 
-  // Enhanced Intersection Observer for priority loading
+  // Use shared Intersection Observer for better performance
   React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Higher priority for more visible icons
-            const visibilityRatio = entry.intersectionRatio;
-            const newPriority = Math.floor(visibilityRatio * 100);
-            setPriority(newPriority);
-            setShouldLoad(true);
-          } else {
-            // Lower priority when not visible
-            setPriority(0);
-          }
-        });
-      },
-      { 
-        threshold: [0, 0.25, 0.5, 0.75, 1.0], // Multiple thresholds for priority calculation
-        rootMargin: '100px' // Start loading slightly before coming into view
+    const element = elementRef.current;
+    if (!element) return;
+
+    const observer = getSharedObserver();
+    const callback = (entry: IntersectionObserverEntry) => {
+      if (entry.isIntersecting) {
+        const visibilityRatio = entry.intersectionRatio;
+        const newPriority = Math.floor(visibilityRatio * 100);
+        setPriority(newPriority);
+        setShouldLoad(true);
+      } else {
+        setPriority(0);
       }
-    );
+    };
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
-    }
+    observerCallbacks.set(element, callback);
+    observer.observe(element);
 
-    return () => observer.disconnect();
+    return () => {
+      observerCallbacks.delete(element);
+      observer.unobserve(element);
+    };
   }, []);
 
   React.useEffect(() => {
     if (!shouldLoad) return;
     
+    let isMounted = true; // Track if component is mounted
+    const abortController = new AbortController(); // For cancelling fetch
     const iconId = file.sha || file.path;
+    
     const loadSvgContent = async () => {
       if (!file.download_url) {
-        setError(true);
-        setIsLoading(false);
+        if (isMounted) {
+          setError(true);
+          setIsLoading(false);
+        }
         return;
       }
 
       try {
-        setIsLoading(true);
-        setError(false);
+        if (isMounted) {
+          setIsLoading(true);
+          setError(false);
+        }
         
         // Create a ParsedIcon-like object from GitHubFile
         const iconForCache: ParsedIcon = {
@@ -163,30 +201,54 @@ const IconPreview = React.memo<{ file: GitHubFile }>(({ file }) => {
           rawSvg = await iconCacheService.getSvgContent(iconForCache);
         } catch {
           // Fallback to direct fetch if cache fails
-          const response = await fetch(file.download_url);
+          const response = await fetch(file.download_url, {
+            signal: abortController.signal,
+            // Add cache headers for better performance
+            headers: {
+              'Cache-Control': 'max-age=3600',
+            },
+            // Use cache when available
+            cache: 'default',
+            // Lower priority for background loading
+            priority: priority > 50 ? 'high' : 'low',
+          } as RequestInit);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           rawSvg = await response.text();
         }
         
-        // Clean and resize the SVG for preview (20x20 size)
-        const cleanedSvg = rawSvg
-          .replace(/width="[^"]*"/gi, '')
-          .replace(/height="[^"]*"/gi, '')
-          .replace(/<svg([^>]*)>/i, '<svg$1 width="20" height="20">');
-        
-        setSvgContent(cleanedSvg);
-      } catch (err) {
-        console.error('Failed to load SVG content:', err);
-        setError(true);
+        // Only update state if component is still mounted
+        if (isMounted) {
+          // Clean and resize the SVG for preview (20x20 size)
+          const cleanedSvg = rawSvg
+            .replace(/width="[^"]*"/gi, '')
+            .replace(/height="[^"]*"/gi, '')
+            .replace(/<svg([^>]*)>/i, '<svg$1 width="20" height="20">');
+          
+          setSvgContent(cleanedSvg);
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError' && isMounted) {
+          console.error('Failed to load SVG content:', err);
+          setError(true);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     // Add to priority queue instead of loading immediately
     loadQueue.addToQueue(iconId, loadSvgContent, priority);
+    
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldLoad, file.download_url, priority, loadQueue]);
 
   if (!shouldLoad || isLoading) {
@@ -198,7 +260,15 @@ const IconPreview = React.memo<{ file: GitHubFile }>(({ file }) => {
   }
 
   if (error || !svgContent) {
-    return <FileImage size={20} className="icon-preview-fallback" />;
+    return (
+      <div 
+        ref={elementRef} 
+        className="icon-preview icon-preview-error" 
+        title={`Failed to load ${file.name}`}
+      >
+        <FileImage size={20} className="icon-preview-fallback" />
+      </div>
+    );
   }
 
   return (
@@ -219,33 +289,29 @@ const TreeItem = React.memo<TreeItemProps>(({
   onFileSelect,
   onPreviewFile,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(level < 2);
-  const isSvgFile = item.type === 'file' && item.name.toLowerCase().endsWith('.svg');
-  const isSelected = selectedFiles.has(item.path);
-  const svgFile = svgFiles.find(f => f.path === item.path);
+  // Use lazy initial state for better performance
+  const [isExpanded, setIsExpanded] = useState(() => level < 2);
   
-  const handleToggle = () => {
+  // Memoize computations
+  const isSvgFile = React.useMemo(
+    () => item.type === 'file' && item.name.toLowerCase().endsWith('.svg'),
+    [item.type, item.name]
+  );
+  const isSelected = selectedFiles.has(item.path);
+  const svgFile = React.useMemo(
+    () => svgFiles.find(f => f.path === item.path),
+    [svgFiles, item.path]
+  );
+  
+  const handleToggle = React.useCallback(() => {
     if (item.type === 'dir') {
-      setIsExpanded(!isExpanded);
+      setIsExpanded(prev => !prev);
     } else if (isSvgFile) {
       // For SVG files, clicking anywhere selects/deselects them
       onFileSelect(item.path, !isSelected);
     }
-  };
+  }, [item.type, item.path, isSvgFile, isSelected, onFileSelect]);
 
-  const handleFileSelect = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isSvgFile) {
-      onFileSelect(item.path, !isSelected);
-    }
-  };
-
-  const handlePreview = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (svgFile) {
-      onPreviewFile(svgFile);
-    }
-  };
 
   const hasChildren = item.children && item.children.length > 0;
   const svgFilesInFolder = item.children ? 
@@ -263,7 +329,20 @@ const TreeItem = React.memo<TreeItemProps>(({
         } ${isSelected ? 'selected' : ''}`}
         style={{ paddingLeft: `${level * 1.5}rem` }}
         onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
+        tabIndex={isSvgFile ? 0 : -1}
+        role={isSvgFile ? 'checkbox' : item.type === 'dir' ? 'button' : undefined}
+        aria-checked={isSvgFile ? isSelected : undefined}
+        aria-label={isSvgFile ? `${isSelected ? 'Deselect' : 'Select'} ${item.name}` : item.name}
+        data-svg-item={isSvgFile ? 'true' : 'false'}
+        data-path={item.path}
         whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
+        whileFocus={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', outline: '2px solid var(--brand-primary)' }}
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: level * 0.05 }}
@@ -309,26 +388,12 @@ const TreeItem = React.memo<TreeItemProps>(({
           </div>
 
           {isSvgFile && (
-            <div className="item-actions" onClick={(e) => e.stopPropagation()}>
-              <motion.button
-                className="action-button preview-button"
-                onClick={handlePreview}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                title="Preview"
-              >
-                <Eye size={14} />
-              </motion.button>
-              
-              <motion.button
-                className={`action-button select-button ${isSelected ? 'selected' : ''}`}
-                onClick={handleFileSelect}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                title={isSelected ? 'Deselect' : 'Select'}
-              >
-                {isSelected ? <CheckCircle2 size={16} /> : <Circle size={16} />}
-              </motion.button>
+            <div className="selection-indicator">
+              {isSelected ? (
+                <CheckCircle2 size={18} className="selected-icon" />
+              ) : (
+                <Circle size={18} className="unselected-icon" />
+              )}
             </div>
           )}
         </div>
@@ -371,54 +436,219 @@ const FolderTreeBrowser = React.memo<FolderTreeBrowserProps>(({
   onPreviewFile,
   onExportSelected,
   isLoading = false,
+  repositoryName,
+  repositoryType = "Standard SVG Repository",
+  repositoryDescription,
 }) => {
   const { displayValue: searchQuery, searchValue: debouncedSearchQuery, setDisplayValue: setSearchQuery } = useDebouncedSearch('', 300);
   
-  // Filter SVG files based on debounced search query
+  // Keyboard navigation state
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  
+  // Optimized keyboard navigation with debouncing
+  const handleKeyDown = React.useCallback((e: KeyboardEvent) => {
+    // Only handle if not in input field
+    if ((e.target as HTMLElement).tagName === 'INPUT') return;
+    if (!containerRef.current) return;
+    
+    const svgItems = Array.from(containerRef.current.querySelectorAll('[data-svg-item="true"]'));
+    if (!svgItems.length) return;
+    
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setFocusedIndex(prev => Math.min(prev + 1, svgItems.length - 1));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setFocusedIndex(prev => Math.max(prev - 1, 0));
+        break;
+      case ' ':
+      case 'Enter':
+        if (focusedIndex >= 0 && svgItems[focusedIndex]) {
+          e.preventDefault();
+          const item = svgItems[focusedIndex] as HTMLElement;
+          const path = item.dataset.path;
+          if (path) {
+            onFileSelect(path, !selectedFiles.has(path));
+          }
+        }
+        break;
+      case 'a':
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          onSelectAll();
+        }
+        break;
+      case 'd':
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          onDeselectAll();
+        }
+        break;
+    }
+  }, [focusedIndex, selectedFiles, onFileSelect, onSelectAll, onDeselectAll]);
+  
+  React.useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+  
+  // Search cache for better performance
+  const searchCache = React.useRef(new Map<string, GitHubFile[]>());
+  
+  // Enhanced search with caching and pattern matching
   const filteredSvgFiles = useMemo(() => {
     if (!debouncedSearchQuery.trim()) return svgFiles;
     
-    const query = debouncedSearchQuery.toLowerCase().trim();
-    return svgFiles.filter(file => 
-      file.name.toLowerCase().includes(query) ||
-      file.path.toLowerCase().includes(query)
-    );
+    // Check cache first
+    const cacheKey = `${debouncedSearchQuery}_${svgFiles.length}`;
+    if (searchCache.current.has(cacheKey)) {
+      return searchCache.current.get(cacheKey)!;
+    }
+    
+    const query = debouncedSearchQuery.trim();
+    let result: GitHubFile[] = [];
+    
+    // Regex search: /pattern/flags with better error handling
+    if (query.startsWith('/') && query.lastIndexOf('/') > 0) {
+      try {
+        const lastSlash = query.lastIndexOf('/');
+        const pattern = query.slice(1, lastSlash);
+        const flags = query.slice(lastSlash + 1) || 'i'; // Default to case-insensitive
+        
+        // Validate regex flags
+        if (!/^[gimsuvy]*$/.test(flags)) {
+          throw new Error('Invalid regex flags');
+        }
+        
+        const regex = new RegExp(pattern, flags);
+        
+        result = svgFiles.filter(file => 
+          regex.test(file.name) || regex.test(file.path)
+        );
+      } catch (e) {
+        // Invalid regex, fall back to literal search
+        console.warn('Invalid regex pattern:', e);
+      }
+    }
+    
+    // Only continue if no regex results
+    if (result.length === 0) {
+      const lowerQuery = query.toLowerCase();
+      
+      // Wildcard search: convert * to regex
+      if (lowerQuery.includes('*')) {
+        try {
+          const regexPattern = lowerQuery
+            .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // Escape special chars except *
+            .replace(/\*/g, '.*'); // Convert * to .*
+          const regex = new RegExp(regexPattern);
+          
+          result = svgFiles.filter(file => 
+            regex.test(file.name.toLowerCase()) || 
+            regex.test(file.path.toLowerCase())
+          );
+        } catch (e) {
+          // Invalid pattern, fall back to literal search
+        }
+      }
+      
+      // Standard fuzzy search if no wildcard results
+      if (result.length === 0) {
+        result = svgFiles.filter(file => {
+          const fileName = file.name.toLowerCase();
+          const filePath = file.path.toLowerCase();
+          const fileBaseName = fileName.replace('.svg', '');
+          
+          // Direct matching
+          if (fileName.includes(lowerQuery) ||
+              filePath.includes(lowerQuery) ||
+              fileBaseName.includes(lowerQuery)) {
+            return true;
+          }
+          
+          // Fuzzy matching: check if query chars appear in order
+          // Using Array.from() for ES5 compatibility
+          const queryChars = Array.from(lowerQuery);
+          let lastIndex = -1;
+          for (const char of queryChars) {
+            const index = fileName.indexOf(char, lastIndex + 1);
+            if (index === -1) return false;
+            lastIndex = index;
+          }
+          return true;
+        });
+      }
+    }
+    
+    // Cache the result (limit cache size to prevent memory issues)
+    if (searchCache.current.size > 50) {
+      const firstKey = searchCache.current.keys().next().value;
+      searchCache.current.delete(firstKey);
+    }
+    searchCache.current.set(cacheKey, result);
+    
+    return result;
   }, [svgFiles, debouncedSearchQuery]);
   
-  const totalSvgFiles = filteredSvgFiles.length;
-  const selectedCount = selectedFiles.size;
+  // Memoized calculations for better performance
+  const totalSvgFiles = React.useMemo(() => filteredSvgFiles.length, [filteredSvgFiles]);
+  const selectedCount = React.useMemo(() => selectedFiles.size, [selectedFiles]);
   
-  // Clear search
-  const clearSearch = () => setSearchQuery('');
+  // Clear search with memoization
+  const clearSearch = React.useCallback(() => {
+    setSearchQuery('');
+    setFocusedIndex(-1);
+  }, [setSearchQuery]);
   
-  // Create filtered tree with search results
+  // Enhanced performance-optimized tree filtering
   const filteredTree = useMemo(() => {
     if (!debouncedSearchQuery.trim()) {
-      // For large datasets without search, limit initial render to first 100 items
-      if (tree.length === 1 && tree[0].children && tree[0].children.length > 100) {
+      // For large datasets, implement progressive loading
+      if (tree.length === 1 && tree[0].children && tree[0].children.length > 150) {
         const rootFolder = tree[0];
+        const visibleLimit = 150;
+        const remainingCount = rootFolder.children!.length - visibleLimit;
+        
         return [{
           ...rootFolder,
-          children: rootFolder.children!.slice(0, 100).concat([{
-            name: `... and ${rootFolder.children!.length - 100} more files (use search to narrow results)`,
-            path: '__more_files__',
+          children: rootFolder.children!.slice(0, visibleLimit).concat([{
+            name: `⚡ Load ${remainingCount} more files (${remainingCount} remaining)`,
+            path: '__load_more__',
             type: 'file' as const,
-            sha: '__more__'
+            sha: '__load_more__',
+            size: 0
           }])
         }];
       }
       return tree;
     }
     
-    // For search results, limit to 200 files for performance
-    const limitedResults = filteredSvgFiles.slice(0, 200);
-    return [{
-      name: `Search Results (${limitedResults.length} of ${filteredSvgFiles.length})`,
+    // Enhanced search with better performance and pagination
+    const searchResults = filteredSvgFiles.slice(0, 300);
+    const hasMore = filteredSvgFiles.length > 300;
+    
+    const searchTree = [{
+      name: `🔍 Search Results (${searchResults.length}${hasMore ? ` of ${filteredSvgFiles.length}` : ''})`,
       path: 'search-results',
       type: 'dir' as const,
-      children: limitedResults,
+      children: searchResults,
       sha: 'search-results'
     }];
+
+    if (hasMore) {
+      searchTree[0].children = searchResults.concat([{
+        name: `📄 ${filteredSvgFiles.length - 300} more results (refine search to see all)`,
+        path: '__search_more__',
+        type: 'file' as const,
+        sha: '__search_more__',
+        size: 0
+      }]);
+    }
+
+    return searchTree;
   }, [tree, filteredSvgFiles, debouncedSearchQuery]);
 
   if (isLoading) {
@@ -430,7 +660,23 @@ const FolderTreeBrowser = React.memo<FolderTreeBrowserProps>(({
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
-          <p>Loading repository structure...</p>
+          <div className="loading-text">
+            <h3>Loading repository structure...</h3>
+            <p>Analyzing SVG files and building file tree</p>
+          </div>
+          
+          {/* Skeleton Loading */}
+          <div className="skeleton-container">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="skeleton-item" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="skeleton-icon"></div>
+                <div className="skeleton-text">
+                  <div className="skeleton-name" style={{ width: `${60 + Math.random() * 40}%` }}></div>
+                  <div className="skeleton-meta" style={{ width: `${30 + Math.random() * 30}%` }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -440,88 +686,152 @@ const FolderTreeBrowser = React.memo<FolderTreeBrowserProps>(({
     return (
       <div className="folder-tree-browser empty">
         <div className="empty-content">
-          <Folder size={48} />
-          <h3>No Repository Loaded</h3>
-          <p>Enter a GitHub repository URL to browse SVG files</p>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, ease: "backOut" }}
+          >
+            <Folder size={64} />
+          </motion.div>
+          <div className="empty-text">
+            <h3>No Repository Loaded</h3>
+            <p>Enter a GitHub repository URL above to browse and select SVG files</p>
+            <div className="empty-features">
+              <div className="feature-item">🔍 Advanced search with wildcards</div>
+              <div className="feature-item">⌨️ Keyboard navigation support</div>
+              <div className="feature-item">🎯 Bulk selection tools</div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="folder-tree-browser">
+    <div className="folder-tree-browser" ref={containerRef}>
+      {/* Repository Header */}
       <motion.div
-        className="tree-header"
+        className="repo-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.4 }}
       >
-        <div className="header-info">
-          <h3>Repository Files</h3>
-          <div className="file-stats">
-            <span className="total-files">{totalSvgFiles} SVG files found</span>
-            <span className="selected-files">{selectedCount} selected</span>
+        <div className="repo-info">
+          <div className="repo-title">
+            <h3>Repository Files</h3>
+            <div className="repo-name">{repositoryName || "Bootstrap Icons"}</div>
+          </div>
+          <div className="repo-badge">{repositoryType}</div>
+        </div>
+        
+        <div className="file-counter">
+          <div className="counter-item">
+            <span className="counter-number">{totalSvgFiles}</span>
+            <span className="counter-label">SVG files found</span>
+          </div>
+          <div className="counter-item selected">
+            <span className="counter-number">{selectedCount}</span>
+            <span className="counter-label">selected</span>
           </div>
         </div>
         
-        <div className="header-actions">
+        <div className="action-buttons">
           <motion.button
-            className="action-btn select-all"
+            className="btn-secondary"
             onClick={onSelectAll}
             disabled={selectedCount === totalSvgFiles}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            title="Select all visible SVG files (Ctrl+A)"
           >
             <CheckCircle2 size={16} />
             Select All
           </motion.button>
           
           <motion.button
-            className="action-btn deselect-all"
+            className="btn-secondary"
             onClick={onDeselectAll}
             disabled={selectedCount === 0}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            title="Deselect all selected files (Ctrl+D)"
           >
             <Circle size={16} />
-            Deselect All
+            Clear
           </motion.button>
         </div>
       </motion.div>
 
-      {/* Search Input - Right above the icon list */}
+      {/* Enhanced Search Bar */}
       <motion.div
-        className="search-container"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.5 }}
+        className="search-section"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
       >
-        <div className="search-input-wrapper">
-          <Search size={16} className="search-icon" />
+        <div className="search-wrapper">
+          <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder="Search icons..."
+            placeholder="Search icons... (try: arrow*, home, *icon, /regex/)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                clearSearch();
+              }
+            }}
+            className="search-field"
+            autoComplete="off"
+            spellCheck="false"
           />
           {searchQuery && (
             <button 
               onClick={clearSearch}
-              className="clear-search"
-              title="Clear search"
+              className="clear-btn"
+              title="Clear search (Esc)"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           )}
         </div>
+        
+        {searchQuery && (
+          <div className="search-stats">
+            {filteredSvgFiles.length} of {svgFiles.length} files match your search
+            {debouncedSearchQuery !== searchQuery && (
+              <span className="search-loading"> • Searching...</span>
+            )}
+          </div>
+        )}
+        
+        {/* Keyboard Shortcuts Help */}
+        {!searchQuery && totalSvgFiles > 0 && (
+          <div className="keyboard-help">
+            <span className="help-text">💡 Use ↑↓ arrow keys to navigate • Space/Enter to select • Esc to clear search</span>
+          </div>
+        )}
       </motion.div>
 
+      {/* Files List with Virtual Scrolling Support */}
       <motion.div
-        className="tree-container"
+        className="files-list"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+        onScroll={(e) => {
+          const target = e.currentTarget;
+          const scrollPercentage = (target.scrollTop / (target.scrollHeight - target.clientHeight)) * 100;
+          
+          // Load more items when user scrolls near the bottom
+          if (scrollPercentage > 80 && filteredTree.length > 0) {
+            const firstItem = filteredTree[0];
+            if (firstItem?.children?.some((child: any) => child.path === '__load_more__')) {
+              // Trigger load more logic here if needed
+              console.log('Near bottom, ready to load more');
+            }
+          }
+        }}
       >
         {filteredTree.map((item, index) => (
           <TreeItem
@@ -542,11 +852,17 @@ const FolderTreeBrowser = React.memo<FolderTreeBrowserProps>(({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <div className="summary-info">
             <CheckCircle2 size={18} />
             <span>
-              {selectedCount} file{selectedCount !== 1 ? 's' : ''} selected
+              <strong>{selectedCount}</strong> file{selectedCount !== 1 ? 's' : ''} selected
+              {selectedCount > 0 && filteredSvgFiles.length > selectedCount && (
+                <span className="selection-percentage">
+                  {' '}({Math.round((selectedCount / filteredSvgFiles.length) * 100)}%)
+                </span>
+              )}
             </span>
           </div>
           
@@ -556,6 +872,7 @@ const FolderTreeBrowser = React.memo<FolderTreeBrowserProps>(({
               onClick={onExportSelected}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              title={`Export ${selectedCount} selected SVG files`}
             >
               <Download size={16} />
               Export Selected ({selectedCount})
